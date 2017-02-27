@@ -1,0 +1,18 @@
+.pad2y {
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+.pad1 {
+  padding: 15px;
+}
+
+.pad1y {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.pad2x {
+  padding-left: 30px;
+  padding-right: 30px;
+}

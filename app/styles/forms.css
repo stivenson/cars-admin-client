@@ -1,0 +1,38 @@
+.pt-button {
+  position: relative;
+
+  &.pt-intent-primary {
+
+    &:focus {
+      outline: 0;
+    }
+
+    & .button-popover {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 5px;
+    }
+  }
+
+  & .pt-spinner {
+    position: relative;
+    top: 6px;
+  }
+
+  & .pt-spinner .pt-spinner-track {
+    stroke: rgba(178, 200, 218, 0.2);
+  }
+  & .pt-spinner .pt-spinner-head {
+    stroke: rgba(171, 179, 185, 0.8);
+  }
+}
+
+.pt-spinner.pt-intent-primary .pt-spinner-head {
+  stroke: #d12960;
+}
+
+.help {
+  color: #5d707f;
+  cursor: pointer;
+}

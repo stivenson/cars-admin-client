@@ -1,0 +1,32 @@
+.dashboard{
+
+    min-height: 1000px;
+    padding-left: 24px;
+    padding-right: 24px;
+
+    & h1 {
+        font-size: 24px;
+        margin-bottom: 15px;
+    }
+
+    & h3 {
+        font-size: 16px;
+        font-weight: 500;
+        color: #8A9BA8;
+        margin-bottom: 30px;
+    }
+
+
+    tbody tr:nth-child(odd) {
+        background-color: #ccc;
+    }
+
+    & .custom-padding {
+        padding: 8px;
+        display: inline-block;
+    }
+
+
+
+}
+

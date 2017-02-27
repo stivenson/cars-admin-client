@@ -1,0 +1,26 @@
+.status {
+  &.awaiting {
+    background: #a4bfc3;
+    border-color: #a4bfc3;
+  }
+
+  &.confirmed {
+    background: #89c33f;
+    border-color: #89c33f;
+  }
+
+  &.finished {
+    background: #00b4f1;
+    border-color: #00b4f1;
+  }
+
+  &.canceled {
+    background: #b71d51;
+    border-color: #b71d51;
+  }
+
+  &.noshow {
+    background: #d3245f;
+    border-color: #d3245f;
+  }
+}

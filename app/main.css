@@ -1,0 +1,19 @@
+html, body {
+  -webkit-font-smoothing: antialiased;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
+  font-family: 'Raleway', 'Helvetica Neue', sans-serif;
+  font-size: 14px;
+  line-height: 1.42857143;
+}
+
+a {
+    cursor: pointer;
+}
+
+.cont-login {
+	text-align: center;
+}
+
+.hidden {
+	display: none;
+}

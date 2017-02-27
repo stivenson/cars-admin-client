@@ -1,0 +1,15 @@
+.panel.panel-default {
+  border-color: #dfdfdf;
+
+  & .panel-heading {
+    background: none;
+    border-bottom: 0;
+    font-weight: 600;
+
+    & .description {
+      color: #828282;
+      font-weight: 500;
+      font-size: 12px;
+    }
+  }
+}

@@ -1,0 +1,13 @@
+.list {
+	padding: 15px;
+	& .message-plate {
+		font-size: 12px;
+		color: #146B00;
+	}
+
+	& .message-invalid-date {
+		color: red;
+		font-weight: bold;
+		font-size: 12px;
+	}
+}
