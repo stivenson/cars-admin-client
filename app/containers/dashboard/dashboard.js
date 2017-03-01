@@ -1,11 +1,12 @@
 import m from 'mithril';
-import DashboardList from '../../components/dashboard/list';
+import CarList from '../../components/car/list'
+
 
 export const Dashboard = {
     controller(p){
     },
     view(c,p){
-        return <DashboardList />
+        return <CarList />
     }
 }
 

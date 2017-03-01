@@ -3,10 +3,6 @@
   "description": "Description",
   "author": "Stivenson Rincon <stivenson.rpm@gmail.com>",
   "version": "1.0.0",
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:stivenson/colombiasoat.git"
-  },
   "scripts": {
     "start": "brunch watch --server",
     "prod": "brunch build --production"

@@ -15,7 +15,8 @@ module.exports = {
                 before: [
                     'vendor/css/bootstrap.css',
                     'vendor/css/hint.css',
-                    'vendor/css/blueprint.css'
+                    'vendor/css/blueprint.css',
+                    'vendor/js/*.css'
                 ]
             }
         }
