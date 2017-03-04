@@ -1,13 +1,6 @@
-.list {
-	padding: 15px;
-	& .message-plate {
-		font-size: 12px;
-		color: #146B00;
-	}
+.car-list {
 
-	& .message-invalid-date {
-		color: red;
-		font-weight: bold;
-		font-size: 12px;
-	}
+	padding-top: 80px;
+	padding-left: 34px;
+    padding-right: 34px;
 }

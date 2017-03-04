@@ -19,7 +19,7 @@ export const CarList = {
         this.vm.fetchProducts().then(this.vm.products).then(()=>this.vm.working(false)).then(()=>m.redraw());
     },
     view(c,p){
-        return <span>LISTA</span>;
+        return <div class="car-list">LISTA</div>;
     }
 }
 

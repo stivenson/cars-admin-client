@@ -365,7 +365,7 @@ a:hover {text-decoration: none;}
 	height: 50px; */
     width: 75px;
 	height: 80px; 
-	background: url("../images/logo4.png") no-repeat;
+	background: url("./resources/images/logo.png") no-repeat;
 	-webkit-transition: all 0.5s ease;
 	-o-transition: all 0.5s ease;
 	transition: all 0.5s ease;

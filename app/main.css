@@ -17,3 +17,7 @@ a {
 .hidden {
 	display: none;
 }
+
+.logo_elixir {
+	background:url("./resources/images/logo.png");
+}
