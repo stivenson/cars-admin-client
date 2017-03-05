@@ -24,7 +24,7 @@ export const CarList = {
                 <div class="row">
 
                   <div class="col-sm-3 col-md-3 col-xs-12">
-                    <div class="thumbnail">
+                    <div class="thumbnail thumbnail-click">
                         <div class="cont-image-product">
                             <img class="image-product" alt="image product 1" src="https://img.buzzfeed.com/buzzfeed-static/static/2016-03/4/14/enhanced/webdr05/grid-cell-20993-1457120411-7.jpg" />
                         </div>
@@ -36,7 +36,7 @@ export const CarList = {
                   </div>
 
                   <div class="col-sm-3 col-md-3 col-xs-12">
-                    <div class="thumbnail">
+                    <div class="thumbnail thumbnail-click">
                         <div class="cont-image-product">
                             <img class="image-product" alt="image product 1" src="http://www.radioactiva.cl/files/2014/07/Comida-china-de-tallarines-con-carne-y-verduras.jpg" />
                         </div>
@@ -48,7 +48,7 @@ export const CarList = {
                   </div>
 
                   <div class="col-sm-3 col-md-3 col-xs-12">
-                    <div class="thumbnail">
+                    <div class="thumbnail thumbnail-click">
                         <div class="cont-image-product">
                             <img class="image-product" alt="image product 1" src="https://img.buzzfeed.com/buzzfeed-static/static/2016-03/4/14/enhanced/webdr05/grid-cell-20993-1457120411-7.jpg" />
                         </div>
@@ -60,7 +60,7 @@ export const CarList = {
                   </div>
 
                   <div class="col-sm-3 col-md-3 col-xs-12">
-                    <div class="thumbnail">
+                    <div class="thumbnail thumbnail-click">
                         <div class="cont-image-product">
                             <img class="image-product" alt="image product 1" src="https://img.buzzfeed.com/buzzfeed-static/static/2016-03/4/14/enhanced/webdr05/grid-cell-20993-1457120411-7.jpg" />
                         </div>
