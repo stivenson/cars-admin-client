@@ -10,6 +10,10 @@ a {
     cursor: pointer;
 }
 
+#app {
+	background: transparent;
+}
+
 .cont-login {
 	text-align: center;
 }
@@ -20,4 +24,16 @@ a {
 
 .logo_elixir {
 	background:url("./resources/images/logo.png");
+}
+
+.background {
+	background:url("./resources/images/car_background.jpg") no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+.car-header{
+	background:rgba(0,0,0,0.3);
 }

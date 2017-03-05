@@ -1,6 +1,28 @@
 .car-list {
-
-	padding-top: 80px;
+	margin-top: 69px;
+	padding-top: 30px;
 	padding-left: 34px;
     padding-right: 34px;
+	background:rgba(0,0,0,0.2);
+}
+
+.cont-image-product {
+ 	width: 100%;
+ 	height: 145px;
+  	position: relative;
+}
+
+.image-product {
+	width: 100%;
+	height: 145px;
+	position: absolute;
+}
+
+.price-product{
+	font-weight: bold;
+	color: #164800;
+}
+
+.car-product{
+
 }
