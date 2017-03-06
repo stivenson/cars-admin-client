@@ -35,7 +35,6 @@ const API = {
             url: API.requestUrl(endpoint),
             background: true
         };
-
         var request = m.request(Object.assign({}, defaults, options));
         request.xhr = xhr;
 
