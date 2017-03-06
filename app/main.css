@@ -37,3 +37,7 @@ a {
 .car-header{
 	background:rgba(0,0,0,0.3);
 }
+
+.custom-spinner {
+  padding-top: 80px;
+}

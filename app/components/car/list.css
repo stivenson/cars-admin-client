@@ -26,3 +26,7 @@
 .thumbnail-click{
 	cursor: pointer;
 }
+
+.title-product{
+	text-transform: capitalize;
+}

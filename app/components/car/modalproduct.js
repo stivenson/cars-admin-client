@@ -11,7 +11,6 @@ import {
 } from '../ui';
 
 import { ModalHeader } from '../modal/header';
-import { ModalTabs } from '../modal/tabs';
 import Modal from '../../containers/modal/modal';
 import { MProduct } from './models';
 
@@ -21,8 +20,13 @@ const CarModalproduct = {};
 CarModalproduct.vm = function (p) {
     return {
         saving: m.prop(false),
+        amount: m.prop(1),
         refreshProduct: (id) => {
             return MProduct.get(id);
+        },
+        addToCar: (product) => {
+            p.car().push(product);
+            console.log(p.car());
         },
         submit(event) {
             if (event) { event.preventDefault(); }
@@ -35,11 +39,36 @@ CarModalproduct.vm = function (p) {
 
 CarModalproduct.controller = function (p) {
     this.vm = CarModalproduct.vm(p);
-    this.vm.refreshProduct(p.product.id());
+    this.vm.refreshProduct(p.product.id()).then(p.product).then(()=>m.redraw());
+    this.addToCar = (product) => {
+        this.vm.addToCar(product);
+        Modal.vm.terminate();
+        m.redraw(true);
+    }; 
 }
 
-CarModalproduct.view = function (c) {
-    return <span>Modal</span>;
+CarModalproduct.view = function (c,p) {
+    return (
+        <div class="mmodal-body product-modal">
+            <ModalHeader>
+                <div class="text-center title-product">{p.product.name()}</div>
+            </ModalHeader>
+
+            <div class="thumbnail thumbnail-click">
+                <div class="cont-image-product">
+                    <img class="image-product" alt={"image product "+p.product.id()} src={p.product.srcImage()} />
+                </div>
+                <div class="caption text-center">
+                    <h4 class="price-product">{p.product.value()}</h4>
+                    <p align="justify">{p.product.description()}</p>
+                    <div>
+                        <input type="number" value={c.vm.amount()} oninput={m.withAttr('value', c.vm.amount)} class="pt-input amount-input"/>
+                        <Button onclick={c.addToCar.bind(c,p.product)}><span class="pt-icon-standard pt-icon-shopping-cart"></span> Agregar </Button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
 }
 
 
