@@ -21,6 +21,7 @@ CarModalproduct.vm = function (p) {
     return {
         saving: m.prop(false),
         amount: m.prop(1),
+        observations: m.prop(''),
         refreshProduct: (id) => {
             return MProduct.get(id);
         },
@@ -41,6 +42,8 @@ CarModalproduct.controller = function (p) {
     this.vm = CarModalproduct.vm(p);
     this.vm.refreshProduct(p.product.id()).then(p.product).then(()=>m.redraw());
     this.addToCar = (product) => {
+        product.amount = this.vm.amount();
+        product.observations = this.vm.observations();
         this.vm.addToCar(product);
         Modal.vm.terminate();
         m.redraw(true);
@@ -62,7 +65,14 @@ CarModalproduct.view = function (c,p) {
                     <h4 class="price-product">{p.product.value()}</h4>
                     <p align="justify">{p.product.description()}</p>
                     <div>
-                        <input type="number" value={c.vm.amount()} oninput={m.withAttr('value', c.vm.amount)} class="pt-input amount-input"/>
+                        Pedir <input type="number" value={c.vm.amount()} oninput={m.withAttr('value', c.vm.amount)} class="pt-input amount-input"/>
+                        <br/>
+                        <textarea
+                        style="min-height:70px;" 
+                        rows="3"
+                        placeholder="Agregar observación sobre el pedido (opcional)" 
+                        onchange={m.withAttr('value', c.vm.observations)}>{c.vm.observations()}</textarea>
+                        <br/>
                         <Button onclick={c.addToCar.bind(c,p.product)}><span class="pt-icon-standard pt-icon-shopping-cart"></span> Agregar </Button>
                     </div>
                 </div>

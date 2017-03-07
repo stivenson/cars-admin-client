@@ -16,6 +16,7 @@ module.exports = {
                     'vendor/css/bootstrap.css',
                     'vendor/css/hint.css',
                     'vendor/css/blueprint.css',
+                    'vendor/css/font-awesome.css',
                     'vendor/js/*.css'
                 ]
             }
