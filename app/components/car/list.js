@@ -4,6 +4,8 @@ import {Spinner, Button} from '../../components/ui';
 import {MProduct} from './models';
 import Modal from '../../containers/modal/modal';
 import CarModalproduct from './modalproduct';
+import IndicatorCar from './indicator';
+import CoverageCar from './coverage';
 
 export const CarList = {
     vm(p){
@@ -28,15 +30,37 @@ export const CarList = {
             this.vm.openProduct(product,this.vm.car.bind(this.vm));
         }
 
+        this.amounproducts = () => {
+                console.log(this.vm.products());
+                if(this.vm.products() != 'length')
+                    return this.vm.products().length;   
+                else
+                    return 0;
+        }
+
     },
     view(c,p){
 
+        let indicator = <div class="align-indicator-car"><IndicatorCar amounproducts={c.amounproducts.bind(c)} /></div>;
+
+        let coverage = <div class="align-coverage-car"><CoverageCar /></div>;
+
         let list = <div class="custom-spinner text-center"><Spinner Large /></div>;
 
+        let infocar = (
+            <div class="row infocar">
+                <div class="col-sm-9 col-md-9 col-xs-12" ></div>
+                <div class="col-sm-3 col-md-3 col-xs-12" >
+                    <div class="row"><div class="col-md-8 col-xs-8">{coverage}</div><div class="col-md-4 col-xs-4">{indicator}</div></div>
+                </div>
+            </div>
+        );
 
+        console.log(c.vm.products());
         if(c.vm.products() != 'empty'){
             list = (
                 <div class="car-list">
+                    {infocar}
                     <div class="row">
                         {c.vm.products().map((product) => {
                             return (

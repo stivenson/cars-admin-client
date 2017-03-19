@@ -30,3 +30,20 @@
 .title-product{
 	text-transform: capitalize;
 }
+
+
+.align-coverage-car{
+	text-align: left;
+}
+
+.align-indicator-car{
+	text-align: right;
+}
+
+.infocar{
+	padding-bottom: 15px;
+}
+
+.sepcolor{
+	color: transparent;
+}
