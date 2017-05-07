@@ -1,7 +1,8 @@
 import m from 'mithril';
 import {Spinner, Button} from '../../components/ui';
 import { Product } from './models';
-
+import {Alert} from '../../components/ui';
+import API from '../api';
 
 export const Products = {
     vm(p){
@@ -9,48 +10,79 @@ export const Products = {
             working: m.prop(false),
             products: m.prop('empty'),
             readonly: m.prop(false),
-            product: m.prop(new Product({})),
+            product: m.prop(new Product()),
             waitForm: m.prop(false)
         } 
     },
     controller(p){
         this.vm = Products.vm(p);
-        this.vm.working(true);
-        Product.list().then(this.vm.products).then(()=>this.vm.working(false)).then(()=>m.redraw());
+        this.limitSizeImagen = 8388606;
+
+        let getProducts = () => {
+            this.vm.working(true);
+            Product.list()
+                .then(this.vm.products)
+                .then(()=>this.vm.working(false))
+                .then(()=>m.redraw());
+        }
+
+        getProducts();
+
         this.add = () => {
             this.vm.waitForm(true);
-            this.vm.product(new Product({}));
+             
             setTimeout(() => {
                 this.vm.waitForm(false);
                 m.redraw();
             },500);
         }
 
-        this.save = (event) => {
-            // get results of functions this.vm.product().form
-            var data = new FormData();
-            // validate Size
+        var currentformData = new FormData();
+
+        this.prepareImage = (event) => {
+
             if(typeof event.target.files[0] != 'undefined'){
                     
-                if(event.target.files[0].size >= limitSizeImagen){
+                // validate Size
+                if(event.target.files[0].size >= c.limitSizeImagen){
                     Modal.vm.open(AlertModal, {label: 'La imagen es muy pesada'});
                     return true;
                 }      
                 
-                data.append('file', event.target.files[0]);
-                var endpoint = 'products';
-                var options = {
-                    config: (xhr) => {
-                        let token = window.localStorage.getItem('token') || false;
-                        if (token) {
-                            API.configAuth(xhr, token);
-                        }
-                        xhr.setRequestHeader('X-Requested-With', Config.ID);
-                    },
-                    serialize: (value) => value,
-                    url: API.requestUrl(endpoint)
-                };
-            // Product.save(data,options).then()
+                currentformData.append('image', event.target.files[0]);
+
+            }else{
+                Modal.vm.open(AlertModal, {label: 'Debe especificar imagen'});
+                return true;
+            }
+
+        }
+
+        this.save = () => {
+
+            let endpoint = 'products';
+            let options = {
+                serialize: (value) => value,
+                url: API.requestUrl(endpoint)
+            };
+
+            currentformData.append('name', this.vm.product().form.name());
+            currentformData.append('description', this.vm.product().form.description());
+            currentformData.append('value', this.vm.product().form.value());
+            currentformData.append('iva', this.vm.product().form.iva());
+            currentformData.append('available', this.vm.product().form.available());
+
+            // Get results of functions this.vm.product().form
+            Product.save(currentformData,options).then((res) => {
+                if(!res){
+                    Modal.vm.open(AlertModal, {label: 'No se pudo guardar el producto'});
+                }else{  
+                    Modal.vm.open(AlertModal, {label: 'Producto guardado con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
+                    //this.vm.product(new Product());
+                    //currentformData = new FormData();
+                    getProducts();
+                }
+            })
         }
     },
     view(c,p){
@@ -80,9 +112,26 @@ export const Products = {
                             oninput={m.withAttr('value', c.vm.product().form.name)}
                             value={c.vm.product().form.name()}
                             placeholder=""
+                            required
                             disabled={c.vm.readonly()}
                         />
                     </label>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group" >
+                                    <label for="venue-description">Descripción</label>
+                                    <textarea
+                                        value={c.vm.product().form.description()}
+                                        onchange={m.withAttr('value', c.vm.product().form.description)}
+                                        class="pt-fill pt-input"
+                                        name="description"
+                                        rows="5"
+                                        required
+                                        placeholder="Descripción del producto, incluyendo, adicionales y/o otras aclaraciones."></textarea>
+                                </div>
+                            </div>
+                        </div>
 
                     <label class="pt-label">
                         <div class="pt-control-group">
@@ -105,10 +154,38 @@ export const Products = {
                                 oninput={m.withAttr('value', c.vm.product().form.iva)}
                                 value={c.vm.product().form.iva()}
                                 placeholder="IVA"
+                                required
                                 disabled={c.vm.readonly()}
                             />
                         </div>
                     </label>
+
+                    <label class="pt-file-upload">
+                      <input    
+                            id="product-file-upload" 
+                            type="file" 
+                            required
+                            onchange={c.prepareImage.bind(c)}/>
+                            <span style="width:160px;" class="pt-file-upload-input">Seleccionar imagen..</span>
+                            <br/>
+                            <br/>
+                    </label>
+
+                    <label class="pt-control pt-checkbox pt-inline">
+                        <input
+                            type="checkbox"
+                            checked={c.vm.product().form.available()}
+                            onclick={m.withAttr('checked', c.vm.product().form.available)}
+                            />
+                        <span class="pt-control-indicator"></span>
+                        Disponible <i>(Si no esta disponible, no aparecerá para el cliente)</i>
+                    </label>
+
+                    <div class="text-center">
+                        <Button onclick={c.save.bind(c)}>
+                            Guardar
+                        </Button>
+                    </div>
                 </form>
             </div>
             </div>
@@ -170,7 +247,6 @@ export const Products = {
                 <div clas="col-md-12">{btnAdd}<br/></div> 
 
                 <div class="col-md-8">
-
                     {list}
                 </div> 
                 <div class="col-md-4">   

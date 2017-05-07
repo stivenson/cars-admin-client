@@ -2,8 +2,8 @@ import m from 'mithril';
 import API from '../api';
 import Utils from '../utils';
 
-export const Product = (data) => {
-    console.log(data.name);
+export const Product = function(data) {
+    data = data || {};
     this.id = m.prop(data.id || false);
     this.name = m.prop(data.name || '');
     this.description = m.prop(data.description || '');
@@ -24,13 +24,11 @@ export const Product = (data) => {
 
 }
 
-Product.list = () => {
+Product.list = function () {
     return API.get('products', {type: Product});
 }
 
-Product.save = (data,options) => {
-    // process image to send
-
+Product.save = function () {
     return API.post('products',data,options);
 }
 
