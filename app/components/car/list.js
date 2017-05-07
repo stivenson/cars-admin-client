@@ -46,7 +46,7 @@ export const CarList = {
         let coverage = <div class="align-coverage-car"><CoverageCar /></div>;
 
         let list = <div class="custom-spinner text-center"><Spinner Large /></div>;
-
+ 
         let infocar = (
             <div class="row infocar">
                 <div class="col-sm-9 col-md-9 col-xs-12" ></div>
@@ -56,7 +56,6 @@ export const CarList = {
             </div>
         );
 
-        console.log(c.vm.products());
         if(c.vm.products() != 'empty'){
             list = (
                 <div class="car-list">
