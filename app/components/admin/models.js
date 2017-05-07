@@ -28,7 +28,7 @@ Product.list = function () {
     return API.get('products', {type: Product});
 }
 
-Product.save = function () {
+Product.save = function (data,options) {
     return API.post('products',data,options);
 }
 

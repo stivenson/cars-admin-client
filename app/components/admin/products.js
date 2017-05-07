@@ -1,8 +1,8 @@
 import m from 'mithril';
-import {Spinner, Button} from '../../components/ui';
 import { Product } from './models';
-import {Alert} from '../../components/ui';
 import API from '../api';
+import Modal from '../../containers/modal/modal';
+import {Spinner, Button, Alert} from '../../components/ui';
 
 export const Products = {
     vm(p){
@@ -44,21 +44,23 @@ export const Products = {
             if(typeof event.target.files[0] != 'undefined'){
                     
                 // validate Size
-                if(event.target.files[0].size >= c.limitSizeImagen){
-                    Modal.vm.open(AlertModal, {label: 'La imagen es muy pesada'});
+                if(event.target.files[0].size >= this.limitSizeImagen){
+                    Modal.vm.open(Alert, {label: 'La imagen es muy pesada'});
                     return true;
                 }      
                 
                 currentformData.append('image', event.target.files[0]);
 
             }else{
-                Modal.vm.open(AlertModal, {label: 'Debe especificar imagen'});
+                Modal.vm.open(Alert, {label: 'Debe especificar imagen'});
                 return true;
             }
 
         }
 
         this.save = () => {
+
+            // validation for make
 
             let endpoint = 'products';
             let options = {
@@ -73,17 +75,19 @@ export const Products = {
             currentformData.append('available', this.vm.product().form.available());
 
             // Get results of functions this.vm.product().form
-            Product.save(currentformData,options).then((res) => {
-                if(!res){
-                    Modal.vm.open(AlertModal, {label: 'No se pudo guardar el producto'});
+            Product.save(currentformData,options).then(res => {
+                if(res == false){
+                    Modal.vm.open(Alert, {label: 'No se pudo guardar el producto'});
                 }else{  
-                    Modal.vm.open(AlertModal, {label: 'Producto guardado con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
-                    //this.vm.product(new Product());
-                    //currentformData = new FormData();
+                    Modal.vm.open(Alert, {label: 'Producto guardado con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
+                    this.vm.product(new Product());
+                    currentformData = new FormData();
                     getProducts();
                 }
-            })
+            }).then(()=>m.redraw())
         }
+
+        setTimeout(()=> Modal.vm.open(Alert, {label: 'prueba de alert'}),3000);
     },
     view(c,p){
 
@@ -166,7 +170,7 @@ export const Products = {
                             type="file" 
                             required
                             onchange={c.prepareImage.bind(c)}/>
-                            <span style="width:160px;" class="pt-file-upload-input">Seleccionar imagen..</span>
+                            <span class="pt-file-upload-input">Seleccionar imagen..</span>
                             <br/>
                             <br/>
                     </label>
@@ -182,7 +186,7 @@ export const Products = {
                     </label>
 
                     <div class="text-center">
-                        <Button onclick={c.save.bind(c)}>
+                        <Button type="button" onclick={c.save.bind(c)}>
                             Guardar
                         </Button>
                     </div>
@@ -243,7 +247,7 @@ export const Products = {
 
 
         let content = (
-            <div class="row">
+            <div class="admin-products row">
                 <div clas="col-md-12">{btnAdd}<br/></div> 
 
                 <div class="col-md-8">

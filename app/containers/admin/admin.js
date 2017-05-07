@@ -10,7 +10,7 @@ export const Admin = {
 
 			<div class="panel panel-default admin-panel">
 			  	<div class="panel-body admin-panel">
-		        	<div class="admin">
+		        	<div class="admin" >
 						<div class="pt-tabs">
 						    <ul class="pt-tab-list pt-large" role="tablist">
 						        <li class="pt-tab " role="tab" aria-selected="true">Productos</li>
