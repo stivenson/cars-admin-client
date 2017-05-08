@@ -27,3 +27,5 @@ node_modules/
 public/
 .idea
 web
+public/sftp-config.json
+sftp-config_json
