@@ -20,16 +20,18 @@ export const Products = {
         this.limitSizeImagen = 8388606;
         var currentformData = new FormData();
 
-        let getProducts = () => {
+        let getProducts = (selectFirst,index) => {
+            index = index || null;
             this.vm.working(true);
             Product.list()
                 .then(this.vm.products)
                 .then(()=>this.vm.working(false))
-                .then(()=>this.edit(0))
+                .then(()=>{if(selectFirst == true) {this.edit(0)}})
+                .then(()=>{if(index != null){this.edit(index)}})
                 .then(()=>m.redraw());
         }
 
-        getProducts();
+        getProducts(true,null);
 
         this.add = () => {
             currentformData = new FormData();
@@ -76,7 +78,7 @@ export const Products = {
                     Modal.vm.open(Alert, {label: 'No se pudo eliminar el producto'});
                 }else{  
                     Modal.vm.open(Alert, {label: 'Producto eliminado con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
-                    getProducts();
+                    getProducts(true,null);
                 }
             })
         }
@@ -131,8 +133,7 @@ export const Products = {
                         Modal.vm.open(Alert, {label: 'No se pudo actualizar el producto'});
                     }else{  
                         Modal.vm.open(Alert, {label: 'Producto actualizado con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
-                        this.edit(this.vm.product().index());
-                        getProducts();
+                        getProducts(false,this.vm.product().index());
                     }
                 })
 
@@ -158,7 +159,7 @@ export const Products = {
                         Modal.vm.open(Alert, {label: 'Producto guardado con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
                         this.vm.product(new Product());
                         currentformData = new FormData();
-                        getProducts();
+                        getProducts(true,null);
                     }
                 })
 
@@ -265,7 +266,7 @@ export const Products = {
                     </label>
 
                     <div class={"text-center "+(c.vm.product().form.haveImage() ? ' ':'hidden')} >
-                        <img src={c.vm.product().form.image()}/>
+                        <img src={c.vm.product().form.image()} heigth="130"/>
                         <br/><br/>
                     </div>
 
