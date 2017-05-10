@@ -1,5 +1,8 @@
 .admin-products {
-
+	& .have-image {
+		color: #009924;
+		font-weight: bold;
+	}
 }
 
 .hidden{

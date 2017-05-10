@@ -9,7 +9,7 @@ export const Product = function(data) {
     this.description = m.prop(data.description || '');
     this.smalldescription = m.prop(this.description().substring(0,10)+'...');
     this.value = m.prop(Utils.formatMoney(data.value) || '');
-    this.available = m.prop(data.available || '');
+    this.available = m.prop(data.available == true ? true : false);
     this.iva = m.prop(data.iva || 0);
     let mime = data.mime || ' ';
     let urlImage = `data:image/${mime};base64,${(data.image1 || ' ')}`;
@@ -21,7 +21,7 @@ export const Product = function(data) {
         name: m.prop(data.name || ''),
         description: m.prop(data.description || ''),
         value: m.prop(data.value || ''),
-        available: m.prop(data.available || ''),
+        available: m.prop(data.available == true ? true : false),
         iva: m.prop(data.iva || ''),
         image: m.prop(urlImage),
         haveImage: m.prop(mime != ' ')

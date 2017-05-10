@@ -26,8 +26,13 @@ export const Products = {
             Product.list()
                 .then(this.vm.products)
                 .then(()=>this.vm.working(false))
+                .then(()=>{
+                    if(index != null){
+                        if(index == 'first')
+                            index = 0;
+                        this.edit(index);
+                }})
                 .then(()=>{if(selectFirst == true) {this.edit(0)}})
-                .then(()=>{if(index != null){this.edit(index)}})
                 .then(()=>m.redraw());
         }
 
@@ -42,7 +47,7 @@ export const Products = {
             setTimeout(() => {
                 this.vm.waitForm(false);
                 m.redraw();
-            },500);
+            },350);
         }
 
         this.edit = (index) => {
@@ -50,13 +55,14 @@ export const Products = {
             this.vm.waitForm(true);
             let arrProducts = this.vm.products();
             this.vm.product(arrProducts[index]);
-            this.vm.product().index = m.prop(index);
+            this.vm.product().index = m.prop(index+1);
             this.vm.readonly(false);
-            this.vm.statusImage('Seleccionar imagen');
-            setTimeout(() => {
+            this.vm.statusImage('Seleccionar imagen');  
+            
+            setTimeout(() => {              
                 this.vm.waitForm(false);
                 m.redraw();
-            },500);
+            },350);
         }
 
         this.detail = (index) => {
@@ -67,7 +73,7 @@ export const Products = {
             setTimeout(() => {
                 this.vm.waitForm(false);
                 m.redraw();
-            },500);
+            },350);
         }
 
         this.delete = (index) => {
@@ -108,11 +114,24 @@ export const Products = {
 
         this.save = () => {
 
-            // validation for make
+            if (this.vm.working()) return;
+
+            let endpoint = 'products';
+            let options = {
+                serialize: (value) => value,
+                url: API.requestUrl(endpoint)
+            };
+
+            currentformData.append('name', this.vm.product().form.name());
+            currentformData.append('description', this.vm.product().form.description());
+            currentformData.append('value', this.vm.product().form.value());
+            currentformData.append('iva', this.vm.product().form.iva());
+            currentformData.append('available', this.vm.product().form.available());
 
             if(this.vm.product().form.id() != false){
 
                 // validation for make - less image
+
                 let endpoint = 'products';
                 let options = {
                     serialize: (value) => value,
@@ -120,41 +139,30 @@ export const Products = {
                 };
 
                 currentformData.append('id', this.vm.product().form.id());
-                currentformData.append('name', this.vm.product().form.name());
-                currentformData.append('description', this.vm.product().form.description());
-                currentformData.append('value', this.vm.product().form.value());
-                currentformData.append('iva', this.vm.product().form.iva());
-                currentformData.append('available', this.vm.product().form.available());
-
-                // Get results of functions this.vm.product().form
+                this.vm.working(true);
                 Product.save(currentformData,options)
                 .then(res => {
+                    this.vm.working(false);
                     if(res == false){
                         Modal.vm.open(Alert, {label: 'No se pudo actualizar el producto'});
+                        m.redraw();
                     }else{  
                         Modal.vm.open(Alert, {label: 'Producto actualizado con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
-                        getProducts(false,this.vm.product().index());
+                        let auxIndex = (this.vm.product().index()-1) == 0 ? 'first': this.vm.product().index()-1;
+                        getProducts(false,auxIndex);
                     }
                 })
 
             }else{
 
-                let endpoint = 'products';
-                let options = {
-                    serialize: (value) => value,
-                    url: API.requestUrl(endpoint)
-                };
-
-                currentformData.append('name', this.vm.product().form.name());
-                currentformData.append('description', this.vm.product().form.description());
-                currentformData.append('value', this.vm.product().form.value());
-                currentformData.append('iva', this.vm.product().form.iva());
-                currentformData.append('available', this.vm.product().form.available());
-
-                // Get results of functions this.vm.product().form
-                Product.save(currentformData,options).then(res => {
+                // validation for make
+                this.vm.working(true);
+                Product.save(currentformData,options)
+                .then(res => {
+                    this.vm.working(false);
                     if(res == false){
                         Modal.vm.open(Alert, {label: 'No se pudo guardar el producto'});
+                        m.redraw();
                     }else{  
                         Modal.vm.open(Alert, {label: 'Producto guardado con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
                         this.vm.product(new Product());
@@ -223,16 +231,16 @@ export const Products = {
                     </div>
 
                     <label class="pt-label">
-                        <div class="pt-control-group">
+                        <div class="pt-control-group pt-vertical pt-intent-primary">
                             <div class="pt-input-group">
                             <span>Precio (COP)</span>
-                            $<input
+                            <input
                                 type="text"
-                                class="pt-input pt-fill"
+                                class="pt-input "
                                 name="value"
                                 oninput={m.withAttr('value', c.vm.product().form.value)}
                                 value={c.vm.product().form.value()}
-                                placeholder="Valor en COP"
+                                placeholder="Valor en COP (solo números)"
                                 disabled={c.vm.readonly()}
                                 required
                             />
@@ -241,11 +249,11 @@ export const Products = {
                             <span>IVA</span> 
                             <input
                                 type="text"
-                                class="pt-input pt-fill"
+                                class="pt-input "
                                 name="iva"
                                 oninput={m.withAttr('value', c.vm.product().form.iva)}
                                 value={c.vm.product().form.iva()}
-                                placeholder="IVA"
+                                placeholder="IVA (solo números)"
                                 required
                                 disabled={c.vm.readonly()}
                             />
@@ -260,7 +268,7 @@ export const Products = {
                             required
                             disabled={c.vm.readonly()}
                             onchange={c.prepareImage.bind(c)}/>
-                            <span class="pt-file-upload-input">{c.vm.statusImage()}</span>
+                            <span class={"pt-file-upload-input "+(c.vm.statusImage() == 'Seleccionar imagen' ? '':'have-image')}>{c.vm.statusImage()}</span>
                             <br/>
                             <br/>
                     </label>
@@ -282,12 +290,12 @@ export const Products = {
                     </label>
 
                     <label class={"pt-control pt-checkbox pt-inline "+(c.vm.readonly() == true ? '':'hidden')} >
-                        <div class={"pt-tag pt-intent-success "+(c.vm.product().form.available()?'':'hidden')}>Disponible</div>
-                        <div class={"pt-tag "+(c.vm.product().form.available()?'hidden':'')}>No Disponible</div>
+                        <div class={"pt-tag pt-intent-success "+(c.vm.product().form.available() == true?'':'hidden')}>Disponible</div>
+                        <div class={"pt-tag "+(c.vm.product().form.available() == true?'hidden':'')}>No Disponible</div>
                     </label>
 
                     <div class={"text-center "+(c.vm.readonly() ? 'hidden':'')}>
-                        <Button type="button" onclick={c.save.bind(c)}>
+                        <Button type="button" onclick={c.save.bind(c)} loading={c.vm.working()} >
                             Guardar
                         </Button>
                     </div>
@@ -319,7 +327,7 @@ export const Products = {
                                     <td>{product.value()}</td>
                                     <td>
                                     {(() => {
-                                        if(product.available() == 1){
+                                        if(product.available() == true){
                                             return <span class="pt-tag pt-intent-success">Disponible</span>;
                                         }else{
                                             return <span class="pt-tag ">No disponible</span>;
