@@ -1,9 +1,14 @@
 .admin {
-	margin-top: 113px;
-	padding-top: 20px;
-	padding-left: 34px;
-    padding-right: 34px;
-	background:rgba(0,0,0,0.2);
+
+    min-height: 1000px;
+    padding-left: 24px;
+    padding-right: 24px;
+    margin-top: 65px;
+
+
+    & .tab-link {
+    	display: block;	
+    }
 	
 }
 
@@ -11,3 +16,4 @@
 .color-white {
 	color: #FFFFFF;
 }
+

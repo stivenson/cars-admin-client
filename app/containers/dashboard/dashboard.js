@@ -6,7 +6,7 @@ export const Dashboard = {
     controller(p){
     },
     view(c,p){
-        return <CarList />
+        return <CarList />;
     }
 }
 

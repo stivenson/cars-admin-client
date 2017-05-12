@@ -5,11 +5,11 @@ import Modal from '../../containers/modal/modal';
 import {Spinner, Button, Alert, Confirm} from '../../components/ui';
 import CarModalproduct from '../car/modalproduct';
 
-export const Products = {
+export const Clients = {
     vm(p){
     	return {
             working: m.prop(false),
-            products: m.prop('empty'),
+            clients: m.prop('empty'),
             readonly: m.prop(false),
             product: m.prop(new Product()),
             waitForm: m.prop(false),
@@ -17,15 +17,15 @@ export const Products = {
         } 
     },
     controller(p){
-        this.vm = Products.vm(p);
+        this.vm = Clients.vm(p);
         this.limitSizeImagen = 8388606;
         var currentformData = new FormData();
 
-        let getProducts = (selectFirst,index) => {
+        let getClients = (selectFirst,index) => {
             index = index || null;
             this.vm.working(true);
             Product.list()
-                .then(this.vm.products)
+                .then(this.vm.clients)
                 .then(()=>this.vm.working(false))
                 .then(()=>{
                     if(index != null){
@@ -37,7 +37,7 @@ export const Products = {
                 .then(()=>m.redraw());
         }
 
-        getProducts(true,null);
+        getClients(true,null);
 
         this.add = () => {
             currentformData = new FormData();
@@ -54,8 +54,8 @@ export const Products = {
         this.edit = (index) => {
             currentformData = new FormData();
             this.vm.waitForm(true);
-            let arrProducts = this.vm.products();
-            this.vm.product(arrProducts[index]);
+            let arrClients = this.vm.clients();
+            this.vm.product(arrClients[index]);
             this.vm.product().index = m.prop(index+1);
             this.vm.readonly(false);
             this.vm.statusImage('Seleccionar imagen');  
@@ -68,8 +68,8 @@ export const Products = {
 
         this.detail = (index) => {
             this.vm.waitForm(true);
-            let arrProducts = this.vm.products();
-            this.vm.product(arrProducts[index]);
+            let arrClients = this.vm.clients();
+            this.vm.product(arrClients[index]);
             this.vm.readonly(true);
             setTimeout(() => {
                 this.vm.waitForm(false);
@@ -78,15 +78,15 @@ export const Products = {
         }
 
         this.delete = (index) => {
-            let arrProducts = this.vm.products();
+            let arrClients = this.vm.clients();
             Modal.vm.open(Confirm, {className: 'mmodal-small', mood: 'success', icon: 'ok-circle',label: '¿Confirmas que deseas borrar este producto?', actionLabel: 'Eliminar producto'})
             .then(() => {
-                    Product.delete(arrProducts[index].id())
+                    Product.delete(arrClients[index].id())
                     .then(res =>{
                         if(res == false){
                             Modal.vm.open(Alert, {label: 'No se pudo eliminar el producto'});
                         }else{  
-                            getProducts(true,null);
+                            getClients(true,null);
                             Modal.vm.open(Alert, {label: 'Producto eliminado con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
                         }
                     })
@@ -120,7 +120,7 @@ export const Products = {
 
             if (this.vm.working()) return;
 
-            let endpoint = 'products';
+            let endpoint = 'clients';
             let options = {
                 serialize: (value) => value,
                 url: API.requestUrl(endpoint)
@@ -136,7 +136,7 @@ export const Products = {
 
                 // validation for make - less image
 
-                let endpoint = 'products';
+                let endpoint = 'clients';
                 let options = {
                     serialize: (value) => value,
                     url: API.requestUrl(endpoint)
@@ -151,7 +151,7 @@ export const Products = {
                         Modal.vm.open(Alert, {label: 'No se pudo actualizar el producto'});
                     }else{  
                         let auxIndex = (this.vm.product().index()-1) == 0 ? 'first': this.vm.product().index()-1;
-                        getProducts(false,auxIndex);
+                        getClients(false,auxIndex);
                         Modal.vm.open(Alert, {label: 'Producto actualizado con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
                     }   
                 })
@@ -168,7 +168,7 @@ export const Products = {
                     }else{  
                         this.vm.product(new Product());
                         currentformData = new FormData();
-                        getProducts(true,null);
+                        getClients(true,null);
                         Modal.vm.open(Alert, {label: 'Producto guardado con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
                     }
                 })
@@ -307,7 +307,7 @@ export const Products = {
             );
         }
 
-        if(c.vm.products() != 'empty'){
+        if(c.vm.clients() != 'empty'){
             list = (
             	<div class="table-responsive">
                     <table class="table table-striped">
@@ -321,7 +321,7 @@ export const Products = {
                             </tr>
                         </thead>
                         <tbody>
-                        {c.vm.products().map((product,index) => {
+                        {c.vm.clients().map((product,index) => {
                             return (
                                 <tr>
                                     <td>{product.name()}</td>
@@ -358,7 +358,7 @@ export const Products = {
 
 
         let content = (
-            <div class="admin-products row">
+            <div class="admin-clients row">
                 <div clas="col-md-12">{btnAdd}<br/></div> 
 
                 <div class="col-md-8">
@@ -376,4 +376,4 @@ export const Products = {
 }
 
 
-export default Products;
+export default Clients;

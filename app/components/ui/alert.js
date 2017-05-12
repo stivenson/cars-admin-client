@@ -26,9 +26,7 @@ export var Alert = {
         return (
             <div class="mmodal-body confirm-modal">
                 <div class="row">
-                    <div class="col-md-3 col-sm-3 col-xs-12 text-center"><span
-                        class={"pt-icon-large " + c.options.icon + ' ' + c.options.mood}></span></div>
-                    <div class="col-md-9 col-sm-9 col-xs-12">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
                         <h2>{c.options.actionLabel}</h2>
                         <p>{c.options.label}</p>
                     </div>

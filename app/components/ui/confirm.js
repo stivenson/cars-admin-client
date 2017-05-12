@@ -27,8 +27,7 @@ export var Confirm = {
         return (
             <div class="mmodal-body confirm-modal">
                 <div class="row">
-                    <div class="col-xs-3 text-center"><span class={"pt-icon-large pt-icon-" + c.options.icon + " " + c.options.mood}></span></div>
-                    <div class="col-xs-9">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
                         <h2>{c.options.actionLabel}</h2>
                         <p>{c.options.label}</p>
                     </div>

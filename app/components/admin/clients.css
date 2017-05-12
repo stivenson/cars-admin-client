@@ -1,4 +1,4 @@
-.admin-products {
+.admin-clients {
 
     background:rgba(0,0,0,0.2);
 
@@ -7,9 +7,6 @@
 		font-weight: bold;
 	}
 
-	.hidden{
-		display: none;
-	}
 
 }
 

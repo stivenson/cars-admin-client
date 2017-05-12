@@ -22,8 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     m.route.mode = 'hash';
     m.route(root, '/', {
-        '/dashboard': Login,
-        '/admin': Admin,
+        '/dashboard': WrapMainLayout(Login),
+        '/admin': WrapMainLayout(Admin),
         '/': WrapMainLayout(Dashboard)
     });
 });
