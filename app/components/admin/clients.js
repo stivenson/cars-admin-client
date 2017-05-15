@@ -1,9 +1,8 @@
 import m from 'mithril';
-import { Product } from './models';
+import { Client } from './models';
 import API from '../api';
 import Modal from '../../containers/modal/modal';
 import {Spinner, Button, Alert, Confirm} from '../../components/ui';
-import CarModalproduct from '../car/modalproduct';
 
 export const Clients = {
     vm(p){
@@ -11,9 +10,8 @@ export const Clients = {
             working: m.prop(false),
             clients: m.prop('empty'),
             readonly: m.prop(false),
-            product: m.prop(new Product()),
-            waitForm: m.prop(false),
-            statusImage: m.prop('Seleccionar imagen')
+            client: m.prop(new Client()),
+            waitForm: m.prop(false)
         } 
     },
     controller(p){
@@ -24,10 +22,10 @@ export const Clients = {
         let getClients = (selectFirst,index) => {
             index = index || null;
             this.vm.working(true);
-            Product.list()
+            Client.list()
                 .then(this.vm.clients)
-                .then(()=>this.vm.working(false))
-                .then(()=>{
+                .then(() => this.vm.working(false))
+                .then(() => {
                     if(index != null){
                         if(index == 'first')
                             index = 0;
@@ -42,9 +40,8 @@ export const Clients = {
         this.add = () => {
             currentformData = new FormData();
             this.vm.waitForm(true);
-            this.vm.product(new Product());
+            this.vm.client(new Client());
             this.vm.readonly(false);
-            this.vm.statusImage('Seleccionar imagen');
             setTimeout(() => {
                 this.vm.waitForm(false);
                 m.redraw();
@@ -55,10 +52,9 @@ export const Clients = {
             currentformData = new FormData();
             this.vm.waitForm(true);
             let arrClients = this.vm.clients();
-            this.vm.product(arrClients[index]);
-            this.vm.product().index = m.prop(index+1);
+            this.vm.client(arrClients[index]);
+            this.vm.client().index = m.prop(index+1);
             this.vm.readonly(false);
-            this.vm.statusImage('Seleccionar imagen');  
 
             setTimeout(() => {              
                 this.vm.waitForm(false);
@@ -69,7 +65,7 @@ export const Clients = {
         this.detail = (index) => {
             this.vm.waitForm(true);
             let arrClients = this.vm.clients();
-            this.vm.product(arrClients[index]);
+            this.vm.client(arrClients[index]);
             this.vm.readonly(true);
             setTimeout(() => {
                 this.vm.waitForm(false);
@@ -79,15 +75,15 @@ export const Clients = {
 
         this.delete = (index) => {
             let arrClients = this.vm.clients();
-            Modal.vm.open(Confirm, {className: 'mmodal-small', mood: 'success', icon: 'ok-circle',label: '¿Confirmas que deseas borrar este producto?', actionLabel: 'Eliminar producto'})
+            Modal.vm.open(Confirm, {className: 'mmodal-small', mood: 'success', icon: 'ok-circle',label: '¿Confirmas que deseas borrar este cliente?', actionLabel: 'Eliminar cliente'})
             .then(() => {
-                    Product.delete(arrClients[index].id())
+                    Client.delete(arrClients[index].id())
                     .then(res =>{
                         if(res == false){
-                            Modal.vm.open(Alert, {label: 'No se pudo eliminar el producto'});
+                            Modal.vm.open(Alert, {label: 'No se pudo eliminar el cliente'});
                         }else{  
                             getClients(true,null);
-                            Modal.vm.open(Alert, {label: 'Producto eliminado con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
+                            Modal.vm.open(Alert, {label: 'Cliente eliminado con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
                         }
                     })
                 }
@@ -95,26 +91,6 @@ export const Clients = {
 
         }
 
-
-        this.prepareImage = (event) => {
-
-            if(typeof event.target.files[0] != 'undefined'){
-                    
-                // validate Size
-                if(event.target.files[0].size >= this.limitSizeImagen){
-                    this.vm.statusImage('Seleccionar imagen');
-                    Modal.vm.open(Alert, {label: 'La imagen es muy pesada'});
-                }      
-                
-                currentformData.append('image', event.target.files[0]);
-                this.vm.statusImage('Hay una imagen');
-
-            }else{
-                this.vm.statusImage('Seleccionar imagen');
-                Modal.vm.open(Alert, {label: 'Debe especificar imagen'});
-            }
-
-        }
 
         this.save = () => {
 
@@ -126,52 +102,58 @@ export const Clients = {
                 url: API.requestUrl(endpoint)
             };
 
-            currentformData.append('name', this.vm.product().form.name());
-            currentformData.append('description', this.vm.product().form.description());
-            currentformData.append('value', this.vm.product().form.value());
-            currentformData.append('iva', this.vm.product().form.iva());
-            currentformData.append('available', this.vm.product().form.available());
+            currentformData.append('name', this.vm.client().form.name());
+            currentformData.append('cc', this.vm.client().form.cc());
+            currentformData.append('roles_id', this.vm.client().form.roles_id());
+            currentformData.append('telephone', this.vm.client().form.telephone());
+            currentformData.append('cell_phone', this.vm.client().form.cell_phone());
+            currentformData.append('email', this.vm.client().form.email());
+            currentformData.append('password', this.vm.client().form.password());
+            currentformData.append('neighborhood', this.vm.client().form.neighborhood());
+            currentformData.append('address', this.vm.client().form.address());
 
-            if(this.vm.product().form.id() != false){
+            if(this.vm.client().form.id() != false){
 
                 // validation for make - less image
 
-                let endpoint = 'clients';
-                let options = {
-                    serialize: (value) => value,
-                    url: API.requestUrl(endpoint)
-                };
-
-                currentformData.append('id', this.vm.product().form.id());
+                currentformData.append('id', this.vm.client().form.id());
                 this.vm.working(true);
-                Product.save(currentformData,options)
+                Client.save(currentformData,options)
                 .then(res => {
                     this.vm.working(false);
                     if(res == false){
-                        Modal.vm.open(Alert, {label: 'No se pudo actualizar el producto'});
+                        Modal.vm.open(Alert, {label: 'No se pudo actualizar el cliente'});
                     }else{  
-                        let auxIndex = (this.vm.product().index()-1) == 0 ? 'first': this.vm.product().index()-1;
+                        let auxIndex = (this.vm.client().index()-1) == 0 ? 'first': this.vm.client().index()-1;
                         getClients(false,auxIndex);
-                        Modal.vm.open(Alert, {label: 'Producto actualizado con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
+                        Modal.vm.open(Alert, {label: 'Cliente actualizado con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
                     }   
-                })
+                }).catch(erSave => {
+                    this.vm.working(false);
+                    console.log("Error: "+erSave);
+                    Modal.vm.open(Alert, {label: 'No se pudo actualizar el cliente, por favor verifique datos faltantes, y/o reales'});
+                });
 
             }else{
 
                 // validation for make
                 this.vm.working(true);
-                Product.save(currentformData,options)
+                Client.save(currentformData,options)
                 .then(res => {
                     this.vm.working(false);
                     if(res == false){
-                        Modal.vm.open(Alert, {label: 'No se pudo guardar el producto'});
+                        Modal.vm.open(Alert, {label: 'No se pudo guardar el cliente'});
                     }else{  
-                        this.vm.product(new Product());
+                        this.vm.client(new Client());
                         currentformData = new FormData();
                         getClients(true,null);
-                        Modal.vm.open(Alert, {label: 'Producto guardado con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
+                        Modal.vm.open(Alert, {label: 'Cliente guardado con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
                     }
-                })
+                }).catch(erSave => {
+                    this.vm.working(false);
+                    console.log("Error: "+erSave);
+                    Modal.vm.open(Alert, {label: 'No se pudo guardar el cliente, por favor verifique datos faltantes, y/o reales'});
+                });
 
             }
 
@@ -187,7 +169,7 @@ export const Clients = {
         let list = spinner;
         let form = spinner;
 
-        let btnAdd = <button onclick={c.add.bind(c)} type="button" class="pt-button pt-minimal pt-icon-add pt-intent-primary" >Agregar Producto</button>;
+        let btnAdd = <button onclick={c.add.bind(c)} type="button" class="pt-button pt-minimal pt-icon-add pt-intent-primary custom-add-btn" >Agregar Cliente</button>;
 
 
         if(c.vm.waitForm() == false){
@@ -195,105 +177,118 @@ export const Clients = {
             <div class="panel panel-default">
             <div class="panel-body">
                 <form>
+
                     <label class="pt-label">
-                        Nombre producto
+                        Nombre completo cliente
                         <input
                             type="text"
                             class="pt-input pt-fill"
                             name="name"
-                            oninput={m.withAttr('value', c.vm.product().form.name)}
-                            value={c.vm.product().form.name()}
+                            oninput={m.withAttr('value', c.vm.client().form.name)}
+                            value={c.vm.client().form.name()}
                             placeholder=""
                             required
                             disabled={c.vm.readonly()}
                         />
                     </label>
 
-                    <div  class={"row "+(c.vm.readonly() == true ? 'hidden':'')} >
-                        <div class="col-md-12">
-                            <div class="form-group" >
-                                <label for="description">Descripción</label>
-                                <textarea
-                                        value={c.vm.product().form.description()}
-                                        onchange={m.withAttr('value', c.vm.product().form.description)}
-                                        class="pt-fill pt-input"
-                                        name="description"
-                                        rows="5"
-                                        required
-                                        placeholder="Descripción del producto, incluyendo, adicionales y/o otras aclaraciones."></textarea>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div  class={"row "+(c.vm.readonly() == false ? 'hidden':'')} >
-                        <div class="col-md-12">
-                            <b>Descripción</b><br/>
-                            <p align="justify">{c.vm.product().form.description()}</p>
-                        </div>
-                    </div>
-
                     <label class="pt-label">
-                        <div class="pt-control-group pt-vertical pt-intent-primary">
-                            <div class="pt-input-group">
-                            <span>Precio (COP)</span>
-                            <input
-                                type="text"
-                                class="pt-input "
-                                name="value"
-                                oninput={m.withAttr('value', c.vm.product().form.value)}
-                                value={c.vm.product().form.value()}
-                                placeholder="Valor en COP (solo números)"
-                                disabled={c.vm.readonly()}
-                                required
-                            />
-                            </div>
-                            <div class="pt-input-group">
-                            <span>IVA</span> 
-                            <input
-                                type="text"
-                                class="pt-input "
-                                name="iva"
-                                oninput={m.withAttr('value', c.vm.product().form.iva)}
-                                value={c.vm.product().form.iva()}
-                                placeholder="IVA (solo números)"
-                                required
-                                disabled={c.vm.readonly()}
-                            />
-                            </div>
-                        </div>
-                    </label>
-
-                    <label class={"pt-file-upload "+(c.vm.readonly() == true ? 'hidden':'')} >
-                      <input    
-                            id="product-file-upload" 
-                            type="file" 
+                        Número identificación
+                        <input
+                            type="text"
+                            class="pt-input pt-fill"
+                            name="cc"
+                            oninput={m.withAttr('value', c.vm.client().form.cc)}
+                            value={c.vm.client().form.cc()}
+                            placeholder="Solo números"
                             required
                             disabled={c.vm.readonly()}
-                            onchange={c.prepareImage.bind(c)}/>
-                            <span class={"pt-file-upload-input "+(c.vm.statusImage() == 'Seleccionar imagen' ? '':'have-image')}>{c.vm.statusImage()}</span>
-                            <br/>
-                            <br/>
+                        />
                     </label>
 
-                    <div class={"text-center "+(c.vm.product().form.haveImage() ? ' ':'hidden')} >
-                        <img src={c.vm.product().form.image()}/>
-                        <br/><br/>
-                    </div>
-
-                    <label class={"pt-control pt-checkbox pt-inline "+(c.vm.readonly() == true ? 'hidden':'')} >
+                    <label class="pt-label">
+                        Celular 
                         <input
-                            type="checkbox"
+                            type="text"
+                            class="pt-input pt-fill"
+                            name="cell_phone"
+                            oninput={m.withAttr('value', c.vm.client().form.cell_phone)}
+                            value={c.vm.client().form.cell_phone()}
+                            placeholder="Solo números"
+                            required
                             disabled={c.vm.readonly()}
-                            checked={c.vm.product().form.available()}
-                            onclick={m.withAttr('checked', c.vm.product().form.available)}
-                            />
-                        <span class="pt-control-indicator"></span>
-                        Disponible <i>(Si no esta disponible, no aparecerá para el cliente)</i>
+                        />
                     </label>
 
-                    <label class={"pt-control pt-checkbox pt-inline "+(c.vm.readonly() == true ? '':'hidden')} >
-                        <div class={"pt-tag pt-intent-success "+(c.vm.product().form.available() == true?'':'hidden')}>Disponible</div>
-                        <div class={"pt-tag "+(c.vm.product().form.available() == true?'hidden':'')}>No Disponible</div>
+
+                    <label class="pt-label">
+                        Teléfono fijo <i>Opcional</i> 
+                        <input
+                            type="text"
+                            class="pt-input pt-fill"
+                            name="telephone"
+                            oninput={m.withAttr('value', c.vm.client().form.telephone)}
+                            value={c.vm.client().form.telephone()}
+                            placeholder="Solo números"
+                            disabled={c.vm.readonly()}
+                        />
+                    </label>
+
+                    <label class="pt-label">
+                        Nombre Barrio
+                        <input
+                            type="text"
+                            class="pt-input pt-fill"
+                            name="neighborhood"
+                            oninput={m.withAttr('value', c.vm.client().form.neighborhood)}
+                            value={c.vm.client().form.neighborhood()}
+                            placeholder=""
+                            required
+                            disabled={c.vm.readonly()}
+                        />
+                    </label>
+
+                    <label class="pt-label">
+                        Dirección Domicilio
+                        <input
+                            type="text"
+                            class="pt-input pt-fill"
+                            name="address"
+                            oninput={m.withAttr('value', c.vm.client().form.address)}
+                            value={c.vm.client().form.address()}
+                            placeholder=""
+                            required
+                            disabled={c.vm.readonly()}
+                        />
+                    </label>
+
+
+                    <label class="pt-label">
+                        Email
+                        <input
+                            type="email"
+                            class="pt-input pt-fill"
+                            name="email"
+                            oninput={m.withAttr('value', c.vm.client().form.email)}
+                            value={c.vm.client().form.email()}
+                            placeholder=""
+                            required
+                            disabled={c.vm.readonly()}
+                        />
+                    </label>
+
+                    <label class={"pt-label "+(c.vm.readonly() == true ? 'hidden':'')} >
+                        Password
+                        <input
+                            type="password"
+                            class="pt-input pt-fill"
+                            name="password"
+                            oninput={m.withAttr('value', c.vm.client().form.password)}
+                            value={c.vm.client().form.password()}
+                            placeholder="******"
+                            required
+                            disabled={c.vm.readonly()}
+                        />
                     </label>
 
                     <div class={"text-center "+(c.vm.readonly() ? 'hidden':'')}>
@@ -309,33 +304,24 @@ export const Clients = {
 
         if(c.vm.clients() != 'empty'){
             list = (
-            	<div class="table-responsive">
+            	<div class="table-responsive custom-table-responsive">
                     <table class="table table-striped">
                         <thead>
                             <tr>
+                                <th>cc</th>
                                 <th>Nombre</th>
-                                <th>Descripción</th>
                                 <th>Valor (COP)</th>
-                                <th>Estado</th>
+                                <th>Celular</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
-                        {c.vm.clients().map((product,index) => {
+                        {c.vm.clients().map((client,index) => {
                             return (
                                 <tr>
-                                    <td>{product.name()}</td>
-                                    <td>{product.smalldescription()}</td>
-                                    <td>{product.value()}</td>
-                                    <td>
-                                    {(() => {
-                                        if(product.available() == true){
-                                            return <span class="pt-tag pt-intent-success">Disponible</span>;
-                                        }else{
-                                            return <span class="pt-tag ">No disponible</span>;
-                                        }
-                                    })()}
-                                    </td>
+                                    <td>{client.cc()}</td>
+                                    <td>{client.name()}</td>
+                                    <td>{client.cell_phone()}</td>
                                     <td>
                                         <div class="dropdown">
                                           <button class="pt-button pt-minimal dropdown-toggle" type="button" data-toggle="dropdown"> Acciones
@@ -361,10 +347,10 @@ export const Clients = {
             <div class="admin-clients row">
                 <div clas="col-md-12">{btnAdd}<br/></div> 
 
-                <div class="col-md-8">
+                <div class="col-md-7">
                     {list}
                 </div> 
-                <div class="col-md-4">   
+                <div class="col-md-5">   
                     {form}
                 </div> 
             </div>

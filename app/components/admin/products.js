@@ -3,7 +3,6 @@ import { Product } from './models';
 import API from '../api';
 import Modal from '../../containers/modal/modal';
 import {Spinner, Button, Alert, Confirm} from '../../components/ui';
-import CarModalproduct from '../car/modalproduct';
 
 export const Products = {
     vm(p){
@@ -136,12 +135,6 @@ export const Products = {
 
                 // validation for make - less image
 
-                let endpoint = 'products';
-                let options = {
-                    serialize: (value) => value,
-                    url: API.requestUrl(endpoint)
-                };
-
                 currentformData.append('id', this.vm.product().form.id());
                 this.vm.working(true);
                 Product.save(currentformData,options)
@@ -154,7 +147,11 @@ export const Products = {
                         getProducts(false,auxIndex);
                         Modal.vm.open(Alert, {label: 'Producto actualizado con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
                     }   
-                })
+                }).catch(erSave => {
+                    this.vm.working(false);
+                    console.log("Error: "+erSave);
+                    Modal.vm.open(Alert, {label: 'No se pudo actualizar el producto, por favor verifique datos faltantes, y/o reales'});
+                });
 
             }else{
 
@@ -171,7 +168,11 @@ export const Products = {
                         getProducts(true,null);
                         Modal.vm.open(Alert, {label: 'Producto guardado con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
                     }
-                })
+                }).catch(erSave => {
+                    this.vm.working(false);
+                    console.log("Error: "+erSave);
+                    Modal.vm.open(Alert, {label: 'No se pudo guardar el producto, por favor verifique datos faltantes, y/o reales'});
+                });
 
             }
 
@@ -187,7 +188,7 @@ export const Products = {
         let list = spinner;
         let form = spinner;
 
-        let btnAdd = <button onclick={c.add.bind(c)} type="button" class="pt-button pt-minimal pt-icon-add pt-intent-primary" >Agregar Producto</button>;
+        let btnAdd = <button onclick={c.add.bind(c)} type="button" class="pt-button pt-minimal pt-icon-add pt-intent-primary custom-add-btn" >Agregar Producto</button>;
 
 
         if(c.vm.waitForm() == false){
@@ -309,7 +310,7 @@ export const Products = {
 
         if(c.vm.products() != 'empty'){
             list = (
-            	<div class="table-responsive">
+            	<div class="table-responsive custom-table-responsive">
                     <table class="table table-striped">
                         <thead>
                             <tr>

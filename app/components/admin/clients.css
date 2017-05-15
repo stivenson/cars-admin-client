@@ -1,12 +1,15 @@
 .admin-clients {
 
-    background:rgba(0,0,0,0.2);
+    background: #DFDFDF;
 
 	& .have-image {
 		color: #009924;
 		font-weight: bold;
 	}
 
+	& .custom-table-responsive {
+		padding-bottom: 170px;
+	}
 
 }
 
