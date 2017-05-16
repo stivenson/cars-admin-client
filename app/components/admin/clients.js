@@ -92,8 +92,8 @@ export const Clients = {
         }
 
 
-        this.save = () => {
-
+        this.save = (event) => {
+             if (event) { event.preventDefault(); }
             if (this.vm.working()) return;
 
             let endpoint = 'clients';
@@ -176,7 +176,7 @@ export const Clients = {
             form = (
             <div class="panel panel-default">
             <div class="panel-body">
-                <form>
+                <form onsubmit={c.save.bind(c)} >
 
                     <label class="pt-label">
                         Nombre completo cliente
@@ -286,13 +286,13 @@ export const Clients = {
                             oninput={m.withAttr('value', c.vm.client().form.password)}
                             value={c.vm.client().form.password()}
                             placeholder="******"
-                            required
+                            required={c.vm.client().form.id() == false}
                             disabled={c.vm.readonly()}
                         />
                     </label>
 
                     <div class={"text-center "+(c.vm.readonly() ? 'hidden':'')}>
-                        <Button type="button" onclick={c.save.bind(c)} loading={c.vm.working()} >
+                        <Button type="submit" loading={c.vm.working()} >
                             Guardar
                         </Button>
                     </div>

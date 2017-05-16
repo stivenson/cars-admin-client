@@ -115,8 +115,8 @@ export const Products = {
 
         }
 
-        this.save = () => {
-
+        this.save = (event) => {
+            if (event) { event.preventDefault(); }
             if (this.vm.working()) return;
 
             let endpoint = 'products';
@@ -195,7 +195,7 @@ export const Products = {
             form = (
             <div class="panel panel-default">
             <div class="panel-body">
-                <form>
+                <form onsubmit={c.save.bind(c)} >
                     <label class="pt-label">
                         Nombre producto
                         <input
@@ -268,7 +268,7 @@ export const Products = {
                       <input    
                             id="product-file-upload" 
                             type="file" 
-                            required
+                            required={c.vm.product().form.id() == false}
                             disabled={c.vm.readonly()}
                             onchange={c.prepareImage.bind(c)}/>
                             <span class={"pt-file-upload-input "+(c.vm.statusImage() == 'Seleccionar imagen' ? '':'have-image')}>{c.vm.statusImage()}</span>
@@ -298,7 +298,7 @@ export const Products = {
                     </label>
 
                     <div class={"text-center "+(c.vm.readonly() ? 'hidden':'')}>
-                        <Button type="button" onclick={c.save.bind(c)} loading={c.vm.working()} >
+                        <Button type="submit" loading={c.vm.working()} >
                             Guardar
                         </Button>
                     </div>
