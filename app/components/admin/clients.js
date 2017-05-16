@@ -222,14 +222,14 @@ export const Clients = {
 
 
                     <label class="pt-label">
-                        Teléfono fijo <i>Opcional</i> 
+                        Teléfono fijo <i>(Opcional)</i> 
                         <input
                             type="text"
                             class="pt-input pt-fill"
                             name="telephone"
                             oninput={m.withAttr('value', c.vm.client().form.telephone)}
                             value={c.vm.client().form.telephone()}
-                            placeholder="Solo números"
+                            placeholder=""
                             disabled={c.vm.readonly()}
                         />
                     </label>
@@ -310,7 +310,6 @@ export const Clients = {
                             <tr>
                                 <th>cc</th>
                                 <th>Nombre</th>
-                                <th>Valor (COP)</th>
                                 <th>Celular</th>
                                 <th></th>
                             </tr>
