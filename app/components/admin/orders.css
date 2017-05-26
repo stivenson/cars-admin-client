@@ -1,0 +1,10 @@
+.admin-orders {
+
+    background: #DFDFDF;
+
+	& .custom-table-responsive {
+		padding-bottom: 170px;
+	}
+
+}
+
