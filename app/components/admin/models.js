@@ -2,6 +2,10 @@ import m from 'mithril';
 import API from '../api';
 import Utils from '../utils';
 
+
+const DELIVERY_TYPE_DOMICILE = 1;
+const STATUS_PENDING = 1;
+
 export const Product = function(data) {
     data = data || {};
     this.id = m.prop(data.id || false);
@@ -83,6 +87,63 @@ Client.delete = function (id) {
     return API.get(`temporal/delete/clients/${id}`);
 }
 
+
+
+export const Itemorder = function(data) {
+    data = data || {};
+    this.id = m.prop(data.id || false);
+    this.products_id = m.prop(data.products_id || false);
+    this.amount = m.prop(parseInt(data.amount) || 0);
+    this.observations = m.prop(data.observations || '');
+    this.orders_id = m.prop(data.orders_id || false);
+
+    this.form = {
+        id: m.prop(data.id || ''),
+        products_id: m.prop(data.products_id || false),
+        amount: m.prop(parseInt(data.amount) || 0),
+        observations: m.prop(data.observations || ''),
+        orders_id: m.prop(data.orders_id || false)
+    }
+
+}
+
+Itemorder.list = function (idOrder) {
+    if(idOrder === false)  
+        return false;
+    return API.get(`items_orders/all/${idOrder}`, {type: Itemorder});
+}
+
+
+export const Order = function(data) {
+    data = data || {};
+    this.id = m.prop(data.id || false);
+    this.delivery_type = m.prop(data.delivery_type || DELIVERY_TYPE_DOMICILE);
+    this.status = m.prop(data.status || STATUS_PENDING);
+    this.users_id = m.prop(data.users_id || false);
+    let items_orders = Itemorder.list(this.id);
+    this.items_orders = m.prop( items_orders || []);
+
+    this.form = {
+        id: m.prop(data.id || ''),
+        status: m.prop(data.status || STATUS_PENDING),
+        delivery_type: m.prop(data.delivery_type || DELIVERY_TYPE_DOMICILE),
+        users_id: m.prop(data.users_id || false),
+        items_orders: m.prop( items_orders || []) 
+    }
+
+}
+
+Order.list = function () {
+    return API.get('orders', {type: Order});
+}
+
+Order.save = function (data,options) {
+    return API.post('orders',data,options);
+}
+
+Order.delete = function (id) {
+    return API.get(`temporal/delete/orders/${id}`);
+}
 
 
 
