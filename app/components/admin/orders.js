@@ -1,5 +1,5 @@
 import m from 'mithril';
-import { Order } from './models';
+import { Order, Client, STATUTES, DELIVERY_TYPES } from './models';
 import API from '../api';
 import Modal from '../../containers/modal/modal';
 import {Spinner, Button, Alert, Confirm} from '../../components/ui';
@@ -9,6 +9,10 @@ export const Orders = {
     	return {
             working: m.prop(false),
             orders: m.prop('empty'),
+            users: m.prop('empty'),
+            clients: m.prop('empty'),
+            delivery_types: m.prop(DELIVERY_TYPES), 
+            statutes: m.prop(STATUTES),
             readonly: m.prop(false),
             order: m.prop(new Order()),
             waitForm: m.prop(false)
@@ -36,6 +40,16 @@ export const Orders = {
         }
 
         getOrders(true,null);
+
+        let getClients = () => {
+            this.vm.working(true);
+            Client.list()
+                .then(this.vm.clients)
+                .then(() => this.vm.working(false))
+                .then(() => m.redraw());
+        }
+
+        getClients();
 
         this.add = () => {
             currentformData = new FormData();
@@ -162,12 +176,25 @@ export const Orders = {
     view(c,p){
 
         let spinner = <div class="custom-spinner text-center"><Spinner Large /></div>;
+        let smallSpinner = <div small class="custom-spinner text-center"><Spinner Large /></div>;
 
         let list = spinner;
         let form = spinner;
+        let selectUsers = smallSpinner;
 
         let btnAdd = <button onclick={c.add.bind(c)} type="button" class="pt-button pt-minimal pt-icon-add pt-intent-primary custom-add-btn" >Agregar Orden</button>;
 
+        if(c.vm.users() != 'empty'){
+            selectUsers = ( 
+                <select name="users_id" onchange={m.withAttr('value', (v) => c.vm.order().form.users_id(v))} required>
+                    {c.vm.users().map((s) => {
+                        return (
+                            <option value={s.id()} selected={c.vm.order().form.users_id() == s.id()}>{s.name()}</option>
+                        )
+                    })}
+                </select>
+            )
+        }
 
         if(c.vm.waitForm() == false){
             form = (
@@ -176,13 +203,10 @@ export const Orders = {
                 <form onsubmit={c.save.bind(c)} >
 
                     <div class="pt-select">
-                        <select name="users_id" onchange={m.withAttr('value', (v) => ctrl.vm.order().form.users_id(v))} required>
-                            {ctrl.vm.users().map((s) => {
-                                return (
-                                    <option value={s.users_id()} selected={ctrl.vm.order().users_id() == s.users_id()}>{s.full_name()}</option>
-                                )
-                            })}
-                        </select>
+                        <label class="pt-label">
+                        Usuario
+                        {selectUsers}
+                        </label>
                     </div>
                     <div class="panel panel-default">
                         <div class="panel-body">
@@ -193,24 +217,30 @@ export const Orders = {
                             <br />
                         </div>
                     </div>
-                    <div class="pt-select">
-                        <select name="delivery_type" onchange={m.withAttr('value', (v) => ctrl.vm.order().form.delivery_type(v))} required>
-                            {ctrl.vm.delivery_types().map((s) => {
-                                return (
-                                    <option value={s.delivery_type()} selected={ctrl.vm.order().delivery_type() == s.delivery_type()}>{s.label()}</option>
-                                )
-                            })}
-                        </select>
-                    </div>
-                    <div class="pt-select">
-                        <select name="status" onchange={m.withAttr('value', (v) => ctrl.vm.order().form.status(v))} required>
-                            {ctrl.vm.statutes().map((s) => {
-                                return (
-                                    <option value={s.status()} selected={ctrl.vm.order().status(v) == s.status()}>{s.label()}</option>
-                                )
-                            })}
-                        </select>
-                    </div>
+                    <label class="pt-label">
+                        Entrega
+                        <div class="pt-select">
+                            <select name="delivery_type" onchange={m.withAttr('value', (v) => {if(v != null) c.vm.order().form.delivery_type(v)})} required>
+                                {c.vm.delivery_types().map((s) => {
+                                    return (
+                                        <option value={s.id} selected={c.vm.order().form.delivery_type() == s.id}>{s.name}</option>
+                                    )
+                                })}
+                            </select>
+                        </div>
+                    </label>
+                    <label class="pt-label">
+                        Estado
+                        <div class="pt-select">
+                            <select name="status" onchange={m.withAttr('value', (v) => {if(v != null) c.vm.order().form.status(v)})} required>
+                                {c.vm.statutes().map((s) => {
+                                    return (
+                                        <option value={s.id} selected={c.vm.order().form.status() == s.id}>{s.name}</option>
+                                    )
+                                })}
+                            </select>
+                        </div>
+                    </label>
                     <div class={"text-center "+(c.vm.readonly() ? 'hidden':'')}>
                         <Button type="submit" loading={c.vm.working()} >
                             Guardar
