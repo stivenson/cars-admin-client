@@ -9,7 +9,6 @@ export const Orders = {
     	return {
             working: m.prop(false),
             orders: m.prop('empty'),
-            users: m.prop('empty'),
             clients: m.prop('empty'),
             delivery_types: m.prop(DELIVERY_TYPES), 
             statutes: m.prop(STATUTES),
@@ -43,7 +42,7 @@ export const Orders = {
 
         let getClients = () => {
             this.vm.working(true);
-            Client.list()
+            Client.list(true)
                 .then(this.vm.clients)
                 .then(() => this.vm.working(false))
                 .then(() => m.redraw());
@@ -117,11 +116,7 @@ export const Orders = {
                 url: API.requestUrl(endpoint)
             };
 
-            currentformData.append('name', this.vm.order().form.name());
-            currentformData.append('description', this.vm.order().form.description());
-            currentformData.append('value', this.vm.order().form.value());
-            currentformData.append('iva', this.vm.order().form.iva());
-            currentformData.append('available', this.vm.order().form.available());
+            currentformData.append('created_at', this.vm.order().form.created_at());
 
             if(this.vm.order().form.id() != false){
 
@@ -176,7 +171,7 @@ export const Orders = {
     view(c,p){
 
         let spinner = <div class="custom-spinner text-center"><Spinner Large /></div>;
-        let smallSpinner = <div small class="custom-spinner text-center"><Spinner Large /></div>;
+        let smallSpinner = <div class="text-center"><Spinner small /></div>;
 
         let list = spinner;
         let form = spinner;
@@ -184,15 +179,20 @@ export const Orders = {
 
         let btnAdd = <button onclick={c.add.bind(c)} type="button" class="pt-button pt-minimal pt-icon-add pt-intent-primary custom-add-btn" >Agregar Orden</button>;
 
-        if(c.vm.users() != 'empty'){
+        if(c.vm.clients() != 'empty'){
             selectUsers = ( 
-                <select name="users_id" onchange={m.withAttr('value', (v) => c.vm.order().form.users_id(v))} required>
-                    {c.vm.users().map((s) => {
-                        return (
-                            <option value={s.id()} selected={c.vm.order().form.users_id() == s.id()}>{s.name()}</option>
-                        )
-                    })}
-                </select>
+                <label class="pt-label">
+                    Usuario
+                    <div class="pt-select">
+                        <select name="users_id" onchange={m.withAttr('value', (v) => c.vm.order().form.users_id(v))} required>
+                            {c.vm.clients().map((s) => {
+                                return (
+                                    <option value={s.id()} selected={c.vm.order().form.users_id() == s.id()}>{s.name()}</option>
+                                )
+                            })}
+                        </select>
+                    </div>
+                </label>
             )
         }
 
@@ -201,20 +201,13 @@ export const Orders = {
             <div class="panel panel-default">
             <div class="panel-body">
                 <form onsubmit={c.save.bind(c)} >
-
-                    <div class="pt-select">
-                        <label class="pt-label">
-                        Usuario
-                        {selectUsers}
-                        </label>
-                    </div>
+                    {selectUsers}
                     <div class="panel panel-default">
-                        <div class="panel-body">
-                            <br />
-                            <br />
-                            <br />
-                            <br />
-                            <br />
+                        <div class="panel-body text-center">
+
+                            <i class="fa fa-cog fa-spin fa-3x fa-fw"></i>
+                            <p>Sección de selección de productos en contrucción</p>
+
                         </div>
                     </div>
                     <label class="pt-label">
@@ -242,7 +235,7 @@ export const Orders = {
                         </div>
                     </label>
                     <div class={"text-center "+(c.vm.readonly() ? 'hidden':'')}>
-                        <Button type="submit" loading={c.vm.working()} >
+                        <Button disabled="true" type="submit" loading={c.vm.working()} >
                             Guardar
                         </Button>
                     </div>
@@ -258,10 +251,7 @@ export const Orders = {
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>Nombre</th>
-                                <th>Descripción</th>
-                                <th>Valor (COP)</th>
-                                <th>Estado</th>
+                                <th>Fecha</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -269,16 +259,17 @@ export const Orders = {
                         {c.vm.orders().map((order,index) => {
                             return (
                                 <tr>
-                                    <td>{order.name()}</td>
-                                    <td>{order.smalldescription()}</td>
-                                    <td>{order.value()}</td>
+                                    <td>{order.created_at()}</td>
                                     <td>
                                     {(() => {
-                                        if(order.available() == true){
+
+                                        //switch
+                                        /*if(order.status() == true){
                                             return <span class="pt-tag pt-intent-success">Disponible</span>;
                                         }else{
                                             return <span class="pt-tag ">No disponible</span>;
-                                        }
+                                        }*/
+
                                     })()}
                                     </td>
                                     <td>

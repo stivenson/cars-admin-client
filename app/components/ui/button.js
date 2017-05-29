@@ -19,7 +19,7 @@ export const Button = {
             size += ' pt-fill';
         }
 
-        if ('disabled' in attrs && attrs.disabled()) {
+        if ('disabled' in attrs) {
             size += ' pt-disabled';
         }
 

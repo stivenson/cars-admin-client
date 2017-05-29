@@ -77,8 +77,11 @@ export const Client = function(data) {
 
 }
 
-Client.list = function () {
-    return API.get('clients', {type: Client});
+Client.list = function (select) {
+    if(select)
+        return API.get('clients/order/true', {type: Client});
+    else
+        return API.get('clients', {type: Client});
 }
 
 Client.save = function (data,options) {
@@ -122,15 +125,20 @@ export const Order = function(data) {
     this.delivery_type = m.prop(data.delivery_type || DELIVERY_TYPE_DOMICILE);
     this.status = m.prop(data.status || STATUS_PENDING);
     this.users_id = m.prop(data.users_id || false);
-    let items_orders = Itemorder.list(this.id);
-    this.items_orders = m.prop( items_orders || []);
+    this.created_at = m.prop(data.created_at || '--');
+    let items_orders = m.prop([]);
+    //Itemorder.list(this.id)
+    //    .then(items_orders)
+    //    .catch(e => console.log('Error gettings items_orders'));
+    this.items_orders = items_orders;
 
     this.form = {
         id: m.prop(data.id || ''),
         status: m.prop(data.status || STATUS_PENDING),
         delivery_type: m.prop(data.delivery_type || DELIVERY_TYPE_DOMICILE),
         users_id: m.prop(data.users_id || false),
-        items_orders: m.prop( items_orders || []) 
+        created_at: m.prop(data.created_at || '--'),
+        items_orders: items_orders 
     }
 
 }

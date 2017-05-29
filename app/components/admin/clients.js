@@ -22,7 +22,7 @@ export const Clients = {
         let getClients = (selectFirst,index) => {
             index = index || null;
             this.vm.working(true);
-            Client.list()
+            Client.list(false)
                 .then(this.vm.clients)
                 .then(() => this.vm.working(false))
                 .then(() => {
