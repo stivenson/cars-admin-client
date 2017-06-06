@@ -1,8 +1,10 @@
 import m from 'mithril';
-import { Order, Client, Product, STATUTES, DELIVERY_TYPES } from './models';
+import { Order, Client, Product, Itemorder, STATUTES, DELIVERY_TYPES } from './models';
 import API from '../api';
 import Modal from '../../containers/modal/modal';
 import {Spinner, Button, Alert, Confirm} from '../../components/ui';
+import Utils from '../utils';
+import AdminModalproduct from './modalproduct';
 
 export const Orders = {
     vm(p){
@@ -104,6 +106,10 @@ export const Orders = {
             },350);
         }
 
+        this.openProduct = (product) => {
+            return Modal.vm.open(CarModalproduct, {product: product, className: 'mmodal-small'});
+        }
+
         this.delete = (index) => {
             let arrOrders = this.vm.orders();
             Modal.vm.open(Confirm, {className: 'mmodal-small', mood: 'success', icon: 'ok-circle',label: '¿Confirmas que deseas borrar esta orden?', actionLabel: 'Eliminar orden'})
@@ -120,6 +126,23 @@ export const Orders = {
                 }
             );
 
+        }
+
+
+        this.statusProduct = (products_id) => {
+            let selected = this.vm.order().items_orders().filter(o => o.products_id() == products_id);
+            let arrItems = this.vm.order().items_orders();
+            if(selected.length > 0){
+                delete arrItems[selected[0].id()];
+                this.vm.order().items_orders(Utils.deleteNulls(this.vm.order().items_orders()));
+            }else{
+                // open modal
+                // capture data in itemorder
+                let itemorder = {
+                    products_id: products_id
+                }
+                this.vm.order().items_orders().push(new Itemorder(itemorder));
+            }
         }
 
 

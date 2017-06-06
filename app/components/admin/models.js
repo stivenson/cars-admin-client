@@ -138,26 +138,11 @@ export const Order = function(data) {
         delivery_type: m.prop(data.delivery_type || DELIVERY_TYPE_DOMICILE),
         users_id: m.prop(data.users_id || false),
         created_at: m.prop(data.created_at || '--'),
-        items_orders: items_orders 
+        items_orders: this.items_orders 
     }
 
     this.isChecked = (products_id) => {
-        return this.items_orders.filter(o => o.products_id() == products_id).length > 0;
-    }
-
-    this.statusProduct = (products_id) => {
-        let selected = this.items_orders.filter(o => o.products_id() == products_id);
-        if(selected.length > 0){
-            delete this.items_orders[selected[0].id()];
-            this.items_orders = Utils.deleteNulls(this.items_orders);
-        }else{
-            // open modal
-            // capture data in itemorder
-            let itemorder = {
-                products_id: products_id
-            }
-            this.items_orders.push(new Itemorder(itemorder));
-        }
+        return this.items_orders().filter(o => o.products_id() == products_id).length > 0;
     }
 
 }
