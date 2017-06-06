@@ -1,5 +1,5 @@
 import m from 'mithril';
-import { Order, Client, STATUTES, DELIVERY_TYPES } from './models';
+import { Order, Client, Product, STATUTES, DELIVERY_TYPES } from './models';
 import API from '../api';
 import Modal from '../../containers/modal/modal';
 import {Spinner, Button, Alert, Confirm} from '../../components/ui';
@@ -10,6 +10,7 @@ export const Orders = {
             working: m.prop(false),
             orders: m.prop('empty'),
             clients: m.prop('empty'),
+            products: m.prop('empty'),
             delivery_types: m.prop(DELIVERY_TYPES), 
             statutes: m.prop(STATUTES),
             readonly: m.prop(false),
@@ -49,6 +50,16 @@ export const Orders = {
         }
 
         getClients();
+
+        let getProducts = () => {
+            this.vm.working(true);
+            Product.list(true)
+                .then(this.vm.products)
+                .then(() => this.vm.working(false))
+                .then(() => m.redraw());
+        }
+
+        getProducts();
 
         this.add = () => {
             currentformData = new FormData();
@@ -187,7 +198,7 @@ export const Orders = {
                         <select name="users_id" onchange={m.withAttr('value', (v) => c.vm.order().form.users_id(v))} required>
                             {c.vm.clients().map((s) => {
                                 return (
-                                    <option value={s.id()} selected={c.vm.order().form.users_id() == s.id()}>{s.name()}</option>
+                                    <option value={s.id()} selected={c.vm.order().form.users_id() == s.id()}>{s.name()} - {s.cc()}</option>
                                 )
                             })}
                         </select>
@@ -196,6 +207,31 @@ export const Orders = {
             )
         }
 
+        let panelProducts = (
+            <div class="panel-body text-center">
+                <i class="fa fa-cog fa-spin fa-3x fa-fw"></i>
+            </div>
+        )
+
+        if(c.vm.products() != 'empty'){
+            panelProducts = (
+                <ul>
+                    {c.vm.products().map((p) => {   
+                        return (
+                            <li>
+                                <label class="pt-control pt-switch">
+                                    <input name="products" type="checkbox" checked={c.vm.order().isChecked(product.id())} onchange={c.vm.order().statusProduct.bind(c, product.id())} />
+                                    <span class="pt-control-indicator"></span>
+                                    p.name() - p.value()
+                                </label>
+                            </li>
+                        )
+                    })}    
+                </ul>
+            )
+        }
+
+
         if(c.vm.waitForm() == false){
             form = (
             <div class="panel panel-default">
@@ -203,11 +239,8 @@ export const Orders = {
                 <form onsubmit={c.save.bind(c)} >
                     {selectUsers}
                     <div class="panel panel-default">
-                        <div class="panel-body text-center">
-
-                            <i class="fa fa-cog fa-spin fa-3x fa-fw"></i>
-                            <p>Sección de selección de productos en contrucción</p>
-
+                        <div class="scroll-vertical">
+                            {panelProducts}
                         </div>
                     </div>
                     <label class="pt-label">

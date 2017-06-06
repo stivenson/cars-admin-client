@@ -126,11 +126,10 @@ export const Order = function(data) {
     this.status = m.prop(data.status || STATUS_PENDING);
     this.users_id = m.prop(data.users_id || false);
     this.created_at = m.prop(data.created_at || '--');
-    let items_orders = m.prop([]);
+    this.items_orders = m.prop([]);
     //Itemorder.list(this.id)
-    //    .then(items_orders)
+    //    .then(this.items_orders)
     //    .catch(e => console.log('Error gettings items_orders'));
-    this.items_orders = items_orders;
 
     this.form = {
         id: m.prop(data.id || ''),
@@ -139,6 +138,14 @@ export const Order = function(data) {
         users_id: m.prop(data.users_id || false),
         created_at: m.prop(data.created_at || '--'),
         items_orders: items_orders 
+    }
+
+    this.isChecked = (products_id) => {
+        return this.items_orders.filter(o => o.products_id == products_id).length > 0;
+    }
+
+    this.statusProduct = (event,products_id) => {
+
     }
 
 }
