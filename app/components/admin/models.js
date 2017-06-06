@@ -20,7 +20,7 @@ export const Product = function(data) {
     let mime = data.mime || ' ';
     let urlImage = `data:image/${mime};base64,${(data.image1 || ' ')}`;
     this.image = m.prop(urlImage);
-    
+    this.selected = m.prop(false);
 
     this.form = {
         id: m.prop(data.id || ''),
@@ -30,7 +30,8 @@ export const Product = function(data) {
         available: m.prop(data.available == true ? true : false),
         iva: m.prop(data.iva || ''),
         image: m.prop(urlImage),
-        haveImage: m.prop(mime != ' ')
+        haveImage: m.prop(mime != ' '),
+        selected: m.prop(false)
     } 
 
 }
@@ -141,11 +142,22 @@ export const Order = function(data) {
     }
 
     this.isChecked = (products_id) => {
-        return this.items_orders.filter(o => o.products_id == products_id).length > 0;
+        return this.items_orders.filter(o => o.products_id() == products_id).length > 0;
     }
 
-    this.statusProduct = (event,products_id) => {
-
+    this.statusProduct = (products_id) => {
+        let selected = this.items_orders.filter(o => o.products_id() == products_id);
+        if(selected.length > 0){
+            delete this.items_orders[selected[0].id()];
+            this.items_orders = Utils.deleteNulls(this.items_orders);
+        }else{
+            // open modal
+            // capture data in itemorder
+            let itemorder = {
+                products_id: products_id
+            }
+            this.items_orders.push(new Itemorder(itemorder));
+        }
     }
 
 }

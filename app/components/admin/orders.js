@@ -55,6 +55,12 @@ export const Orders = {
             this.vm.working(true);
             Product.list(true)
                 .then(this.vm.products)
+                .then(() => {
+                    let arrProducts = this.vm.products();
+                    for(indexp in arrProducts){
+                        arrProducts[indexp].selected(this.vm.order.isChecked(arrProducts[indexp].id()));
+                    }
+                })
                 .then(() => this.vm.working(false))
                 .then(() => m.redraw());
         }
