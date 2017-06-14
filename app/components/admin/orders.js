@@ -51,6 +51,19 @@ export const Orders = {
                 .then(() => m.redraw());
         }
 
+        this.nameUser = (clients_id) => {
+            console.log(clients_id);
+            if(clients_id != false){    
+                let arr = this.vm.clients().filter(c => c.id() == clients_id);
+                if(arr.length < 1)
+                    return ' -- ';
+                return arr[0].name()+' - '+arr[0].cc(); 
+            }else{
+                return '--';    
+            }
+            
+        } 
+
         getClients();
 
         let getProducts = () => {
@@ -59,8 +72,8 @@ export const Orders = {
                 .then(this.vm.products)
                 .then(() => {
                     let arrProducts = this.vm.products();
-                    for(indexp in arrProducts){
-                        arrProducts[indexp].selected(this.vm.order.isChecked(arrProducts[indexp].id()));
+                    for(let indexp in arrProducts){
+                        arrProducts[indexp].selected(this.vm.order().isChecked(arrProducts[indexp].id()));
                     }
                 })
                 .then(() => this.vm.working(false))
@@ -107,7 +120,7 @@ export const Orders = {
         }
 
         this.openProduct = (product) => {
-            return Modal.vm.open(CarModalproduct, {product: product, className: 'mmodal-small'});
+            return Modal.vm.open(AdminModalproduct, {product: product, className: 'mmodal-small'});
         }
 
         this.delete = (index) => {
@@ -137,6 +150,8 @@ export const Orders = {
                 this.vm.order().items_orders(Utils.deleteNulls(this.vm.order().items_orders()));
             }else{
                 // open modal
+                let currentProducts = this.vm.products().filter(p => p.id() == products_id);
+                this.openProduct(currentProducts[0]);
                 // capture data in itemorder
                 let itemorder = {
                     products_id: products_id
@@ -249,9 +264,9 @@ export const Orders = {
                         return (
                             <li>
                                 <label class="pt-control pt-switch">
-                                    <input name="products" type="checkbox" checked={c.vm.order().isChecked(product.id())} onchange={c.vm.order().statusProduct.bind(c, product.id())} />
+                                    <input name="products" type="checkbox" onchange={c.statusProduct.bind(c, p.id())} />
                                     <span class="pt-control-indicator"></span>
-                                    p.name() - p.value()
+                                    {p.name()} - {p.value()}
                                 </label>
                             </li>
                         )
@@ -307,13 +322,15 @@ export const Orders = {
             );
         }
 
-        if(c.vm.orders() != 'empty'){
+        if(c.vm.orders() != 'empty' && c.vm.clients() != 'empty'){
             list = (
             	<div class="table-responsive custom-table-responsive">
                     <table class="table table-striped">
                         <thead>
                             <tr>
                                 <th>Fecha</th>
+                                <th>Cliente</th>
+                                <th>Estado</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -322,6 +339,8 @@ export const Orders = {
                             return (
                                 <tr>
                                     <td>{order.created_at()}</td>
+                                    <td>{c.nameUser(order.users_id())}</td>
+                                    <td><span class={"pt-tag pt-large pt-round "+order.styleStatus()}>{order.objStatus().name}</span></td>
                                     <td>
                                     {(() => {
 

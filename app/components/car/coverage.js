@@ -8,7 +8,7 @@ export const CoverageCar = {
         this.vm = CoverageCar.vm(p);
     },
     view(c,p){
-        return <span class="coverage" ><span class="pt-tag pt-intent-success"> <span class="pt-icon-standard pt-icon-map-marker"> </span><span class="sepcolor">_</span>Covertura<span class="sepcolor">_</span>Cúcuta </span> </span>;
+        return <span class="coverage" ><span class="pt-tag pt-intent-success"> <span class="pt-icon-standard pt-icon-map-marker custom-icon"> </span><span class="sepcolor">_</span>Covertura<span class="sepcolor">_</span>Cúcuta </span> </span>;
     }
 }
 

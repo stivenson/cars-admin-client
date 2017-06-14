@@ -6,6 +6,7 @@ import Modal from '../../containers/modal/modal';
 import CarModalproduct from './modalproduct';
 import IndicatorCar from './indicator';
 import CoverageCar from './coverage';
+import LoginCar from './login';
 
 export const CarList = {
     vm(p){
@@ -45,13 +46,15 @@ export const CarList = {
 
         let coverage = <div class="align-coverage-car"><CoverageCar /></div>;
 
+        let login = <div class="align-login-car"><LoginCar /></div>;
+
         let list = <div class="custom-spinner text-center"><Spinner Large /></div>;
  
         let infocar = (
             <div class="row infocar">
-                <div class="col-sm-9 col-md-9 col-xs-12" ></div>
-                <div class="col-sm-3 col-md-3 col-xs-12" >
-                    <div class="row"><div class="col-md-8 col-xs-8">{coverage}</div><div class="col-md-4 col-xs-4">{indicator}</div></div>
+                <div class="col-sm-8 col-md-8 col-xs-12" ></div>
+                <div class="col-sm-4 col-md-4 col-xs-12" >
+                    <div class="row"><div class="col-md-5 col-xs-5">{coverage}</div><div class="col-md-3 col-xs-3">{indicator}</div><div class="col-md-4 col-xs-4">{login}</div></div>
                 </div>
             </div>
         );

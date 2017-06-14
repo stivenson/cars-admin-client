@@ -5,7 +5,7 @@ import Utils from '../utils';
 
 const DELIVERY_TYPE_DOMICILE = 1;
 const STATUS_PENDING = 1;
-export const STATUTES = [{id:1,name:'Pendiente'},{id:2,name:'Confirmado'},{id:2,name:'Cancelado'},{id:2,name:'Entregado'}];
+export const STATUTES = [{id:1,name:'Pendiente'},{id:2,name:'Confirmado'},{id:3,name:'Cancelado'},{id:4,name:'Entregado'}];
 export const DELIVERY_TYPES = [{id:1,name:'Domicilio'},{id:2,name:'En local'}];
 
 export const Product = function(data) {
@@ -21,6 +21,7 @@ export const Product = function(data) {
     let urlImage = `data:image/${mime};base64,${(data.image1 || ' ')}`;
     this.image = m.prop(urlImage);
     this.selected = m.prop(false);
+    this.srcImage = m.prop(urlImage);
 
     this.form = {
         id: m.prop(data.id || ''),
@@ -38,6 +39,14 @@ export const Product = function(data) {
 
 Product.list = function () {
     return API.get('products', {type: Product});
+}
+
+Product.listAvailable = () => {
+    return API.get('spe/products/available',{type:Product});
+}
+
+Product.get = (id) => {
+    return API.get(`products/${id}`,{type:Product});
 }
 
 Product.save = function (data,options) {
@@ -141,8 +150,23 @@ export const Order = function(data) {
         items_orders: this.items_orders 
     }
 
+    this.objStatus = () => {
+        let arr = STATUTES.filter(S => S.id == this.status());
+        return arr[0];
+    }
+
     this.isChecked = (products_id) => {
         return this.items_orders().filter(o => o.products_id() == products_id).length > 0;
+    }
+
+    this.styleStatus = () => {
+        let res = '';
+        switch(parseInt(this.status())){
+            case 2: res = 'pt-intent-primary'; break;
+            case 3: res = 'pt-intent-danger'; break;
+            case 4: res = 'pt-intent-success'; break;
+        }
+        return res;
     }
 
 }

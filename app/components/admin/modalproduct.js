@@ -12,7 +12,7 @@ import {
 
 import { ModalHeader } from '../modal/header';
 import Modal from '../../containers/modal/modal';
-import { MProduct } from './models';
+import { Product } from './models';
 
 
 const AdminModalproduct = {};
@@ -23,11 +23,10 @@ AdminModalproduct.vm = function (p) {
         amount: m.prop(1),
         observations: m.prop(''),
         refreshProduct: (id) => {
-            return MProduct.get(id);
+            return Product.get(id);
         },
         addToCar: (product) => {
-            p.car().push(product);
-            console.log(p.car());
+            //p.car().push(product);
         },
         submit(event) {
             if (event) { event.preventDefault(); }
