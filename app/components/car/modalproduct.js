@@ -27,7 +27,6 @@ CarModalproduct.vm = function (p) {
         },
         addToCar: (product) => {
             p.car().push(product);
-            console.log(p.car());
         },
         submit(event) {
             if (event) { event.preventDefault(); }
@@ -42,8 +41,8 @@ CarModalproduct.controller = function (p) {
     this.vm = CarModalproduct.vm(p);
     this.vm.refreshProduct(p.product.id()).then(p.product).then(()=>m.redraw());
     this.addToCar = (product) => {
-        product.amount = this.vm.amount();
-        product.observations = this.vm.observations();
+        product.amount = m.prop(this.vm.amount());
+        product.observations = m.prop(this.vm.observations());
         this.vm.addToCar(product);
         Modal.vm.terminate();
         m.redraw(true);

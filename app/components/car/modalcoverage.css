@@ -1,0 +1,23 @@
+.coverage-modal{
+    padding: 15px;
+}
+
+.title-coverage{
+	text-transform: capitalize;
+}
+
+.amount-input{
+	max-width:100px; 
+	margin: 0 auto;
+}
+
+.image-coverage{
+	width: 100%;
+}
+
+textarea {
+	color: #000000;
+}
+
+
+

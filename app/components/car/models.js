@@ -9,11 +9,13 @@ export const MProduct = function(data) {
     this.name = m.prop(data.name || "");
     this.description = m.prop(data.description || "");
     this.value = m.prop(Utils.formatMoney(data.value) || "");
+    this.numberValue = m.prop(data.value || 0);
     this.iva = m.prop(data.iva || "");
     this.available = m.prop(data.available || "");
     this.image1 = m.prop(data.image1 || "");
     this.mime = m.prop(data.mime || "");
-    this.srcImage = m.prop(`data:image/${data.mime.trim()};base64,${data.image1.trim()}`);
+
+    this.srcImage = m.prop(`data:image/${this.mime()};base64,${this.image1()}`);
 }
 
 

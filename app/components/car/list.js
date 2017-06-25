@@ -32,9 +32,9 @@ export const CarList = {
         }
 
         this.amounproducts = () => {
-                console.log(this.vm.products());
-                if(this.vm.products() != 'length')
-                    return this.vm.products().length;   
+                
+                if(this.vm.products() != 'empty')
+                    return this.vm.car().length;   
                 else
                     return 0;
         }
@@ -42,7 +42,7 @@ export const CarList = {
     },
     view(c,p){
 
-        let indicator = <div class="align-indicator-car"><IndicatorCar amounproducts={c.amounproducts.bind(c)} /></div>;
+        let indicator = <div class="align-indicator-car"><IndicatorCar car={c.vm.car.bind(c.vm)} amounproducts={c.amounproducts.bind(c)} /></div>;
 
         let coverage = <div class="align-coverage-car"><CoverageCar /></div>;
 
