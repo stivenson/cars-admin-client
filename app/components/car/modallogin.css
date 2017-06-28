@@ -1,8 +1,14 @@
-.login-modal{
+.login-modal {
     padding: 15px;
 }
 
-.title-login{
+.title-login {
 	text-transform: capitalize;
+}
+
+
+.register-form {
+	margin-top: 20px;
+	background-color: #e5e5e5;
 }
 

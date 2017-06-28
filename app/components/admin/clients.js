@@ -229,7 +229,7 @@ export const Clients = {
                             name="telephone"
                             oninput={m.withAttr('value', c.vm.client().form.telephone)}
                             value={c.vm.client().form.telephone()}
-                            placeholder=""
+                            placeholder="Opcional"
                             disabled={c.vm.readonly()}
                         />
                     </label>
