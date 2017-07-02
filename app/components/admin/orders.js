@@ -279,45 +279,45 @@ export const Orders = {
         if(c.vm.waitForm() == false){
             form = (
             <div class="panel panel-default">
-            <div class="panel-body">
-                <form onsubmit={c.save.bind(c)} >
-                    {selectUsers}
-                    <div class="panel panel-default">
-                        <div class="scroll-vertical">
-                            {panelProducts}
+                <div class="panel-body">
+                    <form onsubmit={c.save.bind(c)} >
+                        {selectUsers}
+                        <div class="panel panel-default">
+                            <div class="scroll-vertical">
+                                {panelProducts}
+                            </div>
                         </div>
-                    </div>
-                    <label class="pt-label">
-                        Entrega
-                        <div class="pt-select">
-                            <select name="delivery_type" onchange={m.withAttr('value', (v) => {if(v != null) c.vm.order().form.delivery_type(v)})} required>
-                                {c.vm.delivery_types().map((s) => {
-                                    return (
-                                        <option value={s.id} selected={c.vm.order().form.delivery_type() == s.id}>{s.name}</option>
-                                    )
-                                })}
-                            </select>
+                        <label class="pt-label">
+                            Entrega
+                            <div class="pt-select">
+                                <select name="delivery_type" onchange={m.withAttr('value', (v) => {if(v != null) c.vm.order().form.delivery_type(v)})} required>
+                                    {c.vm.delivery_types().map((s) => {
+                                        return (
+                                            <option value={s.id} selected={c.vm.order().form.delivery_type() == s.id}>{s.name}</option>
+                                        )
+                                    })}
+                                </select>
+                            </div>
+                        </label>
+                        <label class="pt-label">
+                            Estado
+                            <div class="pt-select">
+                                <select name="status" onchange={m.withAttr('value', (v) => {if(v != null) c.vm.order().form.status(v)})} required>
+                                    {c.vm.statutes().map((s) => {
+                                        return (
+                                            <option value={s.id} selected={c.vm.order().form.status() == s.id}>{s.name}</option>
+                                        )
+                                    })}
+                                </select>
+                            </div>
+                        </label>
+                        <div class={"text-center "+(c.vm.readonly() ? 'hidden':'')}>
+                            <Button disabled="true" type="submit" loading={c.vm.working()} >
+                                Guardar
+                            </Button>
                         </div>
-                    </label>
-                    <label class="pt-label">
-                        Estado
-                        <div class="pt-select">
-                            <select name="status" onchange={m.withAttr('value', (v) => {if(v != null) c.vm.order().form.status(v)})} required>
-                                {c.vm.statutes().map((s) => {
-                                    return (
-                                        <option value={s.id} selected={c.vm.order().form.status() == s.id}>{s.name}</option>
-                                    )
-                                })}
-                            </select>
-                        </div>
-                    </label>
-                    <div class={"text-center "+(c.vm.readonly() ? 'hidden':'')}>
-                        <Button disabled="true" type="submit" loading={c.vm.working()} >
-                            Guardar
-                        </Button>
-                    </div>
-                </form>
-            </div>
+                    </form>
+                </div>
             </div>
             );
         }

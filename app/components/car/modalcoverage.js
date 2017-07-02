@@ -21,7 +21,7 @@ CarModalCoverage.view = function (c,p) {
     return (
         <div class="mmodal-body coverage-modal">
             <ModalHeader>
-                <div class="text-center title-coverage">Covertura</div>
+                <div class="text-center title-coverage">Covertura Solo Cúcuta</div>
             </ModalHeader>
             <div class="thumbnail">
                 <div class="caption text-center">
