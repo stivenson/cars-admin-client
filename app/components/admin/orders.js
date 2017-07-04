@@ -17,7 +17,8 @@ export const Orders = {
             statutes: m.prop(STATUTES),
             readonly: m.prop(false),
             order: m.prop(new Order()),
-            waitForm: m.prop(false)
+            waitForm: m.prop(false),
+            arr_check_status: []
         } 
     },
     controller(p){
@@ -52,7 +53,6 @@ export const Orders = {
         }
 
         this.nameUser = (clients_id) => {
-            console.log(clients_id);
             if(clients_id != false){    
                 let arr = this.vm.clients().filter(c => c.id() == clients_id);
                 if(arr.length < 1)
@@ -120,15 +120,15 @@ export const Orders = {
         }
 
         this.openProduct = (product) => {
-            return Modal.vm.open(AdminModalproduct, {product: product, className: 'mmodal-small'});
+            return Modal.vm.open(AdminModalproduct, {order: this.vm.order.bind(this.vm),product: product, className: 'mmodal-small'});
         }
-
+ 
         this.delete = (index) => {
             let arrOrders = this.vm.orders();
             Modal.vm.open(Confirm, {className: 'mmodal-small', mood: 'success', icon: 'ok-circle',label: '¿Confirmas que deseas borrar esta orden?', actionLabel: 'Eliminar orden'})
             .then(() => {
                     Order.delete(arrOrders[index].id())
-                    .then(res =>{
+                    .then(res => {
                         if(res == false){
                             Modal.vm.open(Alert, {label: 'No se pudo eliminar la orden'});
                         }else{  
@@ -144,20 +144,28 @@ export const Orders = {
 
         this.statusProduct = (products_id) => {
             let selected = this.vm.order().items_orders().filter(o => o.products_id() == products_id);
-            let arrItems = this.vm.order().items_orders();
+
             if(selected.length > 0){
-                delete arrItems[selected[0].id()];
-                this.vm.order().items_orders(Utils.deleteNulls(this.vm.order().items_orders()));
+                this.vm.order().items_orders(this.vm.order().items_orders().filter(o => o.products_id() != products_id));
             }else{
                 // open modal
                 let currentProducts = this.vm.products().filter(p => p.id() == products_id);
-                this.openProduct(currentProducts[0]);
-                // capture data in itemorder
-                let itemorder = {
-                    products_id: products_id
-                }
-                this.vm.order().items_orders().push(new Itemorder(itemorder));
+                this.openProduct(currentProducts[0]).then( r => this.refreshStatus() );
             }
+            this.refreshStatus();
+        }
+
+        this.refreshStatus = () => {
+            this.vm.arr_check_status.length = 0;
+            this.vm.arr_check_status = null;
+            this.vm.arr_check_status = [];
+
+            for(let io of this.vm.order().items_orders())
+                this.vm.arr_check_status.push(io.products_id());
+        }
+
+        this.arrCheckStatus = (id) => {
+            return this.vm.arr_check_status.some(id => id == id);
         }
 
 
@@ -221,6 +229,17 @@ export const Orders = {
 
         }
 
+        this.total = () => {
+            let res = 0;
+            for(let io of this.vm.order().items_orders()){
+                let prArr = this.vm.products().filter( p => p.id() == io.products_id() );
+                console.log(prArr);
+                let pr = prArr[0];
+                res += (parseFloat(pr.numberValue()) * parseInt(io.amount()));
+            }
+            return Utils.formatMoney(res);
+        }
+
 
     },
     view(c,p){
@@ -260,11 +279,11 @@ export const Orders = {
         if(c.vm.products() != 'empty'){
             panelProducts = (
                 <ul>
-                    {c.vm.products().map((p) => {   
+                    {c.vm.products().map((p,index) => {   
                         return (
                             <li>
                                 <label class="pt-control pt-switch">
-                                    <input name="products" type="checkbox" onchange={c.statusProduct.bind(c, p.id())} />
+                                    <input name="products" type="checkbox" value={c.arrCheckStatus[p.id()]} onchange={c.statusProduct.bind(c, p.id())} />
                                     <span class="pt-control-indicator"></span>
                                     {p.name()} - {p.value()}
                                 </label>
@@ -285,6 +304,11 @@ export const Orders = {
                         <div class="panel panel-default">
                             <div class="scroll-vertical">
                                 {panelProducts}
+                            </div>
+                        </div>
+                        <div class="panel panel-default" >
+                            <div class="total-admin-car">
+                                Total: <b>{c.total()}</b>
                             </div>
                         </div>
                         <label class="pt-label">

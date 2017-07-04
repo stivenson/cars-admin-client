@@ -12,5 +12,11 @@
 		height:400px;
 	}
 
+
+	& .total-admin-car{
+		text-align: right;
+		padding: 5px;
+	}
+
 }
 

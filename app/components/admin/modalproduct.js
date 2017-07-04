@@ -26,7 +26,7 @@ AdminModalproduct.vm = function (p) {
             return Product.get(id);
         },
         addToCar: (product) => {
-            //p.car().push(product);
+            p.order().items_orders().push(product);
         },
         submit(event) {
             if (event) { event.preventDefault(); }
@@ -41,12 +41,15 @@ AdminModalproduct.controller = function (p) {
     this.vm = AdminModalproduct.vm(p);
     this.vm.refreshProduct(p.product.id()).then(p.product).then(()=>m.redraw());
     this.addToCar = (product) => {
-        product.amount = this.vm.amount();
-        product.observations = this.vm.observations();
+        product.amount = m.prop(this.vm.amount());
+        product.observations = m.prop(this.vm.observations());
+        product.products_id = m.prop(p.product.id());
+        product.orders_id = m.prop(p.order().id());
         this.vm.addToCar(product);
         Modal.vm.terminate();
         m.redraw(true);
-    }; 
+    };
+
 }
 
 AdminModalproduct.view = function (c,p) {

@@ -15,6 +15,7 @@ export const Product = function(data) {
     this.description = m.prop(data.description || '');
     this.smalldescription = m.prop(this.description().substring(0,10)+'...');
     this.value = m.prop(Utils.formatMoney(data.value) || '');
+    this.numberValue = m.prop(data.value || 0);
     this.available = m.prop(data.available == true ? true : false);
     this.iva = m.prop(data.iva || 0);
     let mime = data.mime || ' ';
@@ -102,7 +103,7 @@ Client.delete = function (id) {
     return API.get(`temporal/delete/clients/${id}`);
 }
 
-
+/* ORDERS */
 
 export const Itemorder = function(data) {
     data = data || {};
