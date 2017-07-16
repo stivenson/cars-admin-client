@@ -180,6 +180,10 @@ export const Orders = {
             };
 
             currentformData.append('created_at', this.vm.order().form.created_at());
+            currentformData.append('items_orders', this.vm.order().jsonItemsOrders());
+            currentformData.append('delivery_type', this.vm.order().form.delivery_type());
+            currentformData.append('status', this.vm.order().form.status());
+            currentformData.append('users_id', this.vm.order().form.users_id());
 
             if(this.vm.order().form.id() != false){
 
@@ -232,8 +236,8 @@ export const Orders = {
         this.total = () => {
             let res = 0;
             for(let io of this.vm.order().items_orders()){
+                console.log('XXX'); console.log(io.products_id());
                 let prArr = this.vm.products().filter( p => p.id() == io.products_id() );
-                console.log(prArr);
                 let pr = prArr[0];
                 res += (parseFloat(pr.numberValue()) * parseInt(io.amount()));
             }
@@ -336,7 +340,7 @@ export const Orders = {
                             </div>
                         </label>
                         <div class={"text-center "+(c.vm.readonly() ? 'hidden':'')}>
-                            <Button disabled="true" type="submit" loading={c.vm.working()} >
+                            <Button type="submit" loading={c.vm.working()} >
                                 Guardar
                             </Button>
                         </div>

@@ -121,6 +121,17 @@ export const Itemorder = function(data) {
         orders_id: m.prop(data.orders_id || false)
     }
 
+    this.json = () => {
+        return {
+            id: this.id(),
+            products_id: this.products_id(),
+            amount: this.amount(),
+            observations: this.observations(),
+            orders_id: this.orders_id()
+        };
+    }
+
+
 }
 
 Itemorder.list = function (idOrder) {
@@ -149,6 +160,16 @@ export const Order = function(data) {
         users_id: m.prop(data.users_id || false),
         created_at: m.prop(data.created_at || '--'),
         items_orders: this.items_orders 
+    }
+
+    this.jsonItemsOrders = () => {
+        let res = [];
+        let arr = this.items_orders();
+        for (let item of arr) {
+            console.log(item);
+            res.push(item.json());
+        }
+        return JSON.stringify(res);
     }
 
     this.objStatus = () => {

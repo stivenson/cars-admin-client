@@ -48,7 +48,6 @@ const API = {
             data: payload,
             background: true
         };
-
         return m.request(Object.assign({}, defaults, options));
     },
     put(endpoint, payload, options) {

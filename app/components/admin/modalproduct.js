@@ -12,7 +12,7 @@ import {
 
 import { ModalHeader } from '../modal/header';
 import Modal from '../../containers/modal/modal';
-import { Product } from './models';
+import {Product, Itemorder} from './models';
 
 
 const AdminModalproduct = {};
@@ -41,11 +41,12 @@ AdminModalproduct.controller = function (p) {
     this.vm = AdminModalproduct.vm(p);
     this.vm.refreshProduct(p.product.id()).then(p.product).then(()=>m.redraw());
     this.addToCar = (product) => {
-        product.amount = m.prop(this.vm.amount());
-        product.observations = m.prop(this.vm.observations());
-        product.products_id = m.prop(p.product.id());
-        product.orders_id = m.prop(p.order().id());
-        this.vm.addToCar(product);
+        let params = {}; 
+        params.amount = this.vm.amount();
+        params.observations = this.vm.observations();
+        params.products_id = p.product.id();
+        params.orders_id = p.order().id();
+        this.vm.addToCar(new Itemorder(params));
         Modal.vm.terminate();
         m.redraw(true);
     };

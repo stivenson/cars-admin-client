@@ -1,0 +1,17 @@
+{
+    "extends": "rallycoding",
+    "env": {
+        "es6": true,
+        "node": true,
+        "mocha": true
+    },
+    "ecmaFeatures": {
+        "classes": true,
+        "modules": true
+    },
+    "rules": {
+        "no-param-reassign": 0,
+        "newline-per-chained-call": 0,
+        "import/no-extraneous-dependencies": 0
+    }
+}
