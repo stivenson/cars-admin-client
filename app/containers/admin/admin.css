@@ -9,6 +9,11 @@
     & .tab-link {
     	display: block;	
     }
+
+    & .logout {
+    	font-weight: bold;
+    	text-align: right;
+    }
 	
 }
 
@@ -16,4 +21,3 @@
 .color-white {
 	color: #FFFFFF;
 }
-

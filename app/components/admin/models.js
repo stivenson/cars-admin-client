@@ -103,6 +103,18 @@ Client.delete = function (id) {
     return API.get(`temporal/delete/clients/${id}`);
 }
 
+
+
+/* Sesion */
+
+export const Sesion = function() {};
+
+Sesion.logout = function () {
+    localStorage.setItem('sesion',false);
+}
+
+
+
 /* ORDERS */
 
 export const Itemorder = function(data) {

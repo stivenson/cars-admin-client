@@ -32,8 +32,8 @@ export const AdminLogin = {
                     else
                         Modal.vm.open(Alert, { label: 'Credenciales incorrectas. Porfavor verifique y vuelva a intentarlo' });
                 });
-        }
 
+        }
 
     },
     view(c,p){

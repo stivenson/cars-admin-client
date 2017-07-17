@@ -16,9 +16,25 @@ export const Client = function(data) {
     }
 }
 
+const TEMPORAL_CREDENTIALS = {
+    EMAIL: 'admin@senseibistro.com', // temporal validation
+    PASSWORD: 'admin_sen_321' // temporal validation
+}
+
 Client.login = function (credentials) {
 	// pending
 	return new Promise((resolve, reject) => { // temporal
-		resolve(true);	
+        // Temporal
+        if(TEMPORAL_CREDENTIALS.EMAIL == credentials.email && TEMPORAL_CREDENTIALS.PASSWORD == credentials.password ){
+            localStorage.setItem('sesion',true);
+            resolve(true);
+        } else {
+            localStorage.setItem('sesion',false);
+            resolve(false);
+        }
 	});
+}
+
+Client.logout = function () {
+    localStorage.setItem('sesion',false);
 }
