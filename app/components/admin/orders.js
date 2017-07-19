@@ -101,7 +101,7 @@ export const Orders = {
             this.vm.order(arrOrders[index]);
             this.vm.order().index = m.prop(index+1);
             this.vm.readonly(false);
-
+            this.refreshStatus();
             setTimeout(() => {              
                 this.vm.waitForm(false);
                 m.redraw();
@@ -113,34 +113,33 @@ export const Orders = {
             let arrOrders = this.vm.orders();
             this.vm.order(arrOrders[index]);
             this.vm.readonly(true);
+            this.refreshStatus();
             setTimeout(() => {
                 this.vm.waitForm(false);
                 m.redraw();
             },350);
         }
+ 
+        this.changeState = (index,status) => {
+            currentformData = new FormData();
+            this.vm.waitForm(true);
+            let arrOrders = this.vm.orders();
+            this.vm.order(arrOrders[index]);
+            this.vm.order().index = m.prop(index+1);
+            this.vm.readonly(false);
+            this.vm.order().form.status(status.id);
+            this.refreshStatus();
+            setTimeout(() => {    
+                this.save(null);          
+                this.vm.waitForm(false);
+                m.redraw();
+            },350);
+        }
+
 
         this.openProduct = (product) => {
             return Modal.vm.open(AdminModalproduct, {order: this.vm.order.bind(this.vm),product: product, className: 'mmodal-small'});
         }
- 
-        this.delete = (index) => {
-            let arrOrders = this.vm.orders();
-            Modal.vm.open(Confirm, {className: 'mmodal-small', mood: 'success', icon: 'ok-circle',label: '¿Confirmas que deseas borrar esta orden?', actionLabel: 'Eliminar orden'})
-            .then(() => {
-                    Order.delete(arrOrders[index].id())
-                    .then(res => {
-                        if(res == false){
-                            Modal.vm.open(Alert, {label: 'No se pudo eliminar la orden'});
-                        }else{  
-                            getOrders(true,null);
-                            Modal.vm.open(Alert, {label: 'Orden eliminada con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
-                        }
-                    })
-                }
-            );
-
-        }
-
 
         this.statusProduct = (products_id) => {
             let selected = this.vm.order().items_orders().filter(o => o.products_id() == products_id);
@@ -187,8 +186,6 @@ export const Orders = {
 
             if(this.vm.order().form.id() != false){
 
-                // validation for make - less image
-
                 currentformData.append('id', this.vm.order().form.id());
                 this.vm.working(true);
                 Order.save(currentformData,options)
@@ -229,7 +226,6 @@ export const Orders = {
                 });
 
             }
-
 
         }
 
@@ -388,7 +384,10 @@ export const Orders = {
                                           <ul class="dropdown-menu">
                                             <li><button onclick={c.detail.bind(c,index)} type="button" class="pt-button pt-minimal pt-icon-search pt-intent-primary" >Detallar</button></li>
                                             <li><button onclick={c.edit.bind(c,index)} type="button" class="pt-button pt-minimal pt-icon-edit pt-intent-primary" >Editar</button></li>
-                                            <li><button onclick={c.delete.bind(c,index)}  type="button" class="pt-button pt-minimal pt-icon-delete pt-intent-primary" >Borrar</button></li>
+                                            <li><button onclick={c.changeState.bind(c,index,STATUTES[0])}  type="button" class="pt-button pt-minimal pt-icon-intersection pt-intent-primary" >Pendiente</button></li>
+                                            <li><button onclick={c.changeState.bind(c,index,STATUTES[1])}  type="button" class="pt-button pt-minimal pt-icon-intersection pt-intent-primary" >Confirmado</button></li>
+                                            <li><button onclick={c.changeState.bind(c,index,STATUTES[2])}  type="button" class="pt-button pt-minimal pt-icon-intersection pt-intent-primary" >Cancelado</button></li>
+                                            <li><button onclick={c.changeState.bind(c,index,STATUTES[3])}  type="button" class="pt-button pt-minimal pt-icon-intersection pt-intent-primary" >Entregado</button></li>
                                           </ul>
                                         </div>
                                     </td>

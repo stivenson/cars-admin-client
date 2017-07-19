@@ -161,9 +161,7 @@ export const Order = function(data) {
     this.users_id = m.prop(data.users_id || false);
     this.created_at = m.prop(data.created_at || '--');
     this.items_orders = m.prop([]);
-    //Itemorder.list(this.id)
-    //    .then(this.items_orders)
-    //    .catch(e => console.log('Error gettings items_orders'));
+
 
     this.form = {
         id: m.prop(data.id || ''),
@@ -201,6 +199,16 @@ export const Order = function(data) {
             case 4: res = 'pt-intent-success'; break;
         }
         return res;
+    }
+
+
+    if(this.id !== false) {
+        Itemorder.list(this.id)
+            .then((r) => {
+                this.items_orders(r);
+                this.form.items_orders(r);
+            })
+            .catch(e => console.log(`Error gettings items of order ${this.id}`));        
     }
 
 }
