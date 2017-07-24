@@ -26,19 +26,19 @@ export const Orders = {
         this.limitSizeImagen = 8388606;
         var currentformData = new FormData();
 
-        let getOrders = (selectFirst,index) => {
+        let getOrders = (selectFirst, index) => {
             index = index || null;
             this.vm.working(true);
             Order.list()
                 .then(this.vm.orders)
                 .then(()=>this.vm.working(false))
-                .then(()=>{
+                .then(() => {
                     if(index != null){
                         if(index == 'first')
                             index = 0;
                         this.edit(index);
                 }})
-                .then(()=>{if(selectFirst == true) {this.edit(0)}})
+                .then(()=>{if(selectFirst == true) {this.add()}})
                 .then(()=>m.redraw());
         }
 
@@ -100,6 +100,7 @@ export const Orders = {
             let arrOrders = this.vm.orders();
             this.vm.order(arrOrders[index]);
             this.vm.order().index = m.prop(index+1);
+            this.vm.order().getItems(this.refreshStatus.bind(this));
             this.vm.readonly(false);
             this.refreshStatus();
             setTimeout(() => {              
@@ -112,6 +113,7 @@ export const Orders = {
             this.vm.waitForm(true);
             let arrOrders = this.vm.orders();
             this.vm.order(arrOrders[index]);
+            this.vm.order().getItems(this.refreshStatus.bind(this));
             this.vm.readonly(true);
             this.refreshStatus();
             setTimeout(() => {
@@ -132,6 +134,7 @@ export const Orders = {
             setTimeout(() => {    
                 this.save(null);          
                 this.vm.waitForm(false);
+                // this.vm.order.getItems();
                 m.redraw();
             },350);
         }

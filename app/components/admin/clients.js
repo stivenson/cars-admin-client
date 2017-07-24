@@ -19,7 +19,7 @@ export const Clients = {
         this.limitSizeImagen = 8388606;
         var currentformData = new FormData();
 
-        let getClients = (selectFirst,index) => {
+        let getClients = (selectFirst, index) => {
             index = index || null;
             this.vm.working(true);
             Client.list(false)
@@ -31,7 +31,7 @@ export const Clients = {
                             index = 0;
                         this.edit(index);
                 }})
-                .then(()=>{if(selectFirst == true) {this.edit(0)}})
+                .then(()=>{if(selectFirst == true) {this.detail(0)}})
                 .then(()=>m.redraw());
         }
 

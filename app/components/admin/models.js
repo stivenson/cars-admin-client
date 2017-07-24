@@ -168,7 +168,7 @@ export const Order = function(data) {
         id: m.prop(data.id || ''),
         status: m.prop(data.status || STATUS_PENDING),
         delivery_type: m.prop(data.delivery_type || DELIVERY_TYPE_DOMICILE),
-        users_id: m.prop(data.users_id || false),
+        users_id: m.prop(data.users_id || localStorage.getItem('users_id')),
         created_at: m.prop(data.created_at || '--'),
         items_orders: this.items_orders 
     }
@@ -202,18 +202,20 @@ export const Order = function(data) {
         return res;
     }
 
-
-    if(this.id() !== false) {
-        Itemorder.list(this.id())
-            .then((r) => {
-                if(r != false){
-                    this.items_orders(r);
-                    this.form.items_orders(r);
-                }
-            })
-            .catch(e => console.log(`Error gettings items of order ${this.id}`));        
+    this.getItems = (refreshStatus) => {
+        if(this.id() !== false) {
+            Itemorder.list(this.id())
+                .then((r) => {
+                    if(r != false){
+                        this.items_orders(r);
+                        this.form.items_orders(r);
+                        refreshStatus(); // refresh checkbox
+                        m.redraw();
+                    }
+                })
+                .catch(e => console.log(`Error gettings items of order ${this.id}`));        
+        }
     }
-
 }
 
 Order.list = function () {

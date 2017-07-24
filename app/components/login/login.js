@@ -27,10 +27,12 @@ export const AdminLogin = {
             Client.login({email:this.vm.email(), password:this.vm.password()})
                 .then(r => {
                     this.vm.working(false);
-                    if(r === true)
+                    if(r === true){
                         m.route('/admin');
-                    else
+                        // window.location.reload();
+                    } else {
                         Modal.vm.open(Alert, { label: 'Credenciales incorrectas. Porfavor verifique y vuelva a intentarlo' });
+                    }
                 });
 
         }
