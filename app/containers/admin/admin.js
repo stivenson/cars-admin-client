@@ -43,7 +43,7 @@ export const Admin = {
                             <ul class="pt-tab-list pt-large" role="tablist"> 
                                 <li class="pt-tab" role="tab" aria-selected={(c.tab() == 1)} ><a class="tab-link"  onclick={c.tab.bind(c,1)}> Clientes</a></li>
                                 <li class="pt-tab" role="tab" aria-selected={(c.tab() == 2)} ><a class="tab-link" onclick={c.tab.bind(c,2)}> Productos</a></li>
-                                <li class="pt-tab" role="tab" aria-selected={(c.tab() == 3)} ><a class="tab-link" onclick={c.message.bind(c)}> Pedidos</a></li>
+                                <li class="pt-tab" role="tab" aria-selected={(c.tab() == 3)} ><a class="tab-link" onclick={c.tab.bind(c,3)}> Pedidos</a></li>
                             </ul>
                             <div class="pt-tab-panel" role="tabpanel" aria-hidden={!(c.tab() == 1)} ><Clients /></div>
                             <div class="pt-tab-panel" role="tabpanel" aria-hidden={!(c.tab() == 2)} ><Products /></div>

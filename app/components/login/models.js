@@ -27,9 +27,11 @@ Client.login = function (credentials) {
         // Temporal
         if(TEMPORAL_CREDENTIALS.EMAIL == credentials.email && TEMPORAL_CREDENTIALS.PASSWORD == credentials.password ){
             localStorage.setItem('sesion',true);
+            localStorage.setItem('users_id',1);
             resolve(true);
         } else {
             localStorage.setItem('sesion',false);
+            localStorage.setItem('users_id',null);
             resolve(false);
         }
 	});

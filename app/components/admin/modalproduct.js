@@ -56,7 +56,7 @@ AdminModalproduct.controller = function (p) {
 AdminModalproduct.view = function (c,p) {
     return (
         <div class="mmodal-body product-modal">
-            <ModalHeader>
+            <ModalHeader notlockable="true" >
                 <div class="text-center title-product">{p.product.name()}</div>
             </ModalHeader>
 
@@ -71,7 +71,7 @@ AdminModalproduct.view = function (c,p) {
                         Pedir <input type="number" value={c.vm.amount()} oninput={m.withAttr('value', c.vm.amount)} class="pt-input amount-input"/>
                         <br/>
                         <textarea
-                        style="min-height:70px;" 
+                        style="min-height:70px; color: #000000;" 
                         rows="3"
                         placeholder="Agregar observación sobre el pedido (opcional)" 
                         onchange={m.withAttr('value', c.vm.observations)}>{c.vm.observations()}</textarea>

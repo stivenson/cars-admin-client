@@ -148,7 +148,7 @@ export const Itemorder = function(data) {
 
 Itemorder.list = function (idOrder) {
     if(idOrder === false)  
-        return false;
+        return new Promise((resolve, reject) => resolve(false));
     return API.get(`items_orders/all/${idOrder}`, {type: Itemorder});
 }
 
@@ -158,7 +158,8 @@ export const Order = function(data) {
     this.id = m.prop(data.id || false);
     this.delivery_type = m.prop(data.delivery_type || DELIVERY_TYPE_DOMICILE);
     this.status = m.prop(data.status || STATUS_PENDING);
-    this.users_id = m.prop(data.users_id || false);
+    console.log(localStorage.getItem('users_id'));
+    this.users_id = m.prop(data.users_id || localStorage.getItem('users_id'));
     this.created_at = m.prop(data.created_at || '--');
     this.items_orders = m.prop([]);
 
@@ -202,11 +203,13 @@ export const Order = function(data) {
     }
 
 
-    if(this.id !== false) {
-        Itemorder.list(this.id)
+    if(this.id() !== false) {
+        Itemorder.list(this.id())
             .then((r) => {
-                this.items_orders(r);
-                this.form.items_orders(r);
+                if(r != false){
+                    this.items_orders(r);
+                    this.form.items_orders(r);
+                }
             })
             .catch(e => console.log(`Error gettings items of order ${this.id}`));        
     }
@@ -218,6 +221,8 @@ Order.list = function () {
 }
 
 Order.save = function (data,options) {
+    console.log('Save order and items');
+    console.log(data);
     return API.post('orders',data,options);
 }
 
