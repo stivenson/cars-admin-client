@@ -13,9 +13,33 @@
 	}
 
 
-	& .total-admin-car{
+	& .total-admin-car {
 		text-align: right;
 		padding: 5px;
+	}
+
+	& .custom-delivery-type-list-domi {
+		color: green;
+		font-weight: bold;
+	}
+
+	& .custom-delivery-type-list {
+		color: blue;
+		font-weight: bold;
+	}
+
+	& .custom-actions-th {
+		text-align: center;
+		background-color: #ffffff;
+	}
+
+	& .custom-actions {
+		text-align: center;
+	}
+
+	& .custom-label-value {
+		color: #1B6C00;
+		font-weight: bold;
 	}
 
 }

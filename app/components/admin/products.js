@@ -13,7 +13,7 @@ export const Products = {
             product: m.prop(new Product()),
             waitForm: m.prop(false),
             statusImage: m.prop('Seleccionar imagen')
-        } 
+        }; 
     },
     controller(p){
         this.vm = Products.vm(p);
@@ -371,7 +371,7 @@ export const Products = {
                     {form}
                 </div> 
             </div>
-        )
+        );
 
         return content;
 

@@ -111,7 +111,7 @@ export const Sesion = function() {};
 
 Sesion.logout = function () {
     localStorage.setItem('sesion',false);
-}
+};
 
 
 
@@ -131,7 +131,7 @@ export const Itemorder = function(data) {
         amount: m.prop(parseInt(data.amount) || 0),
         observations: m.prop(data.observations || ''),
         orders_id: m.prop(data.orders_id || false)
-    }
+    };
 
     this.json = () => {
         return {
@@ -158,7 +158,7 @@ export const Order = function(data) {
     this.id = m.prop(data.id || false);
     this.delivery_type = m.prop(data.delivery_type || DELIVERY_TYPE_DOMICILE);
     this.status = m.prop(data.status || STATUS_PENDING);
-    console.log(localStorage.getItem('users_id'));
+    // console.log(localStorage.getItem('users_id'));
     this.users_id = m.prop(data.users_id || localStorage.getItem('users_id'));
     this.created_at = m.prop(data.created_at || '--');
     this.items_orders = m.prop([]);
@@ -171,26 +171,26 @@ export const Order = function(data) {
         users_id: m.prop(data.users_id || localStorage.getItem('users_id')),
         created_at: m.prop(data.created_at || '--'),
         items_orders: this.items_orders 
-    }
+    };
 
     this.jsonItemsOrders = () => {
         let res = [];
         let arr = this.items_orders();
         for (let item of arr) {
-            console.log(item);
+            // // console.log(item);
             res.push(item.json());
         }
         return JSON.stringify(res);
-    }
+    };
 
     this.objStatus = () => {
         let arr = STATUTES.filter(S => S.id == this.status());
         return arr[0];
-    }
+    };
 
     this.isChecked = (products_id) => {
         return this.items_orders().filter(o => o.products_id() == products_id).length > 0;
-    }
+    };
 
     this.styleStatus = () => {
         let res = '';
@@ -202,29 +202,34 @@ export const Order = function(data) {
         return res;
     }
 
+
+    this.listItems = () => Itemorder.list(this.id());
+
     this.getItems = (refreshStatus) => {
         if(this.id() !== false) {
-            Itemorder.list(this.id())
-                .then((r) => {
+            this.listItems().then((r) => {
                     if(r != false){
                         this.items_orders(r);
                         this.form.items_orders(r);
                         refreshStatus(); // refresh checkbox
                         m.redraw();
                     }
-                })
-                .catch(e => console.log(`Error gettings items of order ${this.id}`));        
+                }).catch(e => console.log(`Error gettings items of order ${this.id}`));        
         }
-    }
-}
+    };
+
+    this.getItemsPromise = () => {
+        return this.listItems(); 
+    };
+};
 
 Order.list = function () {
     return API.get('orders', {type: Order});
 }
 
 Order.save = function (data,options) {
-    console.log('Save order and items');
-    console.log(data);
+    // console.log('Save order and items');
+    // console.log(data);
     return API.post('orders',data,options);
 }
 

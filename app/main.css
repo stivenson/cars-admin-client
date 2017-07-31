@@ -44,6 +44,8 @@ a {
 
 .custom-add-btn {
   padding: 6px;
+  background-color: #ffffff;
+  color: #000000; 
 }
 
 .custom-icon-cross {

@@ -1,5 +1,5 @@
 import m from 'mithril';
-import { Order, Client, Product, Itemorder, STATUTES, DELIVERY_TYPES } from './models';
+import {Order, Client, Product, Itemorder, STATUTES, DELIVERY_TYPES} from './models';
 import API from '../api';
 import Modal from '../../containers/modal/modal';
 import {Spinner, Button, Alert, Confirm} from '../../components/ui';
@@ -19,14 +19,14 @@ export const Orders = {
             order: m.prop(new Order()),
             waitForm: m.prop(false),
             arr_check_status: []
-        } 
+        }; 
     },
     controller(p){
         this.vm = Orders.vm(p);
         this.limitSizeImagen = 8388606;
         var currentformData = new FormData();
 
-        let getOrders = (selectFirst, index) => {
+        let getOrders = (noSelect, index) => {
             index = index || null;
             this.vm.working(true);
             Order.list()
@@ -34,13 +34,12 @@ export const Orders = {
                 .then(()=>this.vm.working(false))
                 .then(() => {
                     if(index != null){
-                        if(index == 'first')
-                            index = 0;
                         this.edit(index);
-                }})
-                .then(()=>{if(selectFirst == true) {this.add()}})
+                    }
+                })
+                .then(()=>{if(noSelect == true) this.add()})
                 .then(()=>m.redraw());
-        }
+        };
 
         getOrders(true,null);
 
@@ -50,7 +49,7 @@ export const Orders = {
                 .then(this.vm.clients)
                 .then(() => this.vm.working(false))
                 .then(() => m.redraw());
-        }
+        };
 
         this.nameUser = (clients_id) => {
             if(clients_id != false){    
@@ -62,7 +61,7 @@ export const Orders = {
                 return '--';    
             }
             
-        } 
+        }; 
 
         getClients();
 
@@ -78,7 +77,7 @@ export const Orders = {
                 })
                 .then(() => this.vm.working(false))
                 .then(() => m.redraw());
-        }
+        };
 
         getProducts();
 
@@ -90,59 +89,79 @@ export const Orders = {
 
             setTimeout(() => {
                 this.vm.waitForm(false);
+                this.vm.order().items_orders([]);
                 m.redraw();
             },350);
-        }
+        };
 
         this.edit = (index) => {
             currentformData = new FormData();
             this.vm.waitForm(true);
             let arrOrders = this.vm.orders();
-            this.vm.order(arrOrders[index]);
-            this.vm.order().index = m.prop(index+1);
-            this.vm.order().getItems(this.refreshStatus.bind(this));
+            let arrEditOrder = arrOrders.filter(eo => eo.id() == index);
+            let editOrder = arrEditOrder[0];
+            this.vm.order(editOrder);
             this.vm.readonly(false);
+            this.vm.order().getItems(this.refreshStatus.bind(this));
             this.refreshStatus();
             setTimeout(() => {              
                 this.vm.waitForm(false);
                 m.redraw();
             },350);
-        }
+        };
 
         this.detail = (index) => {
             this.vm.waitForm(true);
+            
             let arrOrders = this.vm.orders();
-            this.vm.order(arrOrders[index]);
-            this.vm.order().getItems(this.refreshStatus.bind(this));
+            let arrDetailOrder = arrOrders.filter(o => o.id() == index);
+            let detailOrder = arrDetailOrder[0];
+            this.vm.order(detailOrder);
+
             this.vm.readonly(true);
+            this.vm.order().getItems(this.refreshStatus.bind(this));
             this.refreshStatus();
             setTimeout(() => {
                 this.vm.waitForm(false);
                 m.redraw();
             },350);
-        }
+        };
  
         this.changeState = (index,status) => {
             currentformData = new FormData();
             this.vm.waitForm(true);
+
             let arrOrders = this.vm.orders();
-            this.vm.order(arrOrders[index]);
-            this.vm.order().index = m.prop(index+1);
+            let arrChangeOrder = arrOrders.filter(co => co.id() == index);
+            let changeOrder = arrChangeOrder[0];
+            this.vm.order(changeOrder);
+            
             this.vm.readonly(false);
             this.vm.order().form.status(status.id);
             this.refreshStatus();
             setTimeout(() => {    
-                this.save(null);          
-                this.vm.waitForm(false);
-                // this.vm.order.getItems();
-                m.redraw();
+                this.vm.order().getItemsPromise().then((r) => {
+                    if(r != false){
+                        this.vm.order().items_orders(r);
+                        this.vm.order().form.items_orders(r);
+                        this.refreshStatus(); // refresh checkboxs
+                        this.save(null,index);  
+                        this.vm.waitForm(false);
+                        m.redraw();
+                    }
+                }).catch(e => console.log(`Error gettings items of order ${this.vm.order().id}`));                               
             },350);
-        }
+        };
 
 
         this.openProduct = (product) => {
             return Modal.vm.open(AdminModalproduct, {order: this.vm.order.bind(this.vm),product: product, className: 'mmodal-small'});
-        }
+        };
+
+        this.detailProduct = (products_id) => {
+            let currentProducts = this.vm.products().filter(p => p.id() == products_id);
+            this.openProduct(currentProducts[0]).then( r => this.refreshStatus() );
+        };
 
         this.statusProduct = (products_id) => {
             let selected = this.vm.order().items_orders().filter(o => o.products_id() == products_id);
@@ -155,23 +174,25 @@ export const Orders = {
                 this.openProduct(currentProducts[0]).then( r => this.refreshStatus() );
             }
             this.refreshStatus();
-        }
+        };
 
         this.refreshStatus = () => {
             this.vm.arr_check_status.length = 0;
             this.vm.arr_check_status = null;
             this.vm.arr_check_status = [];
 
-            for(let io of this.vm.order().items_orders())
+            for(let io of this.vm.order().items_orders()){
                 this.vm.arr_check_status.push(io.products_id());
-        }
+            }
+            m.redraw();
+        };
 
         this.arrCheckStatus = (id) => {
-            return this.vm.arr_check_status.some(id => id == id);
-        }
+            return this.vm.arr_check_status.some(i => i == id);
+        };
 
 
-        this.save = (event) => {
+        this.save = (event, indexChangeStatus = false) => {
             if (event) { event.preventDefault(); }
             if (this.vm.working()) return;
 
@@ -197,7 +218,12 @@ export const Orders = {
                     if(res == false){
                         Modal.vm.open(Alert, {label: 'No se pudo actualizar la orden'});
                     }else{  
-                        let auxIndex = (this.vm.order().index()-1) == 0 ? 'first': this.vm.order().index()-1;
+                        let auxIndex = this.vm.order().id();
+
+                        if(indexChangeStatus !== false){
+                            auxIndex = indexChangeStatus;
+                        }
+
                         getOrders(false,auxIndex);
                         Modal.vm.open(Alert, {label: 'Orden actualizada con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
                     }   
@@ -230,18 +256,18 @@ export const Orders = {
 
             }
 
-        }
+        };
 
         this.total = () => {
             let res = 0;
             for(let io of this.vm.order().items_orders()){
-                console.log('XXX'); console.log(io.products_id());
+                // // console.log('XXX'); // console.log(io.products_id());
                 let prArr = this.vm.products().filter( p => p.id() == io.products_id() );
                 let pr = prArr[0];
                 res += (parseFloat(pr.numberValue()) * parseInt(io.amount()));
             }
             return Utils.formatMoney(res);
-        }
+        };
 
 
     },
@@ -254,18 +280,21 @@ export const Orders = {
         let form = spinner;
         let selectUsers = smallSpinner;
 
-        let btnAdd = <button onclick={c.add.bind(c)} type="button" class="pt-button pt-minimal pt-icon-add pt-intent-primary custom-add-btn" >Agregar Orden</button>;
+        let btnAdd = <button onclick={c.add.bind(c)} type="button" class="pt-button custom-add-btn" ><span style="color: red;" class="pt-icon-standard pt-icon-add"></span> Agregar Orden</button>;
 
         if(c.vm.clients() != 'empty'){
             selectUsers = ( 
                 <label class="pt-label">
-                    Usuario
+                    Cliente
                     <div class="pt-select">
-                        <select name="users_id" onchange={m.withAttr('value', (v) => c.vm.order().form.users_id(v))} required>
-                            {c.vm.clients().map((s) => {
-                                return (
-                                    <option value={s.id()} selected={c.vm.order().form.users_id() == s.id()}>{s.name()} - {s.cc()}</option>
-                                )
+                        <select disabled={c.vm.readonly()} name="users_id" onchange={m.withAttr('value', (v) => c.vm.order().form.users_id(v))} required>
+                            <option value="">Seleccione...</option>
+                            {c.vm.clients().map((s) => {  
+                                if(c.vm.order().form.users_id() == s.id()){
+                                    return <option value={s.id()} selected>{s.name()} - {s.cc()}</option>;
+                                }else{
+                                    return <option value={s.id()} >{s.name()} - {s.cc()}</option>;
+                                }                                
                             })}
                         </select>
                     </div>
@@ -277,32 +306,65 @@ export const Orders = {
             <div class="panel-body text-center">
                 <i class="fa fa-cog fa-spin fa-3x fa-fw"></i>
             </div>
-        )
+        );
 
-        if(c.vm.products() != 'empty'){
+        if(c.vm.products() != 'empty' && c.vm.readonly()){
+            panelProducts = (
+                <ol>
+                    {c.vm.order().items_orders().map((io) => {   
+                        let arrP = c.vm.products().filter(pr => pr.id() == io.products_id());
+                        let p = arrP[0];
+                        return (
+                            <li>
+                                 <h5><b>{p.name()}</b> - <span class="custom-label-value">{p.value()}</span></h5>
+                                 
+                                 {io.amount()} unidades.
+                                 <p class={io.observations() !== '' ? '':'hidden'}><b>Observations:</b> {io.observations()}</p>
+                                 <hr/>
+                            </li>
+                        );
+                    })}    
+                </ol>
+            );
+        }
+
+        if(c.vm.products() != 'empty' && !c.vm.readonly()){
             panelProducts = (
                 <ul>
                     {c.vm.products().map((p,index) => {   
                         return (
                             <li>
                                 <label class="pt-control pt-switch">
-                                    <input name="products" type="checkbox" value={c.arrCheckStatus[p.id()]} onchange={c.statusProduct.bind(c, p.id())} />
+                                    {(() => {
+                                        if(c.arrCheckStatus(p.id())) {
+                                            return <input disabled={c.vm.readonly()} checked name="products" type="checkbox" onchange={c.statusProduct.bind(c, p.id())} />;
+                                        } else {
+                                            return <input disabled={c.vm.readonly()} name="products" type="checkbox" onchange={c.statusProduct.bind(c, p.id())} />;
+                                        }
+                                    })()}
                                     <span class="pt-control-indicator"></span>
                                     {p.name()} - {p.value()}
                                 </label>
                             </li>
-                        )
+                        );
                     })}    
                 </ul>
-            )
+            );
         }
-
 
         if(c.vm.waitForm() == false){
             form = (
             <div class="panel panel-default">
                 <div class="panel-body">
                     <form onsubmit={c.save.bind(c)} >
+                        <div class={c.vm.order().form.id() != false ? '':'hidden'}>
+                            <h4>Orden Nº {c.vm.order().form.id()}</h4>
+                            <hr/>
+                        </div>
+                        <div class={c.vm.order().form.id() == false ? '':'hidden'}>
+                            <h4>Nueva Orden</h4>
+                            <hr/>
+                        </div>
                         {selectUsers}
                         <div class="panel panel-default">
                             <div class="scroll-vertical">
@@ -317,7 +379,7 @@ export const Orders = {
                         <label class="pt-label">
                             Entrega
                             <div class="pt-select">
-                                <select name="delivery_type" onchange={m.withAttr('value', (v) => {if(v != null) c.vm.order().form.delivery_type(v)})} required>
+                                <select disabled={c.vm.readonly()} name="delivery_type" onchange={m.withAttr('value', (v) => {if(v != null) c.vm.order().form.delivery_type(v)})} required >
                                     {c.vm.delivery_types().map((s) => {
                                         return (
                                             <option value={s.id} selected={c.vm.order().form.delivery_type() == s.id}>{s.name}</option>
@@ -329,11 +391,11 @@ export const Orders = {
                         <label class="pt-label">
                             Estado
                             <div class="pt-select">
-                                <select name="status" onchange={m.withAttr('value', (v) => {if(v != null) c.vm.order().form.status(v)})} required>
+                                <select disabled={c.vm.readonly()} name="status" onchange={m.withAttr('value', (v) => {if(v != null) c.vm.order().form.status(v)})} required >
                                     {c.vm.statutes().map((s) => {
                                         return (
                                             <option value={s.id} selected={c.vm.order().form.status() == s.id}>{s.name}</option>
-                                        )
+                                        );
                                     })}
                                 </select>
                             </div>
@@ -355,43 +417,51 @@ export const Orders = {
                     <table class="table table-striped">
                         <thead>
                             <tr>
+                                <th>Nº Orden</th>
                                 <th>Fecha</th>
                                 <th>Cliente</th>
                                 <th>Estado</th>
-                                <th></th>
+                                <th>Entrega</th>
+                                <th class="custom-actions-th" colspan="2">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                        {c.vm.orders().map((order,index) => {
+                        {c.vm.orders().map((order, index) => {
                             return (
                                 <tr>
+                                    <td><b>{order.id()}</b></td>
                                     <td>{order.created_at()}</td>
                                     <td>{c.nameUser(order.users_id())}</td>
                                     <td><span class={"pt-tag pt-large pt-round "+order.styleStatus()}>{order.objStatus().name}</span></td>
                                     <td>
                                     {(() => {
-
-                                        //switch
-                                        /*if(order.status() == true){
-                                            return <span class="pt-tag pt-intent-success">Disponible</span>;
+                                        if(order.delivery_type() == 1){
+                                            return <div><i class="fa fa-plane fa-2x custom-delivery-type-list-domi" aria-hidden="true"></i></div>;
                                         }else{
-                                            return <span class="pt-tag ">No disponible</span>;
-                                        }*/
-
+                                            return <div><i style="" class="fa fa-location-arrow fa-2x custom-delivery-type-list" aria-hidden="true"></i></div>;
+                                        }
                                     })()}
                                     </td>
                                     <td>
-                                        <div class="dropdown">
-                                          <button class="pt-button pt-minimal dropdown-toggle" type="button" data-toggle="dropdown"> Acciones
-                                          <span class="caret"></span></button>
-                                          <ul class="dropdown-menu">
-                                            <li><button onclick={c.detail.bind(c,index)} type="button" class="pt-button pt-minimal pt-icon-search pt-intent-primary" >Detallar</button></li>
-                                            <li><button onclick={c.edit.bind(c,index)} type="button" class="pt-button pt-minimal pt-icon-edit pt-intent-primary" >Editar</button></li>
-                                            <li><button onclick={c.changeState.bind(c,index,STATUTES[0])}  type="button" class="pt-button pt-minimal pt-icon-intersection pt-intent-primary" >Pendiente</button></li>
-                                            <li><button onclick={c.changeState.bind(c,index,STATUTES[1])}  type="button" class="pt-button pt-minimal pt-icon-intersection pt-intent-primary" >Confirmado</button></li>
-                                            <li><button onclick={c.changeState.bind(c,index,STATUTES[2])}  type="button" class="pt-button pt-minimal pt-icon-intersection pt-intent-primary" >Cancelado</button></li>
-                                            <li><button onclick={c.changeState.bind(c,index,STATUTES[3])}  type="button" class="pt-button pt-minimal pt-icon-intersection pt-intent-primary" >Entregado</button></li>
-                                          </ul>
+                                        <div class="row">
+                                            <div style="width:100px;" class="col-xs-6 col-md-6 custom-actions">
+                                                <button onclick={c.detail.bind(c, order.id())} type="button" class="pt-button pt-minimal" ><i class="fa fa-eye fa-2x" aria-hidden="true"></i></button>
+                                            </div>
+                                            <div class="col-xs-6 col-md-6 custom-actions">
+                                                <div class="dropdown">
+                                                    <button class="pt-button pt-minimal dropdown-toggle" type="button" data-toggle="dropdown"> 
+                                                        <i class="fa fa-cog fa-2x" aria-hidden="true"></i>  
+                                                        <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li><button onclick={c.edit.bind(c, order.id())} type="button" class="pt-button pt-minimal pt-icon-edit pt-intent-primary" >Editar</button></li>
+                                                        <li><button onclick={c.changeState.bind(c, order.id(), STATUTES[0])}  type="button" class="pt-button pt-minimal pt-icon-intersection pt-intent-primary" >Pendiente</button></li>
+                                                        <li><button onclick={c.changeState.bind(c, order.id(), STATUTES[1])}  type="button" class="pt-button pt-minimal pt-icon-intersection pt-intent-primary" >Confirmado</button></li>
+                                                        <li><button onclick={c.changeState.bind(c, order.id(), STATUTES[2])}  type="button" class="pt-button pt-minimal pt-icon-intersection pt-intent-primary" >Cancelado</button></li>
+                                                        <li><button onclick={c.changeState.bind(c, order.id(), STATUTES[3])}  type="button" class="pt-button pt-minimal pt-icon-intersection pt-intent-primary" >Entregado</button></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>
@@ -406,7 +476,7 @@ export const Orders = {
 
         let content = (
             <div class="admin-orders row">
-                <div clas="col-md-12">{btnAdd}<br/></div> 
+                <div clas="col-md-12">{btnAdd}<br/><br/></div> 
 
                 <div class="col-md-8">
                     {list}
@@ -415,12 +485,12 @@ export const Orders = {
                     {form}
                 </div> 
             </div>
-        )
+        );
 
         return content;
 
     }
-}
+};
 
 
 export default Orders;
