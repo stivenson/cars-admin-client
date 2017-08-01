@@ -42,5 +42,10 @@
 		font-weight: bold;
 	}
 
+	& .custom-btn-add-more-orders {
+		color: #106ba3;
+		font-weight: bold;
+	}
+
 }
 

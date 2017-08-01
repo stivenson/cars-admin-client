@@ -7,6 +7,7 @@ const DELIVERY_TYPE_DOMICILE = 1;
 const STATUS_PENDING = 1;
 export const STATUTES = [{id:1,name:'Pendiente'},{id:2,name:'Confirmado'},{id:3,name:'Cancelado'},{id:4,name:'Entregado'}];
 export const DELIVERY_TYPES = [{id:1,name:'Domicilio'},{id:2,name:'En local'}];
+export const TAKE = 16;
 
 export const Product = function(data) {
     data = data || {};
@@ -223,19 +224,19 @@ export const Order = function(data) {
     };
 };
 
-Order.list = function () {
-    return API.get('orders', {type: Order});
-}
+Order.list = function (take = 16, skip = 0) {
+    return API.get(`pagination_orders/${skip}/${take}`, {type: Order});
+};
 
 Order.save = function (data,options) {
     // console.log('Save order and items');
     // console.log(data);
     return API.post('orders',data,options);
-}
+};
 
 Order.delete = function (id) {
     return API.get(`temporal/delete/orders/${id}`);
-}
+};
 
 
 

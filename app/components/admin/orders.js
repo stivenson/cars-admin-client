@@ -1,5 +1,5 @@
 import m from 'mithril';
-import {Order, Client, Product, Itemorder, STATUTES, DELIVERY_TYPES} from './models';
+import {Order, Client, Product, Itemorder, STATUTES, DELIVERY_TYPES, TAKE} from './models';
 import API from '../api';
 import Modal from '../../containers/modal/modal';
 import {Spinner, Button, Alert, Confirm} from '../../components/ui';
@@ -24,12 +24,15 @@ export const Orders = {
     controller(p){
         this.vm = Orders.vm(p);
         this.limitSizeImagen = 8388606;
-        var currentformData = new FormData();
-
-        let getOrders = (noSelect, index) => {
+        this.limitOrders = m.prop(380);
+        let currentformData = new FormData(); 
+        this.limit = 0;
+        let getOrders = (noSelect, index, withlimit = false) => {
+            if(withlimit)
+                this.limit = this.limit + TAKE;
             index = index || null;
             this.vm.working(true);
-            Order.list()
+            Order.list(this.limit)
                 .then(this.vm.orders)
                 .then(()=>this.vm.working(false))
                 .then(() => {
@@ -41,7 +44,12 @@ export const Orders = {
                 .then(()=>m.redraw());
         };
 
-        getOrders(true,null);
+        getOrders(true,null,true);
+
+
+        this.getMoreOrders = () => {
+            getOrders(true,null,true);
+        };
 
         let getClients = () => {
             this.vm.working(true);
@@ -86,10 +94,10 @@ export const Orders = {
             this.vm.waitForm(true);
             this.vm.order(new Order());
             this.vm.readonly(false);
-
+            this.vm.order().items_orders([]);
+            this.refreshStatus();
             setTimeout(() => {
                 this.vm.waitForm(false);
-                this.vm.order().items_orders([]);
                 m.redraw();
             },350);
         };
@@ -195,6 +203,11 @@ export const Orders = {
         this.save = (event, indexChangeStatus = false) => {
             if (event) { event.preventDefault(); }
             if (this.vm.working()) return;
+            console.log(this.vm.order().jsonItemsOrders());
+            if (this.vm.order().jsonItemsOrders() == '[]') {
+                Modal.vm.open(Alert, {label: 'Debe seleccionar al menos un producto'});
+                return;
+            }
 
             let endpoint = 'orders';
             let options = {
@@ -411,6 +424,15 @@ export const Orders = {
             );
         }
 
+
+        let btnGetMoreOrders;
+
+        if(c.limit >= c.limitOrders()){
+            btnGetMoreOrders = <b>limite de ordenes mostradas hacia atrás en el tiempo ({c.limitOrders()})</b>;
+        } else {
+            btnGetMoreOrders = <button onclick={c.getMoreOrders.bind(c)} type="button" class="pt-button pt-minimal custom-btn-add-more-orders"><span class="pt-icon-standard pt-icon-add-to-artifact"></span> Ver ordenes anteriores</button>;
+        }
+
         if(c.vm.orders() != 'empty' && c.vm.clients() != 'empty'){
             list = (
             	<div class="table-responsive custom-table-responsive">
@@ -469,6 +491,7 @@ export const Orders = {
                         })}
                         </tbody>
                     </table>
+                    {btnGetMoreOrders}
             	</div>
             );
         }
