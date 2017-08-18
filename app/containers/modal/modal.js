@@ -7,9 +7,11 @@ const Modal = {
             return <div></div>;
         }
 
+        //class="mmodal-overlay"
+
         return (
             <div class="m mmodal">
-                <div class="mmodal-overlay" onclick={Modal.vm.close.bind(Modal)}></div>
+                <div onclick={Modal.vm.close.bind(Modal)}></div>
                 <div class={"mmodal-content " + Modal.vm.className()} config={ExpandIn.config}>
                     {Modal.vm.current()}
                 </div>

@@ -12,21 +12,21 @@ import {
 
 import { ModalHeader } from '../modal/header';
 import Modal from '../../containers/modal/modal';
-import { MProduct } from './models';
+import {Product, Itemorder} from './models';
 
 
-const CarModalproduct = {};
+const AdminModalproduct = {};
 
-CarModalproduct.vm = function (p) {
+AdminModalproduct.vm = function (p) {
     return {
         saving: m.prop(false),
         amount: m.prop(1),
         observations: m.prop(''),
         refreshProduct: (id) => {
-            return MProduct.get(id);
+            return Product.get(id);
         },
         addToCar: (product) => {
-            p.car().push(product);
+            p.order().items_orders().push(product);
         },
         submit(event) {
             if (event) { event.preventDefault(); }
@@ -37,22 +37,26 @@ CarModalproduct.vm = function (p) {
     }
 }
 
-CarModalproduct.controller = function (p) {
-    this.vm = CarModalproduct.vm(p);
+AdminModalproduct.controller = function (p) {
+    this.vm = AdminModalproduct.vm(p);
     this.vm.refreshProduct(p.product.id()).then(p.product).then(()=>m.redraw());
     this.addToCar = (product) => {
-        product.amount = m.prop(this.vm.amount());
-        product.observations = m.prop(this.vm.observations());
-        this.vm.addToCar(product);
+        let params = {}; 
+        params.amount = this.vm.amount();
+        params.observations = this.vm.observations();
+        params.products_id = p.product.id();
+        params.orders_id = p.order().id();
+        this.vm.addToCar(new Itemorder(params));
         Modal.vm.terminate();
         m.redraw(true);
-    }; 
+    };
+
 }
 
-CarModalproduct.view = function (c,p) {
+AdminModalproduct.view = function (c,p) {
     return (
         <div class="mmodal-body product-modal">
-            <ModalHeader>
+            <ModalHeader notlockable="true" >
                 <div class="text-center title-product">{p.product.name()}</div>
             </ModalHeader>
 
@@ -64,7 +68,7 @@ CarModalproduct.view = function (c,p) {
                     <h4 class="price-product">{p.product.value()}</h4>
                     <p align="justify">{p.product.description()}</p>
                     <div>
-                        Pedir <input type="number" value={c.vm.amount()} oninput={m.withAttr('value', c.vm.amount)} class="pt-input amount-input"/>
+                        Pedir <input type="number" min="1" value={c.vm.amount()} oninput={m.withAttr('value', c.vm.amount)} class="pt-input amount-input"/>
                         <br/>
                         <textarea
                         style="min-height:70px; color: #000000;" 
@@ -81,4 +85,4 @@ CarModalproduct.view = function (c,p) {
 }
 
 
-export default CarModalproduct;
+export default AdminModalproduct;

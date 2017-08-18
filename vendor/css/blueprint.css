@@ -2519,7 +2519,7 @@ a.pt-button {
   box-shadow: none;
   background-color: rgba(206, 217, 224, 0.5);
   cursor: not-allowed;
-  color: rgba(92, 112, 128, 0.5); }
+  color: #000000 }
 
 .pt-select::after {
   line-height: 1;
@@ -2703,7 +2703,7 @@ a.pt-button {
     background-color: rgba(206, 217, 224, 0.5);
     background-image: none;
     cursor: not-allowed;
-    color: rgba(92, 112, 128, 0.5); }
+    color: #000000 }
 
 .pt-select.pt-large select {
   height: 40px;
@@ -2734,13 +2734,13 @@ a.pt-button {
     box-shadow: none;
     background-color: rgba(206, 217, 224, 0.1);
     background-image: none;
-    color: rgba(191, 204, 214, 0.5); }
+    color: #000000 }
 
 .pt-select select:disabled {
   box-shadow: none;
   background-color: rgba(206, 217, 224, 0.5);
   cursor: not-allowed;
-  color: rgba(92, 112, 128, 0.5); }
+  color: #000000 }
 
 .pt-select::after {
   line-height: 1;
@@ -3424,7 +3424,7 @@ a.pt-button {
     box-shadow: none;
     background: rgba(206, 217, 224, 0.5);
     cursor: not-allowed;
-    color: rgba(92, 112, 128, 0.5);
+    color: #000000;
     resize: none; }
   .pt-input[type="search"], .pt-input.pt-round {
     border-radius: 30px;
@@ -3458,7 +3458,7 @@ a.pt-button {
     .pt-dark .pt-input:disabled, .pt-dark .pt-input.pt-disabled {
       box-shadow: none;
       background: rgba(216, 225, 232, 0.1);
-      color: rgba(255, 255, 255, 0.3); }
+      color: #000000 }
     .pt-dark .pt-input[readonly] {
       box-shadow: inset 0 0 0 1px rgba(16, 22, 26, 0.4); }
   .pt-input.pt-intent-primary {
@@ -3537,7 +3537,7 @@ textarea.pt-input {
     .pt-dark textarea.pt-input:disabled, .pt-dark textarea.pt-input.pt-disabled {
       box-shadow: none;
       background: rgba(216, 225, 232, 0.1);
-      color: rgba(255, 255, 255, 0.3); }
+      color: #000000 }
     .pt-dark textarea.pt-input[readonly] {
       box-shadow: inset 0 0 0 1px rgba(16, 22, 26, 0.4); }
 

@@ -19,10 +19,10 @@ export const Clients = {
         this.limitSizeImagen = 8388606;
         var currentformData = new FormData();
 
-        let getClients = (selectFirst,index) => {
+        let getClients = (selectFirst, index) => {
             index = index || null;
             this.vm.working(true);
-            Client.list()
+            Client.list(false)
                 .then(this.vm.clients)
                 .then(() => this.vm.working(false))
                 .then(() => {
@@ -31,7 +31,7 @@ export const Clients = {
                             index = 0;
                         this.edit(index);
                 }})
-                .then(()=>{if(selectFirst == true) {this.edit(0)}})
+                .then(()=>{if(selectFirst == true) {this.detail(0)}})
                 .then(()=>m.redraw());
         }
 
@@ -229,7 +229,7 @@ export const Clients = {
                             name="telephone"
                             oninput={m.withAttr('value', c.vm.client().form.telephone)}
                             value={c.vm.client().form.telephone()}
-                            placeholder=""
+                            placeholder="Opcional"
                             disabled={c.vm.readonly()}
                         />
                     </label>

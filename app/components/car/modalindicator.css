@@ -1,0 +1,23 @@
+.indicator-modal{
+    padding: 15px;
+}
+
+.title-indicator{
+	text-transform: capitalize;
+}
+
+.amount-input{
+	max-width:100px; 
+	margin: 0 auto;
+}
+
+textarea {
+	color: #000000;
+}
+
+.align-total {
+	text-align: left;
+}
+
+
+

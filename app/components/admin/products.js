@@ -13,7 +13,7 @@ export const Products = {
             product: m.prop(new Product()),
             waitForm: m.prop(false),
             statusImage: m.prop('Seleccionar imagen')
-        } 
+        }; 
     },
     controller(p){
         this.vm = Products.vm(p);
@@ -32,7 +32,9 @@ export const Products = {
                             index = 0;
                         this.edit(index);
                 }})
-                .then(()=>{if(selectFirst == true) {this.edit(0)}})
+                .then(()=>{if(selectFirst == true) {
+                    this.detail(0);
+                }})
                 .then(()=>m.redraw());
         }
 
@@ -369,7 +371,7 @@ export const Products = {
                     {form}
                 </div> 
             </div>
-        )
+        );
 
         return content;
 

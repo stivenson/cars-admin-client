@@ -2,6 +2,13 @@ import m from 'mithril';
 import API from '../api';
 import Utils from '../utils';
 
+
+const DELIVERY_TYPE_DOMICILE = 1;
+const STATUS_PENDING = 1;
+export const STATUTES = [{id:1,name:'Pendiente'},{id:2,name:'Confirmado'},{id:3,name:'Cancelado'},{id:4,name:'Entregado'}];
+export const DELIVERY_TYPES = [{id:1,name:'Domicilio'},{id:2,name:'En local'}];
+export const TAKE = 16;
+
 export const Product = function(data) {
     data = data || {};
     this.id = m.prop(data.id || false);
@@ -9,12 +16,14 @@ export const Product = function(data) {
     this.description = m.prop(data.description || '');
     this.smalldescription = m.prop(this.description().substring(0,10)+'...');
     this.value = m.prop(Utils.formatMoney(data.value) || '');
+    this.numberValue = m.prop(data.value || 0);
     this.available = m.prop(data.available == true ? true : false);
     this.iva = m.prop(data.iva || 0);
     let mime = data.mime || ' ';
     let urlImage = `data:image/${mime};base64,${(data.image1 || ' ')}`;
     this.image = m.prop(urlImage);
-    
+    this.selected = m.prop(false);
+    this.srcImage = m.prop(urlImage);
 
     this.form = {
         id: m.prop(data.id || ''),
@@ -24,13 +33,22 @@ export const Product = function(data) {
         available: m.prop(data.available == true ? true : false),
         iva: m.prop(data.iva || ''),
         image: m.prop(urlImage),
-        haveImage: m.prop(mime != ' ')
+        haveImage: m.prop(mime != ' '),
+        selected: m.prop(false)
     } 
 
 }
 
 Product.list = function () {
     return API.get('products', {type: Product});
+}
+
+Product.listAvailable = () => {
+    return API.get('spe/products/available',{type:Product});
+}
+
+Product.get = (id) => {
+    return API.get(`products/${id}`,{type:Product});
 }
 
 Product.save = function (data,options) {
@@ -71,8 +89,11 @@ export const Client = function(data) {
 
 }
 
-Client.list = function () {
-    return API.get('clients', {type: Client});
+Client.list = function (select) {
+    if(select)
+        return API.get('clients/order/true', {type: Client});
+    else
+        return API.get('clients', {type: Client});
 }
 
 Client.save = function (data,options) {
@@ -83,6 +104,139 @@ Client.delete = function (id) {
     return API.get(`temporal/delete/clients/${id}`);
 }
 
+
+
+/* Sesion */
+
+export const Sesion = function() {};
+
+Sesion.logout = function () {
+    localStorage.setItem('sesion',false);
+};
+
+
+
+/* ORDERS */
+
+export const Itemorder = function(data) {
+    data = data || {};
+    this.id = m.prop(data.id || false);
+    this.products_id = m.prop(data.products_id || false);
+    this.amount = m.prop(parseInt(data.amount) || 0);
+    this.observations = m.prop(data.observations || '');
+    this.orders_id = m.prop(data.orders_id || false);
+
+    this.form = {
+        id: m.prop(data.id || ''),
+        products_id: m.prop(data.products_id || false),
+        amount: m.prop(parseInt(data.amount) || 0),
+        observations: m.prop(data.observations || ''),
+        orders_id: m.prop(data.orders_id || false)
+    };
+
+    this.json = () => {
+        return {
+            id: this.id(),
+            products_id: this.products_id(),
+            amount: this.amount(),
+            observations: this.observations(),
+            orders_id: this.orders_id()
+        };
+    }
+
+
+}
+
+Itemorder.list = function (idOrder) {
+    if(idOrder === false)  
+        return new Promise((resolve, reject) => resolve(false));
+    return API.get(`items_orders/all/${idOrder}`, {type: Itemorder});
+}
+
+
+export const Order = function(data) {
+    data = data || {};
+    this.id = m.prop(data.id || false);
+    this.delivery_type = m.prop(data.delivery_type || DELIVERY_TYPE_DOMICILE);
+    this.status = m.prop(data.status || STATUS_PENDING);
+    // console.log(localStorage.getItem('users_id'));
+    this.users_id = m.prop(data.users_id || localStorage.getItem('users_id'));
+    this.created_at = m.prop(data.created_at || '--');
+    this.items_orders = m.prop([]);
+
+
+    this.form = {
+        id: m.prop(data.id || ''),
+        status: m.prop(data.status || STATUS_PENDING),
+        delivery_type: m.prop(data.delivery_type || DELIVERY_TYPE_DOMICILE),
+        users_id: m.prop(data.users_id || localStorage.getItem('users_id')),
+        created_at: m.prop(data.created_at || '--'),
+        items_orders: this.items_orders 
+    };
+
+    this.jsonItemsOrders = () => {
+        let res = [];
+        let arr = this.items_orders();
+        for (let item of arr) {
+            // // console.log(item);
+            res.push(item.json());
+        }
+        return JSON.stringify(res);
+    };
+
+    this.objStatus = () => {
+        let arr = STATUTES.filter(S => S.id == this.status());
+        return arr[0];
+    };
+
+    this.isChecked = (products_id) => {
+        return this.items_orders().filter(o => o.products_id() == products_id).length > 0;
+    };
+
+    this.styleStatus = () => {
+        let res = '';
+        switch(parseInt(this.status())){
+            case 2: res = 'pt-intent-primary'; break;
+            case 3: res = 'pt-intent-danger'; break;
+            case 4: res = 'pt-intent-success'; break;
+        }
+        return res;
+    }
+
+
+    this.listItems = () => Itemorder.list(this.id());
+
+    this.getItems = (refreshStatus) => {
+        if(this.id() !== false) {
+            this.listItems().then((r) => {
+                    if(r != false){
+                        this.items_orders(r);
+                        this.form.items_orders(r);
+                        refreshStatus(); // refresh checkbox
+                        m.redraw();
+                    }
+                }).catch(e => console.log(`Error gettings items of order ${this.id}`));        
+        }
+    };
+
+    this.getItemsPromise = () => {
+        return this.listItems(); 
+    };
+};
+
+Order.list = function (take = 16, skip = 0) {
+    return API.get(`pagination_orders/${skip}/${take}`, {type: Order});
+};
+
+Order.save = function (data,options) {
+    // console.log('Save order and items');
+    // console.log(data);
+    return API.post('orders',data,options);
+};
+
+Order.delete = function (id) {
+    return API.get(`temporal/delete/orders/${id}`);
+};
 
 
 

@@ -1,0 +1,19 @@
+.product-modal{
+    padding: 15px;
+}
+
+.title-product{
+	text-transform: capitalize;
+}
+
+.amount-input{
+	max-width:100px; 
+	margin: 0 auto;
+}
+
+textarea {
+	color: #000000;
+}
+
+
+

@@ -20,9 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    m.route.mode = 'hash';
+    M.Route.mde = 'hash';
     m.route(root, '/', {
-        '/login': WrapMainLayout(Login),
+        '/dashboard': WrapMainLayout(Login),
         '/admin': WrapMainLayout(Admin),
         '/': WrapMainLayout(Dashboard)
     });

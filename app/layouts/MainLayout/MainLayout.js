@@ -12,7 +12,7 @@ const MainLayout = {
 		}
 	},
     view(_ctrl, _attrs, children) {
-        return (
+        return ( 
         	<div>
 	        	<div id="mithril-modal"><Modal /></div>
 	            <div class="MainLayout">
