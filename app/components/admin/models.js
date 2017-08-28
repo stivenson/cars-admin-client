@@ -5,7 +5,9 @@ import Utils from '../utils';
 
 const DELIVERY_TYPE_DOMICILE = 1;
 const STATUS_PENDING = 1;
-export const STATUTES = [{id:1,name:'Pendiente'},{id:2,name:'Confirmado'},{id:3,name:'Cancelado'},{id:4,name:'Entregado'}];
+export const STATUTES = [{id:1,name:'Pendiente'},{id:2,name:'Confirmado'},
+    {id:3,name:'Cancelado'},
+    {id:4,name:'Entregado'}];
 export const DELIVERY_TYPES = [{id:1,name:'Domicilio'},{id:2,name:'En local'}];
 export const TAKE = 16;
 
@@ -35,29 +37,29 @@ export const Product = function(data) {
         image: m.prop(urlImage),
         haveImage: m.prop(mime != ' '),
         selected: m.prop(false)
-    } 
+    }; 
 
-}
+};
 
 Product.list = function () {
     return API.get('products', {type: Product});
-}
+};
 
 Product.listAvailable = () => {
     return API.get('spe/products/available',{type:Product});
-}
+};
 
 Product.get = (id) => {
     return API.get(`products/${id}`,{type:Product});
-}
+};
 
 Product.save = function (data,options) {
     return API.post('products',data,options);
-}
+};
 
 Product.delete = function (id) {
     return API.get(`temporal/delete/products/${id}`);
-}
+};
 
 
 
@@ -85,24 +87,24 @@ export const Client = function(data) {
         password: m.prop(data.password || ''),
         neighborhood: m.prop(data.neighborhood || ''),
         address: m.prop(data.address || '')
-    }
+    };
 
-}
+};
 
 Client.list = function (select) {
     if(select)
         return API.get('clients/order/true', {type: Client});
     else
         return API.get('clients', {type: Client});
-}
+};
 
 Client.save = function (data,options) {
     return API.post('clients',data,options);
-}
+};
 
 Client.delete = function (id) {
     return API.get(`temporal/delete/clients/${id}`);
-}
+};
 
 
 
@@ -111,7 +113,7 @@ Client.delete = function (id) {
 export const Sesion = function() {};
 
 Sesion.logout = function () {
-    localStorage.setItem('sesion',false);
+    localStorage.setItem('public/logout',false);
 };
 
 
