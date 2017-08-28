@@ -5,7 +5,8 @@
   "version": "1.0.0",
   "scripts": {
     "start": "brunch watch --server",
-    "prod": "brunch build --production"
+    "prod": "brunch build --production",
+    "commit": "git-cz"    
   },
   "dependencies": {
     "json-brunch": "^1.5.4",
@@ -22,6 +23,7 @@
     "bootstrap": "^3.3.7",
     "brunch": "^2.4.0",
     "clean-css-brunch": "^2.0.0",
+    "commitizen": "^2.9.6",
     "css-brunch": "^2.0.0",
     "javascript-brunch": "^2.0.0",
     "mithril-validator": "^1.1.0",
