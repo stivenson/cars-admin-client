@@ -12,16 +12,16 @@ export const Admin = {
         
         this.construction = () => {
             Modal.vm.open(Alert, {label: 'En construcción'});
-        }
+        };
 
         this.message = () => {
             Modal.vm.open(Alert, {label: 'Realizando ultimas correcciones'});
-        }
+        };
 
         this.logout = () => {
             Sesion.logout();
             m.route('/login');
-        }
+        };
     },
     view(c,p){
 
@@ -53,9 +53,9 @@ export const Admin = {
                 </div>
             </div>
 
-        )
+        );
     }
-}
+};
 
 export default Admin;
  

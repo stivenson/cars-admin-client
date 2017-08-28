@@ -82,6 +82,11 @@ export const Itemorder = function(data) {
     this.observations = m.prop(data.observations || '');
     this.orders_id = m.prop(data.orders_id || false);
 
+    // special front fields
+    this.numberValue = m.prop(data.numberValue || '');
+    this.name = m.prop(data.name || '');
+    this.value = m.prop(data.value || '');
+    
     this.form = {
         id: m.prop(data.id || ''),
         products_id: m.prop(data.products_id || false),

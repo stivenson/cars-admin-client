@@ -12,7 +12,7 @@ import {
 
 import { ModalHeader } from '../modal/header';
 import Modal from '../../containers/modal/modal';
-import { MProduct } from './models';
+import {MProduct, Itemorder} from './models';
 
 
 const CarModalproduct = {};
@@ -34,20 +34,27 @@ CarModalproduct.vm = function (p) {
                 return;
             }
         }
-    }
-}
+    };
+};
 
 CarModalproduct.controller = function (p) {
     this.vm = CarModalproduct.vm(p);
     this.vm.refreshProduct(p.product.id()).then(p.product).then(()=>m.redraw());
     this.addToCar = (product) => {
-        product.amount = m.prop(this.vm.amount());
-        product.observations = m.prop(this.vm.observations());
-        this.vm.addToCar(product);
+        let params = {}; 
+        params.amount = this.vm.amount();
+        params.name = product.name();
+        params.numberValue = product.numberValue();
+        params.value = product.value();
+        params.observations = this.vm.observations();
+        params.products_id = product.id();
+        params.orders_id = p.order().id();
+        this.vm.addToCar(new Itemorder(params));
+
         Modal.vm.terminate();
         m.redraw(true);
     }; 
-}
+};
 
 CarModalproduct.view = function (c,p) {
     return (
@@ -77,8 +84,7 @@ CarModalproduct.view = function (c,p) {
                 </div>
             </div>
         </div>
-    )
-}
-
+    );
+};
 
 export default CarModalproduct;

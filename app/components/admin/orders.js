@@ -274,15 +274,12 @@ export const Orders = {
         this.total = () => {
             let res = 0;
             for(let io of this.vm.order().items_orders()){
-                // // console.log('XXX'); // console.log(io.products_id());
                 let prArr = this.vm.products().filter( p => p.id() == io.products_id() );
                 let pr = prArr[0];
                 res += (parseFloat(pr.numberValue()) * parseInt(io.amount()));
             }
             return Utils.formatMoney(res);
         };
-
-
     },
     view(c,p){
 

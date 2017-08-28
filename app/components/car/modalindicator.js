@@ -1,45 +1,75 @@
 import m from 'mithril';
 import API from '../api';
 //import Auth from '../../containers/auth/auth';
-
-import {Button} from '../ui';
-
+import {Button, Alert} from '../ui';
 import { ModalHeader } from '../modal/header';
 import Modal from '../../containers/modal/modal';
 import Utils from '../utils';
+import { Order } from './models';
 
 const CarModalIndicator = {};
 
 CarModalIndicator.vm = function (p) {
     return {
+        working: m.prop(false),        
         saving: m.prop(false)
-    }
-}
+    };
+};
 
 CarModalIndicator.controller = function (p) {
     this.vm = CarModalIndicator.vm(p);
-    this.pay = () => {
-        alert('En construcción');
-    }; 
 
-    this.removeOfCar = () => {
-        alert('En construcción');
-    }
+    let endpoint = 'orders';    
+    let options = {
+        serialize: (value) => value,
+        url: API.requestUrl(endpoint)
+    };
+
+    this.save = () => {
+        const currentformData = new FormData();
+        const order = p.order();
+        currentformData.append('created_at', order.created_at());
+        currentformData.append('items_orders', order.jsonItemsOrders());
+        currentformData.append('delivery_type', order.form.delivery_type());
+        currentformData.append('status', order.status());
+        currentformData.append('users_id', order.users_id());    
+        this.vm.working(true);
+        Order.save(currentformData,options)
+            .then(res => {
+                this.vm.working(false);
+                if(res == false){
+                    Modal.vm.open(Alert, {label: 'No se pudo guardar la orden'});
+                }else{  
+                    p.order(new Order());
+                    Modal.vm.open(Alert, {label: 'Orden guardada con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
+                }
+            }).catch(erSave => {
+                this.vm.working(false);
+                console.log("Error: "+erSave);
+                Modal.vm.open(Alert, {label: 'No se pudo guardar la orden, por favor verifique datos faltantes, y/o reales'});
+            });
+    };
+
+    this.removeOfCar = (id) => {
+        let arr = this.vm.order().items_orders();
+        let filterArr = arr.filter(c => c.id() != id);
+        this.vm.order().items_orders(filterArr);
+    };
 
     this.total = () => {
         let res = 0;
-        for(let oa of p.car()){
-            res += (parseFloat(oa.numberValue()) * parseInt(oa.amount()))
+        for(let io of this.vm.order().items_orders()){
+            res += (parseFloat(io.numberValue()) * parseInt(io.amount()));
         }
         return Utils.formatMoney(res);
-    }
-}
+    };
+};
 
 CarModalIndicator.view = function (c,p) {
 
     let contentCar;
 
-    if(p.car().length < 1){
+    if(p.order().items_orders().length < 1){
         contentCar = (
             <div class="pt-card pt-elevation-3">
                 <p align="center">
@@ -57,17 +87,16 @@ CarModalIndicator.view = function (c,p) {
                         <th>Precio (COP)</th>
                         <th>Acciones</th>
                     </tr>
-                {p.car().map((proSelected) => {
-                    return (
-                        <tr>
-                            <td>{proSelected.name()}</td>
-                            <td>{proSelected.amount()}</td>
-                            <td>{proSelected.value()}</td>
-                            <td><a onclick={c.removeOfCar.bind(c)}><span class="pt-icon-standard pt-icon-cross"></span> quitar</a></td>
-                        </tr> 
-                    )
-                })}
-
+                    {p.order().items_orders().map((proSelected) => {
+                        return (
+                            <tr>
+                                <td>{proSelected.name()}</td>
+                                <td>{proSelected.amount()}</td>
+                                <td>{proSelected.value()}</td>
+                                <td><a onclick={c.removeOfCar.bind(c,proSelected.id())}><span class="pt-icon-standard pt-icon-cross"></span> quitar</a></td>
+                            </tr>
+                        );
+                    })}
                     <tr>
                         <td colspan="3" class="align-total">Total</td>
                         <td><b>{c.total()}</b></td>
@@ -75,7 +104,7 @@ CarModalIndicator.view = function (c,p) {
 
                 </table>
             </div>
-        )
+        );
     }
 
     return (
@@ -88,13 +117,13 @@ CarModalIndicator.view = function (c,p) {
                     <div>
                         {contentCar}
                         <br/>
-                        <Button onclick={c.pay.bind(c)}><span class="pt-icon-standard pt-icon-shopping-cart"></span> Pagar </Button>
+                        <Button onclick={c.save.bind(c)}><span class="pt-icon-standard pt-icon-shopping-cart"></span> Pagar </Button>
                     </div>
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
 
 export default CarModalIndicator;

@@ -23,8 +23,8 @@ CarModalLogin.vm = function (p) {
         password: m.prop(''),
         register: m.prop(false),
         client: m.prop(new Client())
-    }
-}
+    };
+};
 
 CarModalLogin.controller = function (p) {
     
@@ -32,7 +32,7 @@ CarModalLogin.controller = function (p) {
 
     this.construction = () => {
         Modal.vm.open(Alert, {label: 'En construcción'});
-    }
+    };
 
     this.login = () => {
 
@@ -55,7 +55,7 @@ CarModalLogin.controller = function (p) {
             return;
         }
         this.login();
-    }
+    };
     
     this.submitRegister = (e) => {
         if (e) 
@@ -64,17 +64,16 @@ CarModalLogin.controller = function (p) {
             return;
         this.vm.register(false);
         this.construction();
-    }
+    };
 
 
     this.openFormRegister = () => {
         this.vm.register(!this.vm.register());
-    }
+    };
 
-}
+};
 
 CarModalLogin.view = function (c,p) {
-
 
     let registerForm;
 
@@ -260,8 +259,7 @@ CarModalLogin.view = function (c,p) {
                 </div>
             </div>
         </div>
-    )
-}
-
+    );
+};
 
 export default CarModalLogin;
