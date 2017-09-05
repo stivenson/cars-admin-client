@@ -34,8 +34,8 @@ AdminModalproduct.vm = function (p) {
                 return;
             }
         }
-    }
-}
+    };
+};
 
 AdminModalproduct.controller = function (p) {
     this.vm = AdminModalproduct.vm(p);
@@ -51,7 +51,7 @@ AdminModalproduct.controller = function (p) {
         m.redraw(true);
     };
 
-}
+};
 
 AdminModalproduct.view = function (c,p) {
     return (
