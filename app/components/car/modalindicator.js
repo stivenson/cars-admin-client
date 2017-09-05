@@ -117,7 +117,7 @@ CarModalIndicator.view = function (c,p) {
                     <div>
                         {contentCar}
                         <br/>
-                        <Button onclick={c.save.bind(c)}><span class="pt-icon-standard pt-icon-shopping-cart"></span> Pagar </Button>
+                        <Button onclick={c.save.bind(c)}><span class="pt-icon-standard pt-icon-shopping-cart"></span> Hacer pedido </Button>
                     </div>
                 </div>
             </div>
