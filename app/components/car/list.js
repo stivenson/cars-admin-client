@@ -38,7 +38,7 @@ export const CarList = {
         this.amounproducts = () => {
                 
                 if(this.vm.products() != 'empty')
-                    return this.vm.order().length;   
+                    return this.vm.order().items_orders().length;   
                 else
                     return 0;
         };

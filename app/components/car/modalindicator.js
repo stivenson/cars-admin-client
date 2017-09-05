@@ -51,14 +51,14 @@ CarModalIndicator.controller = function (p) {
     };
 
     this.removeOfCar = (id) => {
-        let arr = this.vm.order().items_orders();
+        let arr = p.order().items_orders();
         let filterArr = arr.filter(c => c.id() != id);
-        this.vm.order().items_orders(filterArr);
+        p.order().items_orders(filterArr);
     };
 
     this.total = () => {
         let res = 0;
-        for(let io of this.vm.order().items_orders()){
+        for(let io of p.order().items_orders()){
             res += (parseFloat(io.numberValue()) * parseInt(io.amount()));
         }
         return Utils.formatMoney(res);

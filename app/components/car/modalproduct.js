@@ -26,7 +26,7 @@ CarModalproduct.vm = function (p) {
             return MProduct.get(id);
         },
         addToCar: (product) => {
-            p.car().push(product);
+            p.order().items_orders().push(product);
         },
         submit(event) {
             if (event) { event.preventDefault(); }

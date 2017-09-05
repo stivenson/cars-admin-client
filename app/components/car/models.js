@@ -2,6 +2,14 @@ import m from 'mithril';
 import API from '../api';
 import Utils from '../utils';
 
+const DELIVERY_TYPE_DOMICILE = 1;
+const STATUS_PENDING = 1;
+export const STATUTES = [{id:1,name:'Pendiente'},{id:2,name:'Confirmado'},
+    {id:3,name:'Cancelado'},
+    {id:4,name:'Entregado'}];
+export const DELIVERY_TYPES = [{id:1,name:'Domicilio'},{id:2,name:'En local'}];
+export const TAKE = 16;
+
 export const MProduct = function(data) {
     data = data || {};
     this.id = m.prop(data.id || false);
@@ -68,7 +76,7 @@ Sesion.login = function () {
 };
 
 Sesion.logout = function () {
-    localStorage.setItem('public/logout',false);
+    return API.get('public/logout'); 
 };
 
 
