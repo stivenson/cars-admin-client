@@ -9,13 +9,14 @@ export const LoginCar = {
     controller(p){
         this.vm = LoginCar.vm(p);
         this.openloginCar = () => {
-            return Modal.vm.open(CarModalLogin, {className: 'mmodal-small'});
-        }
+            p.hasOrder(false);
+            return Modal.vm.open(CarModalLogin, {className: 'mmodal-small',hasOrder:p.hasOrder, sendOrder:p.sendOrder});
+        };
     },
     view(c,p){
         return <span class="Login" ><a onclick={c.openloginCar.bind(c)}><span class="pt-tag pt-intent-warning"> <span class="pt-icon-standard pt-icon-log-in custom-icon"> </span><span class="sepcolor">_</span>Iniciar<span class="sepcolor">_</span>Sesión</span> </a></span>;
     }
-}
+};
 
 
 export default LoginCar;

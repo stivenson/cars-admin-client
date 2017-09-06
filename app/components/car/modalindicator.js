@@ -5,7 +5,7 @@ import {Button, Alert} from '../ui';
 import { ModalHeader } from '../modal/header';
 import Modal from '../../containers/modal/modal';
 import Utils from '../utils';
-import { Order } from './models';
+import CarModalLogin from './modallogin';
 
 const CarModalIndicator = {};
 
@@ -20,34 +20,19 @@ CarModalIndicator.controller = function (p) {
     this.vm = CarModalIndicator.vm(p);
 
     let endpoint = 'orders';    
-    let options = {
-        serialize: (value) => value,
-        url: API.requestUrl(endpoint)
+
+    this.openloginCar = () => {
+        return Modal.vm.open(CarModalLogin, {className: 'mmodal-small', hasOrder:p.hasOrder, sendOrder:p.sendOrder});
     };
 
-    this.save = () => {
-        const currentformData = new FormData();
-        const order = p.order();
-        currentformData.append('created_at', order.created_at());
-        currentformData.append('items_orders', order.jsonItemsOrders());
-        currentformData.append('delivery_type', order.form.delivery_type());
-        currentformData.append('status', order.status());
-        currentformData.append('users_id', order.users_id());    
+    this.save = () => {  
         this.vm.working(true);
-        Order.save(currentformData,options)
-            .then(res => {
-                this.vm.working(false);
-                if(res == false){
-                    Modal.vm.open(Alert, {label: 'No se pudo guardar la orden'});
-                }else{  
-                    p.order(new Order());
-                    Modal.vm.open(Alert, {label: 'Orden guardada con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
-                }
-            }).catch(erSave => {
-                this.vm.working(false);
-                console.log("Error: "+erSave);
-                Modal.vm.open(Alert, {label: 'No se pudo guardar la orden, por favor verifique datos faltantes, y/o reales'});
-            });
+        if(localStorage.getItem('token') !== false && localStorage.getItem('token') !== 'false'){
+            p.hasOrder(true);
+            this.openloginCar();
+        }else{
+            p.sendOrder();            
+        }
     };
 
     this.removeOfCar = (id) => {

@@ -4,8 +4,10 @@ const MainLayout = {
 	controller(){
 		this.logout = () => {
 			localStorage.setItem('user',false);
+			localStorage.setItem('data_user', false);
+			localStorage.setItem('token', false);
 			m.route('/');
-		}
+		};
 
 		this.existUser = () => {
 			return localStorage.getItem('user') != 'false';

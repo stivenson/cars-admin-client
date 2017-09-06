@@ -9,7 +9,7 @@ export const IndicatorCar = {
     controller(p){
         this.vm = IndicatorCar.vm(p);
         this.openindicatorCar = () => {
-            return Modal.vm.open(CarModalIndicator,{amounproducts:p.amounproducts,order:p.order});
+            return Modal.vm.open(CarModalIndicator,{hasOrder:p.hasOrder, sendOrder:p.sendOrder, amounproducts:p.amounproducts, order:p.order, openloginCar:p.openloginCar});
         };
     },
     view(c,p){

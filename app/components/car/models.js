@@ -49,7 +49,7 @@ export const Client = function(data) {
     this.address = m.prop(data.address || '');
 
     this.form = {
-        id: m.prop(data.id || ''),
+        id: m.prop(data.id || false),
         name: m.prop(data.name || ''),
         cc: m.prop(data.cc || ''),
         roles_id: m.prop(data.roles_id || 2), // clients rol for default
@@ -62,7 +62,7 @@ export const Client = function(data) {
     };
 };
 
-Client.save = function (data,options) {
+Client.save = function (data, options = {}) {
     return API.post('public/clients',data,options);
 };
 
@@ -71,12 +71,27 @@ Client.save = function (data,options) {
 
 export const Sesion = function() {};
 
-Sesion.login = function () {
-    return API.post('public/login',data,options);    
+Sesion.login = function (data) {
+    return API.post('public/login',data);    
+};
+
+const clearLocalStorage = () => {
+    localStorage.setItem('user', false);
+    localStorage.setItem('data_user', false);
+    localStorage.setItem('token', false);
+};
+
+export const fillLocalStorage = (r) => {
+    localStorage.setItem('data_user', r.user);
+    localStorage.setItem('token', r.token);
 };
 
 Sesion.logout = function () {
-    return API.get('public/logout'); 
+    API.get('public/logout').then(r => {
+        clearLocalStorage();
+    }).catch(r => {
+        clearLocalStorage();
+    });
 };
 
 
@@ -114,12 +129,17 @@ export const Itemorder = function(data) {
     };
 };
 
+const dataUser = () => {
+    const dataUser = JSON.parse(localStorage.getItem('data_user'));
+    return dataUser ? dataUser.id : false;
+};
+
 export const Order = function(data) {
     data = data || {};
     this.id = m.prop(data.id || false);
     this.delivery_type = m.prop(data.delivery_type || DELIVERY_TYPE_DOMICILE);
     this.status = m.prop(data.status || STATUS_PENDING);
-    this.users_id = m.prop(data.users_id || localStorage.getItem('users_id'));
+    this.users_id = m.prop(data.users_id || dataUser());
     this.created_at = m.prop(data.created_at || '--');
     this.items_orders = m.prop([]);
 
@@ -128,7 +148,7 @@ export const Order = function(data) {
         id: m.prop(data.id || ''),
         status: m.prop(data.status || STATUS_PENDING),
         delivery_type: m.prop(data.delivery_type || DELIVERY_TYPE_DOMICILE),
-        users_id: m.prop(data.users_id || localStorage.getItem('users_id')),
+        users_id: m.prop(data.users_id || dataUser()),
         created_at: m.prop(data.created_at || '--'),
         items_orders: this.items_orders 
     };

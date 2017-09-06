@@ -113,7 +113,11 @@ Client.delete = function (id) {
 export const Sesion = function() {};
 
 Sesion.logout = function () {
-    localStorage.setItem('public/logout',false);
+    API.get('public/logout').then(r => {
+        clearLocalStorage();
+    }).catch(r => {
+        clearLocalStorage();
+    });
 };
 
 

@@ -1,7 +1,7 @@
 import m from 'mithril';
 import API from '../api';
 import Utils from '../utils';
-import { Client } from './models';
+import { Client, Sesion } from './models';
 
 import {
     InputAutoComplete,
@@ -12,7 +12,6 @@ import {
 import { ModalHeader } from '../modal/header';
 import Modal from '../../containers/modal/modal';
 import {Alert} from '../ui';
-
 
 const CarModalLogin = {};
 
@@ -41,10 +40,19 @@ CarModalLogin.controller = function (p) {
         credentials.email = this.vm.email();
         credentials.password = this.vm.password();
         
-        // Modal.vm.terminate();
-        this.vm.saving(false);
-        this.construction();
-        // m.redraw(true);
+        Modal.vm.terminate();
+
+        Sesion.login(credentials).then(r => {
+            Modal.vm.open(Alert, {label: 'Inicio de sesión exitoso'}); 
+            Sesion.fillLocalStorage(r);
+            this.vm.saving(false);
+            if(p.hasOrder())
+                p.sendOrder();
+            m.redraw();
+        }).then(r => {
+            Modal.vm.open(Alert, {label: 'Datos incorrectos, porfavor verifique sus credenciales y vuelva a intentarlo'}); 
+            this.vm.saving(false);            
+        });
 
     };
 
@@ -63,7 +71,31 @@ CarModalLogin.controller = function (p) {
         if (this.vm.saving())
             return;
         this.vm.register(false);
-        this.construction();
+
+        const formClient = this.vm.client().form;
+
+        const objformClient = {
+            id: formClient.id(),
+            name: formClient.name(),
+            cc: formClient.cc(),
+            roles_id: formClient.roles_id(),
+            telephone: formClient.telephone(),
+            cell_phone: formClient.cell_phone(),
+            neighborhood: formClient.neighborhood(),
+            address: formClient.address(),
+            email: formClient.email(),
+            password: formClient.password()
+        };
+        this.vm.saving(true);
+        Client.save(objformClient).then( r => {
+            Modal.vm.open(Alert, {label: 'Registro exitoso, ahora porfavor, inicie sesión'});  
+            this.vm.saving(false); 
+            this.vm.register(false); 
+            m.redraw();         
+        }).then( r => {
+            Modal.vm.open(Alert, {label: 'Huvo un error mientras se realizaba el registro, porfavor vuelva a intentarlo'});
+            this.vm.saving(false);                     
+        });
     };
 
 

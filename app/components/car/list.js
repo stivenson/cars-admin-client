@@ -1,6 +1,6 @@
 import m from 'mithril';
 import API from '../../components/api';
-import {Spinner, Button} from '../../components/ui';
+import {Spinner, Button, Alert} from '../../components/ui';
 import {MProduct, Order, Itemorder} from './models';
 import Modal from '../../containers/modal/modal';
 import CarModalproduct from './modalproduct';
@@ -14,6 +14,7 @@ export const CarList = {
             products: m.prop('empty'),
             working: m.prop(false),
             order: m.prop(new Order()),
+            hasOrder: m.prop(false),
             fetchProducts: () => {
                 return MProduct.listAvailable();
             },
@@ -35,6 +36,11 @@ export const CarList = {
             this.vm.openProduct(product,this.vm.order.bind(this.vm));
         };
 
+        let options = {
+            serialize: (value) => value,
+            url: API.requestUrl(endpoint)
+        };
+
         this.amounproducts = () => {
                 
                 if(this.vm.products() != 'empty')
@@ -43,14 +49,38 @@ export const CarList = {
                     return 0;
         };
 
+        this.sendOrder = () => {
+            const currentformData = new FormData();
+            const order = this.vm.order();
+            currentformData.append('created_at', order.created_at());
+            currentformData.append('items_orders', order.jsonItemsOrders());
+            currentformData.append('delivery_type', order.form.delivery_type());
+            currentformData.append('status', order.status());
+            currentformData.append('users_id', order.users_id());  
+            Order.save(currentformData, options)
+            .then(res => {
+                this.vm.working(false);
+                if(res == false){
+                    Modal.vm.open(Alert, {label: 'No se pudo guardar la orden, porfavor vuelta a intentarlo'});
+                } else {  
+                    p.order(new Order());
+                    this.vm.hasOrder(false);
+                    Modal.vm.open(Alert, {label: 'Orden guardada con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
+                }
+            }).catch(erSave => {
+                this.vm.working(false);
+                console.log("Error: "+erSave);
+                Modal.vm.open(Alert, {label: 'No se pudo guardar la orden, por favor verifique datos faltantes, y/o reales'});
+            });
+        };
     },
     view(c,p){
 
-        let indicator = <div class="align-indicator-car"><IndicatorCar order={c.vm.order.bind(c.vm)} amounproducts={c.amounproducts.bind(c)} /></div>;
+        let indicator = <div class="align-indicator-car"><IndicatorCar openloginCar={c.openloginCar.bind(c)} hasOrder={c.vm.hasOrder.bind(c.vm)} sendOrder={c.sendOrder.bind(c)} order={c.vm.order.bind(c.vm)} amounproducts={c.amounproducts.bind(c)} /></div>;
 
         let coverage = <div class="align-coverage-car"><CoverageCar /></div>;
 
-        let login = <div class="align-login-car"><LoginCar /></div>;
+        let login = <div class="align-login-car"><LoginCar hasOrder={c.vm.hasOrder.bind(c.vm)} sendOrder={c.sendOrder.bind(c)} /></div>;
 
         let list = <div class="custom-spinner text-center"><Spinner Large /></div>;
  
