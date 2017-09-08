@@ -112,14 +112,24 @@ Client.delete = function (id) {
 
 export const Sesion = function() {};
 
+const clearLocalStorage = () => {
+    localStorage.setItem('user', false);
+    localStorage.setItem('data_user', false);
+    localStorage.setItem('token', false);
+};
+
 Sesion.logout = function () {
     API.get('public/logout').then(r => {
         clearLocalStorage();
     }).catch(r => {
         clearLocalStorage();
     });
+    m.route('/login');
 };
 
+Sesion.notHaveSession = function () {
+    return localStorage.getItem('user') === 'false' || localStorage.getItem('user') === false;
+};
 
 
 /* ORDERS */

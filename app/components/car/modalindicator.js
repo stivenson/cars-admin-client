@@ -19,8 +19,6 @@ CarModalIndicator.vm = function (p) {
 CarModalIndicator.controller = function (p) {
     this.vm = CarModalIndicator.vm(p);
 
-    let endpoint = 'orders';    
-
     this.openloginCar = () => {
         return Modal.vm.open(CarModalLogin, {className: 'mmodal-small', hasOrder:p.hasOrder, sendOrder:p.sendOrder});
     };

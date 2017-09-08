@@ -36,6 +36,8 @@ export const CarList = {
             this.vm.openProduct(product,this.vm.order.bind(this.vm));
         };
 
+        let endpoint = 'orders';        
+
         let options = {
             serialize: (value) => value,
             url: API.requestUrl(endpoint)
@@ -76,7 +78,7 @@ export const CarList = {
     },
     view(c,p){
 
-        let indicator = <div class="align-indicator-car"><IndicatorCar openloginCar={c.openloginCar.bind(c)} hasOrder={c.vm.hasOrder.bind(c.vm)} sendOrder={c.sendOrder.bind(c)} order={c.vm.order.bind(c.vm)} amounproducts={c.amounproducts.bind(c)} /></div>;
+        let indicator = <div class="align-indicator-car"><IndicatorCar hasOrder={c.vm.hasOrder.bind(c.vm)} sendOrder={c.sendOrder.bind(c)} order={c.vm.order.bind(c.vm)} amounproducts={c.amounproducts.bind(c)} /></div>;
 
         let coverage = <div class="align-coverage-car"><CoverageCar /></div>;
 

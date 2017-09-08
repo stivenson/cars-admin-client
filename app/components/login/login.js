@@ -1,5 +1,5 @@
 import m from 'mithril';
-import { Client } from './models';
+import { Client, Sesion } from './models';
 import API from '../api';
 import Modal from '../../containers/modal/modal';
 import {Button, Alert} from '../../components/ui';
@@ -10,7 +10,7 @@ export const AdminLogin = {
             working: m.prop(false),
             email: m.prop(''),
             password: m.prop('')
-        } 
+        }; 
     },
     controller(p){
 
@@ -24,21 +24,26 @@ export const AdminLogin = {
 
             this.vm.working(true);
 
-            Client.login({email:this.vm.email(), password:this.vm.password()})
-                .then(r => {
-                    this.vm.working(false);
-                    if(r === true){
-                        m.route('/admin');
-                        // window.location.reload();
-                    } else {
-                        Modal.vm.open(Alert, { label: 'Credenciales incorrectas. Porfavor verifique y vuelva a intentarlo' });
-                    }
-                });
-
-        }
+            Sesion.login({email:this.vm.email(), password:this.vm.password()})
+            .then(r => {
+                this.vm.working(false);
+                if('user' in r && 'token' in r){
+                    Sesion.fillLocalStorage(r);
+                    m.route('/admin');
+                } else if(r === 'invalid_credentials') {
+                    Modal.vm.open(Alert, { label: 'Credenciales incorrectas. Porfavor verifique y vuelva a intentarlo' });
+                } else {
+                    Modal.vm.open(Alert, { label: 'Ha ocurrido un error, por favor, vuelta a intentarlo (verifique su internet)' });                        
+                }
+            });
+        };
 
     },
     view(c,p){
+
+        if(Sesion.haveSession()){
+            m.route('/admin');
+        }
 
         let content = (
             <div class="admin-login">
@@ -83,12 +88,12 @@ export const AdminLogin = {
                     </div>
                 </div>
             </div>
-        )
+        );
 
         return content;
 
     }
-}
+};
 
 
 export default AdminLogin;

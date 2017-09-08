@@ -75,13 +75,17 @@ Sesion.login = function (data) {
     return API.post('public/login',data);    
 };
 
+Sesion.check = function (data) {
+    return API.get('public/check');    
+};
+
 const clearLocalStorage = () => {
     localStorage.setItem('user', false);
     localStorage.setItem('data_user', false);
     localStorage.setItem('token', false);
 };
 
-export const fillLocalStorage = (r) => {
+Sesion.fillLocalStorage = function (r) {
     localStorage.setItem('data_user', r.user);
     localStorage.setItem('token', r.token);
 };
@@ -92,6 +96,7 @@ Sesion.logout = function () {
     }).catch(r => {
         clearLocalStorage();
     });
+    m.route('/login');
 };
 
 

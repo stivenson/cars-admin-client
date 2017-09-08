@@ -20,14 +20,11 @@ export const Admin = {
 
         this.logout = () => {
             Sesion.logout();
-            m.route('/login');
         };
     },
     view(c,p){
 
-        console.log(localStorage.getItem('sesion'));
-
-        if(localStorage.getItem('sesion') === 'false'){
+        if(Sesion.notHaveSession()){
             m.route('/login');
         }
         

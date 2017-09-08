@@ -8,6 +8,6 @@ export const Dashboard = {
     view(c,p){
         return <CarList />;
     }
-}
+};
 
 export default Dashboard;
