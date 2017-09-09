@@ -70,7 +70,6 @@ CarModalLogin.controller = function (p) {
             e.preventDefault();
         if (this.vm.saving())
             return;
-        this.vm.register(false);
 
         const formClient = this.vm.client().form;
 
@@ -223,7 +222,7 @@ CarModalLogin.view = function (c,p) {
                         </label>
 
                         <div class="text-center"> 
-                            <Button type="submit">
+                            <Button loading={c.vm.saving()} type="submit">
                                 <span class="pt-icon-standard pt-icon-user"></span> Enviar registro 
                             </Button>
                         </div>
