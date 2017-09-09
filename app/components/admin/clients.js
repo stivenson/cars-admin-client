@@ -130,7 +130,6 @@ export const Clients = {
                     }   
                 }).catch(erSave => {
                     this.vm.working(false);
-                    console.log("Error: "+erSave);
                     Modal.vm.open(Alert, {label: 'No se pudo actualizar el cliente, por favor verifique datos faltantes, y/o reales'});
                 });
 
@@ -151,7 +150,6 @@ export const Clients = {
                     }
                 }).catch(erSave => {
                     this.vm.working(false);
-                    console.log("Error: "+erSave);
                     Modal.vm.open(Alert, {label: 'No se pudo guardar el cliente, por favor verifique datos faltantes, y/o reales'});
                 });
 

@@ -175,7 +175,6 @@ export const Order = function(data) {
     this.id = m.prop(data.id || false);
     this.delivery_type = m.prop(data.delivery_type || DELIVERY_TYPE_DOMICILE);
     this.status = m.prop(data.status || STATUS_PENDING);
-    // console.log(localStorage.getItem('users_id'));
     this.users_id = m.prop(data.users_id || localStorage.getItem('users_id'));
     this.created_at = m.prop(data.created_at || '--');
     this.items_orders = m.prop([]);
@@ -194,7 +193,6 @@ export const Order = function(data) {
         let res = [];
         let arr = this.items_orders();
         for (let item of arr) {
-            // // console.log(item);
             res.push(item.json());
         }
         return JSON.stringify(res);
@@ -245,8 +243,6 @@ Order.list = function (take = 16, skip = 0) {
 };
 
 Order.save = function (data,options) {
-    // console.log('Save order and items');
-    // console.log(data);
     return API.post('orders',data,options);
 };
 

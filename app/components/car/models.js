@@ -96,7 +96,7 @@ Sesion.logout = function () {
     }).catch(r => {
         clearLocalStorage();
     });
-    m.route('/login');
+    m.route('/');
 };
 
 
@@ -135,8 +135,12 @@ export const Itemorder = function(data) {
 };
 
 const dataUser = () => {
-    const dataUser = JSON.parse(localStorage.getItem('data_user'));
-    return dataUser ? dataUser.id : false;
+    let dataUser = {id: false};
+    try {
+        dataUser = JSON.parse(localStorage.getItem('data_user')); 
+    } catch (error) {}
+    
+    return dataUser.id;
 };
 
 export const Order = function(data) {

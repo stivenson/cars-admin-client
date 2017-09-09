@@ -71,7 +71,6 @@ export const CarList = {
                 }
             }).catch(erSave => {
                 this.vm.working(false);
-                console.log("Error: "+erSave);
                 Modal.vm.open(Alert, {label: 'No se pudo guardar la orden, por favor verifique datos faltantes, y/o reales'});
             });
         };

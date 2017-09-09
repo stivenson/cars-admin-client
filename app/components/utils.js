@@ -8,7 +8,6 @@ export const Utils = {
     },
     // return if element is visible or not
     isHidden(el) {
-        console.log(el);
         let res = 'none';
         if(el != false){
             let style = window.getComputedStyle(el,null);

@@ -203,7 +203,6 @@ export const Orders = {
         this.save = (event, indexChangeStatus = false) => {
             if (event) { event.preventDefault(); }
             if (this.vm.working()) return;
-            console.log(this.vm.order().jsonItemsOrders());
             if (this.vm.order().jsonItemsOrders() == '[]') {
                 Modal.vm.open(Alert, {label: 'Debe seleccionar al menos un producto'});
                 return;
@@ -242,7 +241,6 @@ export const Orders = {
                     }   
                 }).catch(erSave => {
                     this.vm.working(false);
-                    console.log("Error: "+erSave);
                     Modal.vm.open(Alert, {label: 'No se pudo actualizar la orden, por favor verifique datos faltantes, y/o reales'});
                 });
 
@@ -263,7 +261,6 @@ export const Orders = {
                     }
                 }).catch(erSave => {
                     this.vm.working(false);
-                    console.log("Error: "+erSave);
                     Modal.vm.open(Alert, {label: 'No se pudo guardar la orden, por favor verifique datos faltantes, y/o reales'});
                 });
 

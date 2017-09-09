@@ -7,10 +7,13 @@ import {Spinner} from '../../components/ui';
 
 export const LoginCar = {
     controller(p) {
+        this.refresh = () => {
+            this.check();
+        };
         this.hasSesion = m.prop('waiting'); 
         this.openloginCar = () => {
             p.hasOrder(false);
-            return Modal.vm.open(CarModalLogin, {className: 'mmodal-small', hasOrder:p.hasOrder, sendOrder:p.sendOrder});
+            return Modal.vm.open(CarModalLogin, {refresh:this.refresh.bind(this), className: 'mmodal-small', hasOrder:p.hasOrder, sendOrder:p.sendOrder});
         };
         this.logout = () => {
             Sesion.logout();

@@ -48,7 +48,7 @@ CarModalLogin.controller = function (p) {
             this.vm.saving(false);
             if(p.hasOrder())
                 p.sendOrder();
-            m.redraw();
+            p.refresh();
         }).then(r => {
             Modal.vm.open(Alert, {label: 'Datos incorrectos, porfavor verifique sus credenciales y vuelva a intentarlo'}); 
             this.vm.saving(false);            
