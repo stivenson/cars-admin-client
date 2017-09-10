@@ -6,7 +6,7 @@ import { ModalHeader } from '../modal/header';
 import Modal from '../../containers/modal/modal';
 import Utils from '../utils';
 import CarModalLogin from './modallogin';
-import { Sesion } from './models';
+import {Sesion, Order} from './models';
 
 const CarModalIndicator = {};
 
@@ -38,6 +38,13 @@ CarModalIndicator.controller = function (p) {
         }else{
             p.sendOrder();            
         }
+    };
+
+    this.cancel = () => {
+        p.order(new Order());
+        p.hasOrder(false);
+        Modal.vm.close();
+        Modal.vm.open(Alert, {label: 'Orden Cancelada con éxito', icon: 'pt-icon-endorsed', mood: 'success'});
     };
 
     this.removeOfCar = (id) => {
@@ -107,7 +114,12 @@ CarModalIndicator.view = function (c,p) {
                     <div>
                         {contentCar}
                         <br/>
+                        <div class="pt-button-group"> 
                         <Button onclick={c.save.bind(c)}><span class="pt-icon-standard pt-icon-shopping-cart"></span> Hacer pedido </Button>
+                        <Button type="button" intent="default" onclick={c.cancel.bind(c)}>
+                            <span class="pt-icon-standard pt-icon-ban-circle"></span> Cancelar pedido
+                        </Button>
+                        </div>
                     </div>
                 </div>
             </div>
