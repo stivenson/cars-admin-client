@@ -15,8 +15,8 @@ export const CarList = {
             working: m.prop(false),
             order: m.prop(new Order()),
             hasOrder: m.prop(false),
-            fetchProducts: () => {
-                return MProduct.listAvailable();
+            fetchProducts: (skip = 0) => {
+                return MProduct.listAvailablePaginate(skip);
             },
             openProduct(product,refOrder){
                 return Modal.vm.open(CarModalproduct, {order:refOrder,
@@ -29,8 +29,23 @@ export const CarList = {
     controller(p){
         this.vm = CarList.vm(p);
         this.vm.working(true);
-        this.vm.fetchProducts().then(this.vm.products)
-            .then(()=>this.vm.working(false)).then(()=>m.redraw());
+        let skip = 0;
+
+        this.getProducts = () => {
+            this.vm.fetchProducts(skip).then( r => {
+                console.log('list of products');
+                console.log(r);
+
+                if(skip > 0)
+                    this.vm.products(this.vm.products().concat(r));
+                else
+                    this.vm.products(r);
+
+                skip += r.length;
+            }).then(()=>this.vm.working(false)).then(()=>m.redraw());
+        };
+
+        this.getProducts();
     
         this.openProductWithCar = (product) => {
             this.vm.openProduct(product,this.vm.order.bind(this.vm));
@@ -50,6 +65,18 @@ export const CarList = {
                 else
                     return 0;
         };
+
+        this.scrollBottomEvent = () => {
+            window.onscroll = null;
+            window.onscroll = function(ev) {
+                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+                    console.log('onscroll event');
+                    this.getProducts();
+                }
+            }.bind(this);
+        };
+
+        this.scrollBottomEvent();
 
         this.sendOrder = () => {
             const currentformData = new FormData();

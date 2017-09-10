@@ -30,6 +30,10 @@ MProduct.listAvailable = () => {
     return API.get('spe/products/available',{type:MProduct});
 };
 
+MProduct.listAvailablePaginate = (skip = 0, take = 24) => {
+    return API.get(`spe/products/available/pagination_products/${skip}/${take}`, {type: MProduct});
+};
+
 MProduct.get = (id) => {
 	return API.get(`public/products/${id}`,{type:MProduct});
 };
