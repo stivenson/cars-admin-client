@@ -3,7 +3,6 @@ import {Config} from '../config';
 
 const API = {
     config(xhr) {
-        xhr.setRequestHeader('Content-Type', 'application/json');
     },
     configAuth(xhr, token) {
         xhr.setRequestHeader('Authorization', 'Bearer ' + token);

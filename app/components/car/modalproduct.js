@@ -71,7 +71,7 @@ CarModalproduct.view = function (c,p) {
                     <h4 class="price-product">{p.product.value()}</h4>
                     <p align="justify">{p.product.description()}</p>
                     <div>
-                        Pedir <input type="number" value={c.vm.amount()} oninput={m.withAttr('value', c.vm.amount)} class="pt-input amount-input"/>
+                        Pedir <input type="number" min="1" value={c.vm.amount()} oninput={m.withAttr('value', c.vm.amount)} class="pt-input amount-input"/>
                         <br/>
                         <textarea
                         style="min-height:70px; color: #000000;" 

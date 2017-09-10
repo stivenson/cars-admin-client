@@ -43,15 +43,19 @@ CarModalLogin.controller = function (p) {
         Modal.vm.terminate();
 
         Sesion.login(credentials).then(r => {
-            Modal.vm.open(Alert, {label: 'Inicio de sesión exitoso'}); 
+            Modal.vm.open(Alert, {label: 'Inicio de sesión exitoso', icon: 'pt-icon-endorsed', mood: 'success'}); 
             Sesion.fillLocalStorage(r);
             this.vm.saving(false);
             if(p.hasOrder())
                 p.sendOrder();
             p.refresh();
-        }).then(r => {
-            Modal.vm.open(Alert, {label: 'Datos incorrectos, porfavor verifique sus credenciales y vuelva a intentarlo'}); 
-            this.vm.saving(false);            
+        }).catch(r => {
+            this.vm.saving(false);
+            if(r === 'invalid_credentials') {
+                Modal.vm.open(Alert, { label: 'Credenciales incorrectas. Porfavor verifique y vuelva a intentarlo' });
+            } else {
+                Modal.vm.open(Alert, { label: 'Ha ocurrido un error, por favor, vuelta a intentarlo (verifique su internet)' });                        
+            }
         });
 
     };
@@ -87,7 +91,7 @@ CarModalLogin.controller = function (p) {
         };
         this.vm.saving(true);
         Client.save(objformClient).then( r => {
-            Modal.vm.open(Alert, {label: 'Registro exitoso, ahora porfavor, inicie sesión'});  
+            Modal.vm.open(Alert, {label: 'Registro exitoso, ahora porfavor, inicie sesión', icon: 'pt-icon-endorsed', mood: 'success'});  
             this.vm.saving(false); 
             this.vm.register(false); 
             m.redraw();         
@@ -233,6 +237,12 @@ CarModalLogin.view = function (c,p) {
         );        
     }
 
+    let optionalMessage = '';
+
+    if('specialMessage' in p)
+        optionalMessage = <div><div class="pt-card pt-elevation-3 optional-message">{p.specialMessage}</div><br/><br/></div>;
+
+
 
     return (
         <div class="mmodal-body login-modal">
@@ -242,7 +252,7 @@ CarModalLogin.view = function (c,p) {
             <div class="thumbnail thumbnail-click">
                 <div class="caption text-center">
                     <form onsubmit={c.submit.bind(c)}>
-
+                        {optionalMessage}
                         <label class="pt-label">
                             Correo electrónico
                             <input

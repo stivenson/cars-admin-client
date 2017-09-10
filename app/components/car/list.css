@@ -11,6 +11,12 @@
 		color: #FFFFFF;
 	}
 
+	& .name-user {
+		text-align: right;
+		color: white;
+		padding-bottom: 3px;
+	}
+
 }
 
 .cont-image-product {

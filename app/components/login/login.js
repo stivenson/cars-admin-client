@@ -27,10 +27,12 @@ export const AdminLogin = {
             Sesion.login({email:this.vm.email(), password:this.vm.password()})
             .then(r => {
                 this.vm.working(false);
-                if('user' in r && 'token' in r){
-                    Sesion.fillLocalStorage(r);
-                    m.route('/admin');
-                } else if(r === 'invalid_credentials') {
+                Sesion.fillLocalStorage(r);
+                m.route('/admin');
+
+            }).catch(r => {
+                this.vm.working(false);
+                if(r === 'invalid_credentials') {
                     Modal.vm.open(Alert, { label: 'Credenciales incorrectas. Porfavor verifique y vuelva a intentarlo' });
                 } else {
                     Modal.vm.open(Alert, { label: 'Ha ocurrido un error, por favor, vuelta a intentarlo (verifique su internet)' });                        

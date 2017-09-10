@@ -90,7 +90,7 @@ const clearLocalStorage = () => {
 };
 
 Sesion.fillLocalStorage = function (r) {
-    localStorage.setItem('data_user', r.user);
+    localStorage.setItem('data_user', JSON.stringify(r.user));
     localStorage.setItem('token', r.token);
 };
 
@@ -156,6 +156,10 @@ export const Order = function(data) {
     this.created_at = m.prop(data.created_at || '--');
     this.items_orders = m.prop([]);
 
+    this.reloadUserId = () => {
+        this.users_id = m.prop(dataUser());
+        this.form.users_id = m.prop(dataUser());
+    };
 
     this.form = {
         id: m.prop(data.id || ''),
@@ -181,6 +185,6 @@ export const Order = function(data) {
 };
 
 
-Order.save = function (data,options) {
-    return API.post('orders',data,options);
+Order.save = function (data, options) {
+    return API.post('orders',data, options);
 };

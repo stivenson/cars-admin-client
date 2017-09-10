@@ -6,6 +6,7 @@ import { ModalHeader } from '../modal/header';
 import Modal from '../../containers/modal/modal';
 import Utils from '../utils';
 import CarModalLogin from './modallogin';
+import { Sesion } from './models';
 
 const CarModalIndicator = {};
 
@@ -20,12 +21,18 @@ CarModalIndicator.controller = function (p) {
     this.vm = CarModalIndicator.vm(p);
 
     this.openloginCar = () => {
-        return Modal.vm.open(CarModalLogin, {className: 'mmodal-small', hasOrder:p.hasOrder, sendOrder:p.sendOrder});
+        return Modal.vm.open(CarModalLogin, {
+            refresh: p.refresh,
+            specialMessage: 'Porfavor, en el formulario de abajo, inicie sesión o regístrese (si aún no lo ha hecho) para enviar la orden',
+            className: 'mmodal-small',
+            hasOrder:p.hasOrder, 
+            sendOrder:p.sendOrder
+        });
     };
 
     this.save = () => {  
-        this.vm.working(true);
-        if(localStorage.getItem('token') !== false && localStorage.getItem('token') !== 'false'){
+        this.vm.working(true);        
+        if(localStorage.getItem('token') === false || localStorage.getItem('token') === 'false'){
             p.hasOrder(true);
             this.openloginCar();
         }else{
@@ -54,7 +61,7 @@ CarModalIndicator.view = function (c,p) {
 
     if(p.order().items_orders().length < 1){
         contentCar = (
-            <div class="pt-card pt-elevation-3">
+            <div class="pt-card pt-elevation-1">
                 <p align="center">
                     No se han seleccionado productos
                 </p>
@@ -62,7 +69,7 @@ CarModalIndicator.view = function (c,p) {
         );
     } else {
         contentCar = (
-            <div class="pt-card pt-elevation-3">
+            <div class="pt-card pt-elevation-1">
                 <table class="pt-table pt-bordered pt-interactive">
                     <tr>
                         <th>Nombre</th>

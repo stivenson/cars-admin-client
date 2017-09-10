@@ -12,7 +12,7 @@ export const Clients = {
             readonly: m.prop(false),
             client: m.prop(new Client()),
             waitForm: m.prop(false)
-        } 
+        }; 
     },
     controller(p){
         this.vm = Clients.vm(p);

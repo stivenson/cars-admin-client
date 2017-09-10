@@ -16,16 +16,11 @@ export const Client = function(data) {
     };
 };
 
-const TEMPORAL_CREDENTIALS = {
-    EMAIL: 'admin@senseibistro.com', // temporal validation
-    PASSWORD: 'admin_sen_321' // temporal validation
-};
-
 export const Sesion = function() {};
 
 
 Sesion.fillLocalStorage = function (r) {
-    localStorage.setItem('data_user', r.user);
+    localStorage.setItem('data_user', JSON.stringify(r.user));
     localStorage.setItem('token', r.token);
 };
 

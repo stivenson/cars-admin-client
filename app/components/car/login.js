@@ -7,26 +7,16 @@ import {Spinner} from '../../components/ui';
 
 export const LoginCar = {
     controller(p) {
-        this.refresh = () => {
-            this.check();
-        };
-        this.hasSesion = m.prop('waiting'); 
+
         this.openloginCar = () => {
             p.hasOrder(false);
-            return Modal.vm.open(CarModalLogin, {refresh:this.refresh.bind(this), className: 'mmodal-small', hasOrder:p.hasOrder, sendOrder:p.sendOrder});
+            return Modal.vm.open(CarModalLogin, {refresh: p.refresh, className: 'mmodal-small', hasOrder:p.hasOrder, sendOrder:p.sendOrder});
         };
         this.logout = () => {
             Sesion.logout();
         };
 
-        this.check = () => {
-            Sesion.check().then(r => {
-                this.hasSesion(r.token === 'active');
-                m.redraw();
-            });
-        };
-
-        this.check();
+        p.checkSesion();
  
     },
     view(c,p){
@@ -35,10 +25,10 @@ export const LoginCar = {
         const spinner = <Spinner small></Spinner>;
         let btnSesion = spinner;
 
-        if(c.hasSesion()){
+        if(p.hasSesion()){
             btnSesion = <a onclick={c.logout.bind(c)}><span class="pt-tag pt-intent-danger"> <span class="pt-icon-standard pt-icon-delete custom-icon"> </span><span class="sepcolor">_</span>Cerrar<span class="sepcolor">_</span>Sesión</span> </a>;
         }
-        if(!c.hasSesion()){
+        if(!p.hasSesion()){
             btnSesion = <a onclick={c.openloginCar.bind(c)}><span class="pt-tag pt-intent-warning"> <span class="pt-icon-standard pt-icon-log-in custom-icon"> </span><span class="sepcolor">_</span>Iniciar<span class="sepcolor">_</span>Sesión</span> </a>;
         }
 
