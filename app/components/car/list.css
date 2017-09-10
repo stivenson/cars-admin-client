@@ -1,13 +1,16 @@
 .car-list {
-	margin-top: 69px;
 	padding-top: 30px;
 	padding-left: 34px;
     padding-right: 34px;
 	background:rgba(0,0,0,0.2);
-
+	max-width: 1440px;
+	margin: 0 auto;
+	margin-top: 69px;
+	
 	& .custom-icon {
 		color: #FFFFFF;
 	}
+
 }
 
 .cont-image-product {
