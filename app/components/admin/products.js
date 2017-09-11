@@ -270,7 +270,8 @@ export const Products = {
                             type="file" 
                             required={c.vm.product().form.id() == false}
                             disabled={c.vm.readonly()}
-                            onchange={c.prepareImage.bind(c)}/>
+                            onchange={c.prepareImage.bind(c)}
+                            accept="image/*" />
                             <span class={"pt-file-upload-input "+(c.vm.statusImage() == 'Seleccionar imagen' ? '':'have-image')}>{c.vm.statusImage()}</span>
                             <br/>
                             <br/>

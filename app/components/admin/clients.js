@@ -127,7 +127,9 @@ export const Clients = {
                     this.vm.working(false);
                     if(res == false){
                         Modal.vm.open(Alert, {label: 'No se pudo actualizar el cliente'});
-                    }else{  
+                    }else if(res === 'email_invalid') {  
+                        Modal.vm.open(Alert, {label: 'El nuevo correo especificado ya existe en el sistema, por favor indique otro'});
+                    } else {  
                         let auxIndex = (this.vm.client().index()-1) == 0 ? 'first': this.vm.client().index()-1;
                         getClients(false,auxIndex);
                         Modal.vm.open(Alert, {label: 'Cliente actualizado con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
@@ -146,7 +148,9 @@ export const Clients = {
                     this.vm.working(false);
                     if(res == false){
                         Modal.vm.open(Alert, {label: 'No se pudo guardar el cliente'});
-                    }else{  
+                    }else if(res === 'email_invalid') {  
+                        Modal.vm.open(Alert, {label: 'El correo especificado ya existe en el sistema, por favor indique otro'});
+                    } else {
                         this.vm.client(new Client());
                         currentformData = new FormData();
                         getClients(true,null);

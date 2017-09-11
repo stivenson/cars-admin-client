@@ -21,6 +21,7 @@ CarModalLogin.vm = function (p) {
         email: m.prop(''),
         password: m.prop(''),
         register: m.prop(false),
+        isMsgEmail: m.prop(false),
         client: m.prop(new Client())
     };
 };
@@ -28,7 +29,7 @@ CarModalLogin.vm = function (p) {
 CarModalLogin.controller = function (p) {
     
     this.vm = CarModalLogin.vm(p);
-
+    this.vm.isMsgEmail(false);
     this.construction = () => {
         Modal.vm.open(Alert, {label: 'En construcción'});
     };
@@ -92,12 +93,20 @@ CarModalLogin.controller = function (p) {
             password: formClient.password()
         };
         this.vm.saving(true);
+        this.vm.isMsgEmail(false);
         Client.save(objformClient).then( r => {
-            Modal.vm.open(Alert, {label: 'Registro exitoso, ahora porfavor, inicie sesión', icon: 'pt-icon-endorsed', mood: 'success'});  
-            this.vm.saving(false); 
-            this.vm.register(false); 
-            m.redraw();         
-        }).then( r => {
+            if(r == 'email_invalid') {  
+                this.vm.saving(false); 
+                this.vm.isMsgEmail(true);
+                m.redraw();
+            }else{
+                Modal.vm.open(Alert, {label: 'Registro exitoso, ahora porfavor, inicie sesión', icon: 'pt-icon-endorsed', mood: 'success'});  
+                this.vm.saving(false); 
+                this.vm.register(false); 
+                m.redraw();  
+            }
+
+        }).catch( r => {
             Modal.vm.open(Alert, {label: 'Huvo un error mientras se realizaba el registro, porfavor vuelva a intentarlo'});
             this.vm.saving(false);                     
         });
@@ -113,6 +122,11 @@ CarModalLogin.controller = function (p) {
 CarModalLogin.view = function (c,p) {
 
     let registerForm;
+
+    let msgEmail = '';
+
+    if(c.vm.isMsgEmail())
+        msgEmail = <span class="pt-tag pt-intent-danger">El correo especificado ya existe en el sistema, por favor indique otro</span>;
 
     if(c.vm.register()){
         registerForm = (
@@ -202,6 +216,7 @@ CarModalLogin.view = function (c,p) {
 
 
                         <label class="pt-label">
+                            {msgEmail}
                             Email
                             <input
                                 type="email"

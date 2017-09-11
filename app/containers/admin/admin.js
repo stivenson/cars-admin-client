@@ -31,9 +31,25 @@ export const Admin = {
             window.location.reload();
         }
 
+        this.getOrdersTag = () => {
+            return <Orders interval={this.interval.bind(this)}/>;
+        };
+
+        this.getOrdersSection = () => {
+            try {
+                clearInterval(this.interval());
+            } catch (error) {}
+            this.tab(3);
+        };
+
     },
     view(c,p){
         
+        let orders = '';
+
+        if(c.tab() === 3)
+            orders = c.getOrdersTag();
+
         return (
 
             <div class="panel panel-default admin">
@@ -46,11 +62,11 @@ export const Admin = {
                             <ul class="pt-tab-list pt-large" role="tablist"> 
                                 <li class="pt-tab" role="tab" aria-selected={(c.tab() == 1)} ><a class="tab-link"  onclick={c.tab.bind(c,1)}> Clientes</a></li>
                                 <li class="pt-tab" role="tab" aria-selected={(c.tab() == 2)} ><a class="tab-link" onclick={c.tab.bind(c,2)}> Productos</a></li>
-                                <li class="pt-tab" role="tab" aria-selected={(c.tab() == 3)} ><a class="tab-link" onclick={c.tab.bind(c,3)}> Pedidos</a></li>
+                                <li class="pt-tab" role="tab" aria-selected={(c.tab() == 3)} ><a class="tab-link" onclick={c.getOrdersSection.bind(c)}> Pedidos</a></li>
                             </ul>
                             <div class="pt-tab-panel" role="tabpanel" aria-hidden={!(c.tab() == 1)} ><Clients /></div>
                             <div class="pt-tab-panel" role="tabpanel" aria-hidden={!(c.tab() == 2)} ><Products /></div>
-                            <div class="pt-tab-panel" role="tabpanel" aria-hidden={!(c.tab() == 3)} ><Orders interval={c.interval.bind(close)}/></div>
+                            <div class="pt-tab-panel" role="tabpanel" aria-hidden={!(c.tab() == 3)} >{orders}</div>
                         </div>
                     </div>
                 </div>

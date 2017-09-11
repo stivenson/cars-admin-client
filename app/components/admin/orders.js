@@ -57,6 +57,9 @@ export const Orders = {
                 .then(()=>m.redraw())
                 .catch(() => {
                     if(!Sesion.haveSesionAdmin()){
+                        try {
+                            clearInterval(this.interval());
+                        } catch (error) {}
                         Modal.vm.open(Alert, { label: 'La sesión se encuentra cerrada, porfavor, vuelva a iniciarla' });
                         m.route('/login');
                     }
