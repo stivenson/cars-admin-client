@@ -38,7 +38,7 @@ export const CarList = {
 
         this.check = () => {
             Sesion.check().then(r => {
-                this.hasSesion(r.token === 'active');
+                this.hasSesion(r.token === 'active' && Sesion.haveSesionClient());
                 m.redraw();
             });
         };
@@ -58,13 +58,6 @@ export const CarList = {
     
         this.openProductWithCar = (product) => {
             this.vm.openProduct(product,this.vm.order.bind(this.vm));
-        };
-
-        let endpoint = 'orders';        
-
-        let options = {
-            serialize: (value) => value,
-            url: API.requestUrl(endpoint)
         };
 
         this.amounproducts = () => {
@@ -101,30 +94,33 @@ export const CarList = {
                 Modal.vm.open(Alert, {label: 'Debe seleccionar al menos un producto'});
                 return;
             }
-
-            const currentformData = new FormData();
-            let order = this.vm.order();
-            currentformData.append('created_at', order.created_at());
-            currentformData.append('items_orders', order.jsonItemsOrders());
-            currentformData.append('delivery_type', order.form.delivery_type());
-            currentformData.append('status', order.status());
-            order.reloadUserId();
-            currentformData.append('users_id', order.users_id());  
-            Order.save(currentformData, options)
-            .then(res => {
-                this.vm.working(false);
-                if(JSON.parse(res) == false){
-                    Modal.vm.open(Alert, {label: 'No se pudo guardar la orden, porfavor vuelta a intentarlo'});
-                } else {  
-                    this.vm.order(new Order());
-                    this.vm.hasOrder(false);
-                    Modal.vm.close();
-                    Modal.vm.open(Alert, {label: 'Orden guardada con éxito', icon: 'pt-icon-endorsed', mood: 'success'});
-                }
-            }).catch(erSave => {
-                this.vm.working(false);
-                Modal.vm.open(Alert, {label: 'No se pudo guardar la orden, por favor verifique datos faltantes, y/o reales'});
-            });
+            if (!Sesion.haveSesionClient()){
+                Modal.vm.open(Alert, { label: 'La sesión ha sido cerrada recientemente, porfavor, vuelva a iniciarla' });
+            } else {
+                const currentformData = new FormData();
+                let order = this.vm.order();
+                currentformData.append('created_at', order.created_at());
+                currentformData.append('items_orders', order.jsonItemsOrders());
+                currentformData.append('delivery_type', order.form.delivery_type());
+                currentformData.append('status', order.status());
+                order.reloadUserId();
+                currentformData.append('users_id', order.users_id());  
+                Order.save(currentformData)
+                .then(res => {
+                    this.vm.working(false);
+                    if(JSON.parse(res) == false){
+                        Modal.vm.open(Alert, {label: 'No se pudo guardar la orden, porfavor vuelta a intentarlo'});
+                    } else {  
+                        this.vm.order(new Order());
+                        this.vm.hasOrder(false);
+                        Modal.vm.close();
+                        Modal.vm.open(Alert, {label: 'Orden guardada con éxito', icon: 'pt-icon-endorsed', mood: 'success'});
+                    }
+                }).catch(erSave => {
+                    this.vm.working(false);
+                    Modal.vm.open(Alert, {label: 'No se pudo guardar la orden, por favor verifique datos faltantes, y/o reales'});
+                });
+            }
         };
     },
     view(c,p){
@@ -139,7 +135,7 @@ export const CarList = {
  
         let nameUser;
 
-        if(c.hasSesion()){
+        if(Sesion.haveSesionClient()){
             nameUser = (
                 <div class="row">
                     <div class="col-md-12 name-user">

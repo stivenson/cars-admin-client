@@ -9,7 +9,8 @@ import MainLayout from 'layouts/MainLayout/MainLayout';
 
 document.addEventListener('DOMContentLoaded', () => {
     var root = document.getElementById('app');
-    localStorage.setItem('user',false);
+    localStorage.setItem('client',false);
+    localStorage.setItem('admin',false);
     localStorage.setItem('data_user', false);
     localStorage.setItem('token', false);
     const WrapMainLayout = (children) => {

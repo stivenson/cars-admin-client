@@ -1,5 +1,5 @@
 import m from 'mithril';
-import {Order, Client, Product, Itemorder, STATUTES, DELIVERY_TYPES, TAKE} from './models';
+import {Order, Client, Product, Itemorder, Sesion, STATUTES, DELIVERY_TYPES} from './models';
 import API from '../api';
 import Modal from '../../containers/modal/modal';
 import {Spinner, Button, Alert, Confirm} from '../../components/ui';
@@ -17,6 +17,7 @@ export const Orders = {
             statutes: m.prop(STATUTES),
             readonly: m.prop(false),
             order: m.prop(new Order()),
+            loadingMoreOrders: m.prop(false),
             waitForm: m.prop(false),
             arr_check_status: []
         }; 
@@ -24,31 +25,50 @@ export const Orders = {
     controller(p){
         this.vm = Orders.vm(p);
         this.limitSizeImagen = 8388606;
-        this.limitOrders = m.prop(380);
+        this.skip = 0;
+        const MILISECONDS_FOR_REFRESH = 60000;  
+
         let currentformData = new FormData(); 
-        this.limit = 0;
-        let getOrders = (noSelect, index, withlimit = false) => {
-            if(withlimit)
-                this.limit = this.limit + TAKE;
+
+        let getOrders = (noSelect, index, take = 15, skip = null) => {
             index = index || null;
             this.vm.working(true);
-            Order.list(this.limit)
-                .then(this.vm.orders)
+            if(skip != null)
+                this.skip = skip;
+            Order.list(this.skip, take)
+                .then(r => {
+                    this.vm.loadingMoreOrders(false);
+                    if(this.skip > 0)
+                        this.vm.orders(this.vm.orders().concat(r));
+                    else
+                        this.vm.orders(r);
+
+                    this.skip += r.length;
+                })
                 .then(()=>this.vm.working(false))
                 .then(() => {
-                    if(index != null){
+                    if(index != null)
                         this.edit(index);
-                    }
                 })
-                .then(()=>{if(noSelect == true) this.add()})
-                .then(()=>m.redraw());
+                .then(()=>{
+                    if(noSelect == true) 
+                        this.add();
+                })
+                .then(()=>m.redraw())
+                .catch(() => {
+                    if(!Sesion.haveSesionAdmin()){
+                        Modal.vm.open(Alert, { label: 'La sesión se encuentra cerrada, porfavor, vuelva a iniciarla' });
+                        m.route('/login');
+                    }
+                });
         };
 
-        getOrders(true,null,true);
+        getOrders(true,null);
 
 
         this.getMoreOrders = () => {
-            getOrders(true,null,true);
+            this.vm.loadingMoreOrders(true);
+            getOrders(true,null);
         };
 
         let getClients = () => {
@@ -134,7 +154,15 @@ export const Orders = {
                 m.redraw();
             },350);
         };
- 
+
+        try {
+            clearInterval(p.interval());
+        } catch (error) {}
+
+        setTimeout(() => {
+            p.interval(setInterval(() => getOrders(false, null, this.vm.orders().length, 0), MILISECONDS_FOR_REFRESH));
+        },10000);
+        
         this.changeState = (index,status) => {
             currentformData = new FormData();
             this.vm.waitForm(true);
@@ -236,7 +264,7 @@ export const Orders = {
                             auxIndex = indexChangeStatus;
                         }
 
-                        getOrders(false,auxIndex);
+                        getOrders(false,auxIndex, this.vm.orders().length, 0);
                         Modal.vm.open(Alert, {label: 'Orden actualizada con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
                     }   
                 }).catch(erSave => {
@@ -256,7 +284,7 @@ export const Orders = {
                     }else{  
                         this.vm.order(new Order());
                         currentformData = new FormData();
-                        getOrders(true,null);
+                        getOrders(true, null, this.vm.orders().length, 0);
                         Modal.vm.open(Alert, {label: 'Orden guardada con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
                     }
                 }).catch(erSave => {
@@ -421,17 +449,16 @@ export const Orders = {
 
         let btnGetMoreOrders;
 
-        if(c.limit >= c.limitOrders()){
-            btnGetMoreOrders = <b>limite de ordenes mostradas hacia atrás en el tiempo ({c.limitOrders()})</b>;
-        } else {
-            btnGetMoreOrders = <button onclick={c.getMoreOrders.bind(c)} type="button" class="pt-button pt-minimal custom-btn-add-more-orders"><span class="pt-icon-standard pt-icon-add-to-artifact"></span> Ver ordenes anteriores</button>;
-        }
+        btnGetMoreOrders = <Button loading={c.vm.loadingMoreOrders()} onclick={c.getMoreOrders.bind(c)} type="button" class="pt-button pt-minimal custom-btn-add-more-orders"><span class="pt-icon-standard pt-icon-add-to-artifact"></span> Ver ordenes anteriores</Button>;
 
         if(c.vm.orders() != 'empty' && c.vm.clients() != 'empty'){
             list = (
             	<div class="table-responsive custom-table-responsive">
                     <table class="table table-striped">
                         <thead>
+                            <tr>
+                                <td colspan="6"><i class="pt-tag pt-intent-success">Este listado se actualiza cada 60 segundos</i></td>
+                            </tr>
                             <tr>
                                 <th>Nº Orden</th>
                                 <th>Fecha</th>
@@ -481,7 +508,7 @@ export const Orders = {
                                         </div>
                                     </td>
                                 </tr>
-                            )
+                            );
                         })}
                         </tbody>
                     </table>

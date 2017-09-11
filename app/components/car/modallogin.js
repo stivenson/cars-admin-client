@@ -39,7 +39,7 @@ CarModalLogin.controller = function (p) {
         let credentials = {};
         credentials.email = this.vm.email();
         credentials.password = this.vm.password();
-        
+        credentials.isclient = true;
         Modal.vm.terminate();
 
         Sesion.login(credentials).then(r => {
@@ -53,6 +53,8 @@ CarModalLogin.controller = function (p) {
             this.vm.saving(false);
             if(r === 'invalid_credentials') {
                 Modal.vm.open(Alert, { label: 'Credenciales incorrectas. Porfavor verifique y vuelva a intentarlo' });
+            } else if(r === 'not_role') {
+                Modal.vm.open(Alert, { label: 'Un administrador no puede iniciar sesión como un cliente' });                        
             } else {
                 Modal.vm.open(Alert, { label: 'Ha ocurrido un error, por favor, vuelta a intentarlo (verifique su internet)' });                        
             }

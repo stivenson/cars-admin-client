@@ -32,8 +32,12 @@ export const Clients = {
                         this.edit(index);
                 }})
                 .then(()=>{if(selectFirst == true) {this.detail(0)}})
-                .then(()=>m.redraw());
-        }
+                .then(()=>m.redraw())
+                .catch(r=>{
+                    m.route('/login');
+                    window.location.reload();
+                });
+        };
 
         getClients(true,null);
 

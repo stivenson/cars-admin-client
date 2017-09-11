@@ -9,6 +9,7 @@ import {Alert} from '../../components/ui';
 export const Admin = {
     controller(p){
         this.tab = m.prop(1);
+        this.interval = m.prop('');
         
         this.construction = () => {
             Modal.vm.open(Alert, {label: 'En construcción'});
@@ -19,14 +20,19 @@ export const Admin = {
         };
 
         this.logout = () => {
+            try {
+                clearInterval(this.interval());
+            } catch (error) {}
             Sesion.logout();
         };
-    },
-    view(c,p){
 
         if(Sesion.notHaveSession()){
             m.route('/login');
+            window.location.reload();
         }
+
+    },
+    view(c,p){
         
         return (
 
@@ -44,7 +50,7 @@ export const Admin = {
                             </ul>
                             <div class="pt-tab-panel" role="tabpanel" aria-hidden={!(c.tab() == 1)} ><Clients /></div>
                             <div class="pt-tab-panel" role="tabpanel" aria-hidden={!(c.tab() == 2)} ><Products /></div>
-                            <div class="pt-tab-panel" role="tabpanel" aria-hidden={!(c.tab() == 3)} ><Orders /></div>
+                            <div class="pt-tab-panel" role="tabpanel" aria-hidden={!(c.tab() == 3)} ><Orders interval={c.interval.bind(close)}/></div>
                         </div>
                     </div>
                 </div>

@@ -115,7 +115,7 @@ export const Products = {
                 Modal.vm.open(Alert, {label: 'Debe especificar imagen'});
             }
 
-        }
+        };
 
         this.save = (event) => {
             if (event) { event.preventDefault(); }

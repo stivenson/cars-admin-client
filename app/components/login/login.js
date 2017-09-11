@@ -28,12 +28,16 @@ export const AdminLogin = {
             .then(r => {
                 this.vm.working(false);
                 Sesion.fillLocalStorage(r);
+                localStorage.setItem('admin',true);
                 m.route('/admin');
 
             }).catch(r => {
+                localStorage.setItem('admin',false);
                 this.vm.working(false);
                 if(r === 'invalid_credentials') {
                     Modal.vm.open(Alert, { label: 'Credenciales incorrectas. Porfavor verifique y vuelva a intentarlo' });
+                } else if(r === 'not_role') {
+                    Modal.vm.open(Alert, { label: 'Su usuario es el de un cliente. No tiene permiso para ingresar acá' });                        
                 } else {
                     Modal.vm.open(Alert, { label: 'Ha ocurrido un error, por favor, vuelta a intentarlo (verifique su internet)' });                        
                 }

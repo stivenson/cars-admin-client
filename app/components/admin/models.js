@@ -91,9 +91,9 @@ export const Client = function(data) {
 
 };
 
-Client.list = function (select) {
+Client.list = function (select, withAdmins = 'no') {
     if(select)
-        return API.get('clients/order/true', {type: Client});
+        return API.get(`clients/order/true/${withAdmins}`, {type: Client});
     else
         return API.get('clients', {type: Client});
 };
@@ -113,24 +113,27 @@ Client.delete = function (id) {
 export const Sesion = function() {};
 
 const clearLocalStorage = () => {
-    localStorage.setItem('user', false);
     localStorage.setItem('data_user', false);
     localStorage.setItem('token', false);
+    localStorage.setItem('admin',false);
+    localStorage.setItem('client',false);
 };
 
 Sesion.logout = function () {
-    API.get('public/logout').then(r => {
+    API.get('public/logout');
+    setTimeout(()=>{
         clearLocalStorage();
-    }).catch(r => {
-        clearLocalStorage();
-    });
-    m.route('/login');
+        m.route('/login');
+    },200);
 };
 
 Sesion.notHaveSession = function () {
-    return localStorage.getItem('user') === 'false' || localStorage.getItem('user') === false;
+    return localStorage.getItem('admin') === 'false' || localStorage.getItem('admin') === false;
 };
 
+Sesion.haveSesionAdmin = function () {
+    return localStorage.getItem('admin') !== 'false' && localStorage.getItem('admin') !== false;
+};
 
 /* ORDERS */
 
@@ -175,7 +178,7 @@ export const Order = function(data) {
     this.id = m.prop(data.id || false);
     this.delivery_type = m.prop(data.delivery_type || DELIVERY_TYPE_DOMICILE);
     this.status = m.prop(data.status || STATUS_PENDING);
-    this.users_id = m.prop(data.users_id || localStorage.getItem('users_id'));
+    this.users_id = m.prop(data.users_id || false);
     this.created_at = m.prop(data.created_at || '--');
     this.items_orders = m.prop([]);
 
@@ -184,7 +187,7 @@ export const Order = function(data) {
         id: m.prop(data.id || ''),
         status: m.prop(data.status || STATUS_PENDING),
         delivery_type: m.prop(data.delivery_type || DELIVERY_TYPE_DOMICILE),
-        users_id: m.prop(data.users_id || localStorage.getItem('users_id')),
+        users_id: m.prop(data.users_id || false),
         created_at: m.prop(data.created_at || '--'),
         items_orders: this.items_orders 
     };
@@ -215,7 +218,7 @@ export const Order = function(data) {
             case 4: res = 'pt-intent-success'; break;
         }
         return res;
-    }
+    };
 
 
     this.listItems = () => Itemorder.list(this.id());
@@ -238,7 +241,7 @@ export const Order = function(data) {
     };
 };
 
-Order.list = function (take = 16, skip = 0) {
+Order.list = function (skip = 0, take = 15) {
     return API.get(`pagination_orders/${skip}/${take}`, {type: Order});
 };
 

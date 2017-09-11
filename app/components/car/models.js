@@ -1,6 +1,8 @@
 import m from 'mithril';
 import API from '../api';
 import Utils from '../utils';
+import Modal from '../../containers/modal/modal';
+import {Alert} from '../../components/ui';
 
 const DELIVERY_TYPE_DOMICILE = 1;
 const STATUS_PENDING = 1;
@@ -84,23 +86,35 @@ Sesion.check = function (data) {
 };
 
 const clearLocalStorage = () => {
-    localStorage.setItem('user', false);
+    localStorage.setItem('client', false);
     localStorage.setItem('data_user', false);
     localStorage.setItem('token', false);
+    localStorage.setItem('admin',false);    
 };
 
 Sesion.fillLocalStorage = function (r) {
+    if(haveSesionAdmin())
+        Modal.vm.open(Alert, { label: 'Hay una sesión previamente abierta como un administrador. Dicha sesión se cerrará para usar esta.' });
+    clearLocalStorage();
     localStorage.setItem('data_user', JSON.stringify(r.user));
     localStorage.setItem('token', r.token);
+    localStorage.setItem('client',true); 
+};
+
+const haveSesionAdmin = () => {
+    return localStorage.getItem('admin') !== 'false' && localStorage.getItem('admin') !== false;
+};
+
+Sesion.haveSesionClient = function() {
+    return localStorage.getItem('client') !== 'false' && localStorage.getItem('client') !== false;
 };
 
 Sesion.logout = function () {
-    API.get('public/logout').then(r => {
+    API.get('public/logout');
+    setTimeout(()=>{
         clearLocalStorage();
-    }).catch(r => {
-        clearLocalStorage();
-    });
-    m.route('/');
+        m.route('/');
+    },200);
 };
 
 
@@ -185,6 +199,14 @@ export const Order = function(data) {
 };
 
 
-Order.save = function (data, options) {
-    return API.post('orders',data, options);
+Order.save = function (data) {
+
+    let endpoint = 'client/orders';        
+    
+    let options = {
+        serialize: (value) => value,
+        url: API.requestUrl(endpoint)
+    };
+
+    return API.post(endpoint, data, options);
 };

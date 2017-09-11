@@ -9,7 +9,7 @@ import MainLayout from 'layouts/MainLayout/MainLayout';
 
 document.addEventListener('DOMContentLoaded', () => {
     var root = document.getElementById('app');
-    localStorage.setItem('user',false);
+    localStorage.setItem('client',false);
     const WrapMainLayout = (children) => {
         return {
             view() {
