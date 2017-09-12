@@ -7,12 +7,13 @@ import {
     InputAutoComplete,
     TextArea,
     Button,
-    Spinner
+    Spinner,
+    Alert
 } from '../ui';
 
 import { ModalHeader } from '../modal/header';
 import Modal from '../../containers/modal/modal';
-import {MProduct, Itemorder} from './models';
+import {MProduct, Itemorder, Sesion} from './models';
 
 
 const CarModalproduct = {};
@@ -41,18 +42,23 @@ CarModalproduct.controller = function (p) {
     this.vm = CarModalproduct.vm(p);
     this.vm.refreshProduct(p.product.id()).then(p.product).then(()=>m.redraw());
     this.addToCar = (product) => {
-        let params = {}; 
-        params.amount = this.vm.amount();
-        params.name = product.name();
-        params.numberValue = product.numberValue();
-        params.value = product.value();
-        params.observations = this.vm.observations();
-        params.products_id = product.id();
-        params.orders_id = p.order().id();
-        this.vm.addToCar(new Itemorder(params));
 
-        Modal.vm.terminate();
-        m.redraw(true);
+        if(!Sesion.haveSesionClient()){
+            Modal.vm.open(Alert, {label: 'Porfavor, inicie sesión para poder seleccionar productos'});
+        }else{
+            let params = {}; 
+            params.amount = this.vm.amount();
+            params.name = product.name();
+            params.numberValue = product.numberValue();
+            params.value = product.value();
+            params.observations = this.vm.observations();
+            params.products_id = product.id();
+            params.orders_id = p.order().id();
+            this.vm.addToCar(new Itemorder(params));
+
+            Modal.vm.terminate();
+            m.redraw(true);
+        }
     }; 
 };
 

@@ -49,7 +49,7 @@ CarModalIndicator.controller = function (p) {
 
     this.removeOfCar = (id) => {
         let arr = p.order().items_orders();
-        let filterArr = arr.filter(c => c.id() != id);
+        let filterArr = arr.filter(c => c.products_id() != id);
         p.order().items_orders(filterArr);
     };
 
@@ -90,7 +90,7 @@ CarModalIndicator.view = function (c,p) {
                                 <td>{proSelected.name()}</td>
                                 <td>{proSelected.amount()}</td>
                                 <td>{proSelected.value()}</td>
-                                <td><a onclick={c.removeOfCar.bind(c,proSelected.id())}><span class="pt-icon-standard pt-icon-cross"></span> quitar</a></td>
+                                <td><a onclick={c.removeOfCar.bind(c,proSelected.products_id())}><span class="pt-icon-standard pt-icon-cross"></span> quitar</a></td>
                             </tr>
                         );
                     })}
