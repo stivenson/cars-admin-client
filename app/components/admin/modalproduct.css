@@ -1,5 +1,14 @@
 .product-modal{
-    padding: 15px;
+	padding: 15px;
+	
+	& .pattern-custom-close {
+		text-align: right;
+	}
+
+	& .custom-close-header-product {
+		font-size: 18px;
+	}
+
 }
 
 .title-product{
@@ -14,6 +23,3 @@
 textarea {
 	color: #000000;
 }
-
-
-

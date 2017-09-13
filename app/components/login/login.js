@@ -65,7 +65,7 @@ export const AdminLogin = {
                                     name="email"
                                     oninput={m.withAttr('value', c.vm.email)}
                                     value={c.vm.email()}
-                                    placeholder="Solo números"
+                                    placeholder=""
                                     required
                                 />
                             </label>
@@ -79,7 +79,7 @@ export const AdminLogin = {
                                     name="password"
                                     oninput={m.withAttr('value', c.vm.password)}
                                     value={c.vm.password()}
-                                    placeholder="Solo números"
+                                    placeholder=""
                                     required
                                 />
                             </label>

@@ -193,8 +193,8 @@ export const Orders = {
         };
 
 
-        this.openProduct = (product) => {
-            return Modal.vm.open(AdminModalproduct, {order: this.vm.order.bind(this.vm),product: product, className: 'mmodal-small'});
+        this.openProduct = (product, currentIDElement) => {
+            return Modal.vm.open(AdminModalproduct, {refreshStatus: this.refreshStatus.bind(this), currentIDElement: currentIDElement, order: this.vm.order.bind(this.vm),product: product, className: 'mmodal-small'});
         };
 
         this.detailProduct = (products_id) => {
@@ -202,17 +202,18 @@ export const Orders = {
             this.openProduct(currentProducts[0]).then( r => this.refreshStatus() );
         };
 
-        this.statusProduct = (products_id) => {
+        this.statusProduct = (products_id, currentIDElement) => {
+
             let selected = this.vm.order().items_orders().filter(o => o.products_id() == products_id);
 
             if(selected.length > 0){
                 this.vm.order().items_orders(this.vm.order().items_orders().filter(o => o.products_id() != products_id));
+                this.refreshStatus();
             }else{
                 // open modal
                 let currentProducts = this.vm.products().filter(p => p.id() == products_id);
-                this.openProduct(currentProducts[0]).then( r => this.refreshStatus() );
+                this.openProduct(currentProducts[0], currentIDElement);
             }
-            this.refreshStatus();
         };
 
         this.refreshStatus = () => {
@@ -308,6 +309,13 @@ export const Orders = {
             }
             return Utils.formatMoney(res);
         };
+
+        this.getRandomArbitrary = (min, max) => {
+            // let numA = Math.random() * (max - min) + min;
+            // return numA.toString().replace(".", "_");
+            return '_'; // temporal
+        };
+    
     },
     view(c,p){
 
@@ -374,10 +382,13 @@ export const Orders = {
                             <li>
                                 <label class="pt-control pt-switch">
                                     {(() => {
+                                        
+                                        let currentID = 'check_product_'+c.getRandomArbitrary(1,6)+'_'+p.id();
+
                                         if(c.arrCheckStatus(p.id())) {
-                                            return <input disabled={c.vm.readonly()} checked name="products" type="checkbox" onchange={c.statusProduct.bind(c, p.id())} />;
+                                            return <input id={currentID} disabled={c.vm.readonly()} checked name="products" type="checkbox" onchange={c.statusProduct.bind(c, p.id(), currentID)} />;
                                         } else {
-                                            return <input disabled={c.vm.readonly()} name="products" type="checkbox" onchange={c.statusProduct.bind(c, p.id())} />;
+                                            return <input id={currentID} disabled={c.vm.readonly()} name="products" type="checkbox" onchange={c.statusProduct.bind(c, p.id(), currentID)} />;
                                         }
                                     })()}
                                     <span class="pt-control-indicator"></span>
@@ -411,7 +422,7 @@ export const Orders = {
                         </div>
                         <div class="panel panel-default" >
                             <div class="total-admin-car">
-                                Total: <b>{c.total()}</b>
+                                <big>Total: <b>{c.total()}</b></big>
                             </div>
                         </div>
                         <label class="pt-label">
