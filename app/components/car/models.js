@@ -109,6 +109,10 @@ Sesion.haveSesionClient = function() {
     return localStorage.getItem('client') !== 'false' && localStorage.getItem('client') !== false;
 };
 
+Sesion.isClient = function(value) {
+    localStorage.setItem('client', value);
+};
+
 Sesion.logout = function () {
     API.get('public/logout');
     setTimeout(()=>{

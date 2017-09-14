@@ -13,7 +13,7 @@ export const IndicatorCar = {
         };
     },
     view(c,p){
-        return <span class="indicator" ><a onclick={c.openindicatorCar.bind(c)}><span class="pt-tag pt-intent-primary"> <span class="pt-icon-standard pt-icon-shopping-cart custom-icon"></span><span class="sepcolor">_</span><span class="sepcolor">_</span>{p.amounproducts()}</span> </a></span>;
+        return <span class="indicator" ><a onclick={c.openindicatorCar.bind(c)}><span class="pt-tag"> <span class="pt-icon-standard pt-icon-shopping-cart custom-icon"></span><span class="sepcolor">_</span><span class="sepcolor">_</span>{p.amounproducts()}</span> </a></span>;
     }
 };
 

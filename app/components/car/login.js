@@ -9,9 +9,25 @@ export const LoginCar = {
     controller(p) {
 
         this.openloginCar = () => {
-            p.hasOrder(false);
-            return Modal.vm.open(CarModalLogin, {refresh: p.refresh, className: 'mmodal-small', hasOrder:p.hasOrder, sendOrder:p.sendOrder});
+            FB.login();
         };
+
+        this.checkSesionFacebook = () => {
+            setTimeout(function() {
+                FB.getLoginStatus(function(response) {
+                    console.log(response);
+                    if('status' in response && response.status === 'connected'){
+                        Sesion.isClient(true);
+                    }else{
+                        Sesion.isClient(false); 
+                    }
+                    m.redraw();
+                });
+            }, 1500);
+        };
+
+        this.checkSesionFacebook();
+
         this.logout = () => {
             Sesion.logout();
         }; 
@@ -20,18 +36,19 @@ export const LoginCar = {
     },
     view(c,p){
 
-       
         const spinner = <Spinner small></Spinner>;
         let btnSesion = spinner;
 
         if(Sesion.haveSesionClient()){
-            btnSesion = <a onclick={c.logout.bind(c)}><span class="pt-tag pt-intent-danger"> <span class="pt-icon-standard pt-icon-delete custom-icon"> </span><span class="sepcolor">_</span>Cerrar<span class="sepcolor">_</span>Sesión</span> </a>;
+            btnSesion = {};
         }
         if(!Sesion.haveSesionClient()){
-            btnSesion = <a onclick={c.openloginCar.bind(c)}><span class="pt-tag pt-intent-warning"> <span class="pt-icon-standard pt-icon-log-in custom-icon"> </span><span class="sepcolor">_</span>Iniciar<span class="sepcolor">_</span>Sesión</span> </a>;
+            btnSesion = <a onclick={c.openloginCar.bind(c)}><span class="pt-tag pt-intent-primary"> <span class="fa fa-facebook-official" aria-hidden="true"></span><span class="sepcolor">_</span>Iniciar<span class="sepcolor">_</span>Sesión<span class="sepcolor">_</span>con<span class="sepcolor">_</span>Facebook</span> </a>;
         }
 
         return <span class="Login" >{btnSesion}</span>;
+    
+
     
     }
 };

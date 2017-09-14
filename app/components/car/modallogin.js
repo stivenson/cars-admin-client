@@ -258,64 +258,13 @@ CarModalLogin.view = function (c,p) {
 
     if('specialMessage' in p)
         optionalMessage = <div><div class="pt-card pt-elevation-3 optional-message">{p.specialMessage}</div><br/><br/></div>;
-
-
+        
 
     return (
         <div class="mmodal-body login-modal">
             <ModalHeader>
-                <div class="text-center title-login">Iniciar Sesión</div>
+                <div class="text-center title-login">Iniciar Sesión Con Facebook</div>
             </ModalHeader>
-            <div class="thumbnail thumbnail-click">
-                <div class="caption text-center">
-                    <form onsubmit={c.submit.bind(c)}>
-                        {optionalMessage}
-                        <label class="pt-label">
-                            Correo electrónico
-                            <input
-                                type="email"
-                                class="pt-input pt-fill"
-                                name="email"
-                                oninput={m.withAttr('value', c.vm.email)}
-                                value={c.vm.email()}
-                                placeholder=""
-                                required
-                            />
-                        </label>
-
-                        <label class="pt-label">
-                            Contraseña
-                            <input
-                                type="password"
-                                class="pt-input pt-fill"
-                                name="password"
-                                oninput={m.withAttr('value', c.vm.password)}
-                                value={c.vm.password()}
-                                placeholder=""
-                                required
-                            />
-                        </label>
-
-                        <br/>
-
-                        <div class="pt-button-group"> 
-
-                            <Button type="submit">
-                                <span class="pt-icon-standard pt-icon-log-in"></span> Entrar 
-                            </Button>
-
-                            <Button type="button" intent="default" onclick={c.openFormRegister.bind(c)}>
-                                <span class="pt-icon-standard pt-icon-user "></span> Registrarse
-                            </Button>
-
-                        </div>
-
-                    </form>
-
-                    {registerForm}
-                
-                </div>
-            </div>
         </div>
     );
 };

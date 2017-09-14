@@ -149,7 +149,7 @@ export const CarList = {
             <div class="row infocar">
                 <div class="col-sm-8 col-md-8 col-xs-12" ></div>
                 <div class="col-sm-4 col-md-4 col-xs-12" >
-                    <div class="row"><div class="col-md-5 col-xs-5">{coverage}</div><div class="col-md-3 col-xs-3">{indicator}</div><div class="col-md-4 col-xs-4">{login}</div></div>
+                    <div class="row"><div class="col-md-4 col-xs-4">{coverage}</div><div class="col-md-2 col-xs-2">{indicator}</div><div class="col-md-6 col-xs-6">{login}</div></div>
                 </div>
             </div>
         );
