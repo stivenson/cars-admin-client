@@ -8,48 +8,51 @@ import {Spinner} from '../../components/ui';
 export const LoginCar = {
     controller(p) {
 
-        this.openloginCar = () => {
-            FB.login();
-        };
-
         this.checkSesionFacebook = () => {
             setTimeout(function() {
                 FB.getLoginStatus(function(response) {
-                    console.log(response);
                     if('status' in response && response.status === 'connected'){
-                        Sesion.isClient(true);
+                        Sesion.fillLocalStorage(response);
+                        Sesion.getClientInfo();
                     }else{
-                        Sesion.isClient(false); 
+                        Sesion.fillLocalStorage(false);
+                        m.redraw();
                     }
-                    m.redraw();
                 });
-            }, 1500);
+            }, 500);
         };
 
-        this.checkSesionFacebook();
+        this.openloginCar = () => {
+            FB.login((response) => {
+                console.log('process session finalized');
+                if (response.authResponse) {
+                    console.log('session started');
+                }
+                this.checkSesionFacebook(); 
+            });
+        };
 
         this.logout = () => {
             Sesion.logout();
         }; 
 
-        p.checkSesion();
+        this.checkSesionFacebook();         
+
     },
     view(c,p){
 
         const spinner = <Spinner small></Spinner>;
-        let btnSesion = spinner;
+        let contInfoSesion = spinner;
 
         if(Sesion.haveSesionClient()){
-            btnSesion = {};
+            contInfoSesion = <span class="msg-sesion" >Sesión iniciada como<br/> {Sesion.getNameUser()}</span>;
         }
         if(!Sesion.haveSesionClient()){
-            btnSesion = <a onclick={c.openloginCar.bind(c)}><span class="pt-tag pt-intent-primary"> <span class="fa fa-facebook-official" aria-hidden="true"></span><span class="sepcolor">_</span>Iniciar<span class="sepcolor">_</span>Sesión<span class="sepcolor">_</span>con<span class="sepcolor">_</span>Facebook</span> </a>;
+            contInfoSesion = <a onclick={c.openloginCar.bind(c)}><span class="pt-tag pt-intent-primary"> <span class="fa fa-facebook-official" aria-hidden="true"></span><span class="sepcolor">_</span>Iniciar<span class="sepcolor">_</span>Sesión<span class="sepcolor">_</span>con<span class="sepcolor">_</span>Facebook</span> </a>;
         }
 
-        return <span class="Login" >{btnSesion}</span>;
-    
+        return <span class="Login" >{contInfoSesion}</span>;
 
-    
     }
 };
 

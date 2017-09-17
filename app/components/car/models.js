@@ -73,51 +73,49 @@ Client.save = function (data, options = {}) {
 };
 
 
-/* Sesion */
+/* SESION */
 
 export const Sesion = function() {};
 
-Sesion.login = function (data) {
-    return API.post('public/login',data);    
+const clearLocalStorage = () => {
+    localStorage.setItem('data_user_facebook', false); 
+};
+
+Sesion.getNameUser = () => {
+    const data_user_facebook = JSON.parse(localStorage.getItem('data_user_facebook'));
+    console.log('-----');
+    console.log(data_user_facebook);
+    return data_user_facebook.name || '';
+};
+
+Sesion.getClientInfo = () => {
+    const data_user_facebook = JSON.parse(localStorage.getItem('data_user_facebook'));
+    const userID = data_user_facebook.authResponse.userID;
+    FB.api(`/${userID}`, function(response) {
+        data_user_facebook.name = response.name;
+        Sesion.fillLocalStorage(data_user_facebook);
+        m.redraw();
+    });
 };
 
 Sesion.check = function (data) {
     return API.get('public/check');    
 };
 
-const clearLocalStorage = () => {
-    localStorage.setItem('client', false);
-    localStorage.setItem('data_user', false);
-    localStorage.setItem('token', false);
-    localStorage.setItem('admin',false);    
-};
-
 Sesion.fillLocalStorage = function (r) {
-    if(haveSesionAdmin())
-        Modal.vm.open(Alert, { label: 'Hay una sesión previamente abierta como un administrador. Dicha sesión se cerrará para usar esta.' });
     clearLocalStorage();
-    localStorage.setItem('data_user', JSON.stringify(r.user));
-    localStorage.setItem('token', r.token);
-    localStorage.setItem('client',true); 
-};
-
-const haveSesionAdmin = () => {
-    return localStorage.getItem('admin') !== 'false' && localStorage.getItem('admin') !== false;
+    localStorage.setItem('data_user_facebook', JSON.stringify(r));
 };
 
 Sesion.haveSesionClient = function() {
-    return localStorage.getItem('client') !== 'false' && localStorage.getItem('client') !== false;
-};
-
-Sesion.isClient = function(value) {
-    localStorage.setItem('client', value);
+    return localStorage.getItem('data_user_facebook') !== null && localStorage.getItem('data_user_facebook') !== 'false' && localStorage.getItem('data_user_facebook') !== false;
 };
 
 Sesion.logout = function () {
-    API.get('public/logout');
     setTimeout(()=>{
         clearLocalStorage();
         m.route('/');
+        m.redraw();
     },200);
 };
 

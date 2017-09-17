@@ -38,7 +38,7 @@ export const CarList = {
 
         this.check = () => {
             Sesion.check().then(r => {
-                this.hasSesion(r.token === 'active' && Sesion.haveSesionClient());
+                this.hasSesion(Sesion.haveSesionClient());
                 m.redraw();
             });
         };
@@ -139,7 +139,7 @@ export const CarList = {
             nameUser = (
                 <div class="row">
                     <div class="col-md-12 name-user">
-                        Un saludo, {c.getNameUser()}
+                        {c.getNameUser()}
                     </div>    
                 </div>
             );  
