@@ -45,10 +45,10 @@ export const LoginCar = {
         let contInfoSesion = spinner;
 
         if(Sesion.haveSesionClient()){
-            contInfoSesion = <span class="msg-sesion" >Sesión iniciada como<br/> {Sesion.getNameUser()}</span>;
+            contInfoSesion = <span class="msg-sesion" ><i class="fa fa-facebook-square" aria-hidden="true"></i> Sesión iniciada como<br/> {Sesion.getNameUser()}</span>;
         }
         if(!Sesion.haveSesionClient()){
-            contInfoSesion = <a onclick={c.openloginCar.bind(c)}><span class="pt-tag pt-intent-primary"> <span class="fa fa-facebook-official" aria-hidden="true"></span><span class="sepcolor">_</span>Iniciar<span class="sepcolor">_</span>Sesión<span class="sepcolor">_</span>con<span class="sepcolor">_</span>Facebook</span> </a>;
+            contInfoSesion = <a onclick={c.openloginCar.bind(c)}><span class="pt-tag pt-intent-primary"> <i class="fa fa-facebook-square" aria-hidden="true"></i><span class="sepcolor">_</span>Iniciar<span class="sepcolor">_</span>Sesión<span class="sepcolor">_</span>con<span class="sepcolor">_</span>Facebook</span> </a>;
         }
 
         return <span class="Login" >{contInfoSesion}</span>;
