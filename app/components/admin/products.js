@@ -188,7 +188,7 @@ export const Products = {
         let list = spinner;
         let form = spinner;
 
-        let btnAdd = <button onclick={c.add.bind(c)} type="button" class="pt-button pt-minimal pt-icon-add pt-intent-primary custom-add-btn" >Agregar Producto</button>;
+        let btnAdd = <button onclick={c.add.bind(c)} type="button" class="pt-button custom-add-btn" ><span style="color: red;" class="pt-icon-standard pt-icon-add"></span> Agregar Producto</button>;
 
 
         if(c.vm.waitForm() == false){
