@@ -17,6 +17,12 @@
 		padding-bottom: 3px;
 	}
 
+	& .thumbnail-custom {
+		max-width: 340px;
+		margin:  0 auto;
+		margin-bottom: 20px;
+	}
+
 }
 
 .cont-image-product {

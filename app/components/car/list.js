@@ -162,8 +162,8 @@ export const CarList = {
                     <div class="row">
                         {c.vm.products().map((product) => {
                             return (
-                                <div class="col-sm-3 col-md-3 col-xs-12">
-                                    <a onclick={c.openProductWithCar.bind(c,product)} class="thumbnail thumbnail-click">
+                                <div class="col-sm-3 col-md-3 col-xs-12 col-centered cont-thumbnail-custom">
+                                    <a onclick={c.openProductWithCar.bind(c,product)} class="thumbnail thumbnail-click thumbnail-custom">
                                         <div class="cont-image-product">
                                             <img class="image-product" alt={"image product "+product.id()} src={product.srcImage()} />
                                         </div>
