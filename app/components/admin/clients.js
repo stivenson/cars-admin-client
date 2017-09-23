@@ -175,9 +175,6 @@ export const Clients = {
         let list = spinner;
         let form = spinner;
 
-        let btnAdd = <button onclick={c.add.bind(c)} type="button" class="pt-button pt-minimal pt-icon-add pt-intent-primary custom-add-btn" >Agregar Cliente</button>;
-
-
         if(c.vm.waitForm() == false){
             form = (
             <div class="panel panel-default">
@@ -350,7 +347,7 @@ export const Clients = {
 
         let content = (
             <div class="admin-clients row">
-                <div clas="col-md-12">{btnAdd}<br/></div> 
+                
 
                 <div class="col-md-7">
                     {list}
