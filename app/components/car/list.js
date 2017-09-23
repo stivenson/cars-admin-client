@@ -133,18 +133,6 @@ export const CarList = {
 
         let list = <div class="custom-spinner text-center"><Spinner Large /></div>;
  
-        let nameUser;
-
-        if(Sesion.haveSesionClient()){
-            nameUser = (
-                <div class="row">
-                    <div class="col-md-12 name-user">
-                        {c.getNameUser()}
-                    </div>    
-                </div>
-            );  
-        }
-
         let infocar = (
             <div class="row infocar">
                 <div class="col-sm-8 col-md-8 col-xs-12" ></div>
@@ -157,7 +145,7 @@ export const CarList = {
         if(c.vm.products() != 'empty'){
             list = (
                 <div class="car-list">
-                    {nameUser}
+
                     {infocar}
                     <div class="row">
                         {c.vm.products().map((product) => {
