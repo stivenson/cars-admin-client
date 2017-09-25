@@ -184,7 +184,7 @@ export const Clients = {
                     {client.name()}<br/>
                     {email}<br/>
                     <span class="pt-icon-standard pt-icon-phone"></span> <b>{client.cell_phone()}</b><br/>
-                    <a onclick={this.openProfileFacebook.bind(this, client.userIdFacebook())} >Perfíl Facebook <span class="pt-icon-standard pt-icon-link"></span></a>
+                    <a onclick={this.openProfileFacebook.bind(this, client.userIdFacebook())} > <i class="fa fa-facebook-square" aria-hidden="true"></i> Perfíl Facebook <span class="pt-icon-standard pt-icon-link"></span></a>
                 </div>
             );
         }; 

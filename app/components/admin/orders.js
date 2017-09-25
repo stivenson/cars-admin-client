@@ -106,7 +106,7 @@ export const Orders = {
                         {arr[0].name()}<br/>
                         {email}<br/>
                         <span class="pt-icon-standard pt-icon-phone"></span> <b>{arr[0].cell_phone()}</b><br/>
-                        <a onclick={this.openProfileFacebook.bind(this, arr[0].userIdFacebook())} >Perfíl Facebook <span class="pt-icon-standard pt-icon-link"></span></a>
+                        <a onclick={this.openProfileFacebook.bind(this, arr[0].userIdFacebook())} > <i class="fa fa-facebook-square" aria-hidden="true"></i> Perfíl Facebook <span class="pt-icon-standard pt-icon-link"></span></a>
                     </div>
                 );
             }else{
