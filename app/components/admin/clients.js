@@ -107,14 +107,14 @@ export const Clients = {
             };
 
             currentformData.append('name', this.vm.client().form.name());
-            currentformData.append('cc', this.vm.client().form.cc());
             currentformData.append('roles_id', this.vm.client().form.roles_id());
-            currentformData.append('telephone', this.vm.client().form.telephone());
             currentformData.append('cell_phone', this.vm.client().form.cell_phone());
             currentformData.append('email', this.vm.client().form.email());
             currentformData.append('password', this.vm.client().form.password());
             currentformData.append('neighborhood', this.vm.client().form.neighborhood());
             currentformData.append('address', this.vm.client().form.address());
+            currentformData.append('userIdFacebook', this.vm.client().form.userIdFacebook());
+            
 
             if(this.vm.client().form.id() != false){
 
@@ -167,6 +167,30 @@ export const Clients = {
         }
 
 
+        this.openProfileFacebook = (userIdFacebook) => {
+            try {
+                const uri = `https://www.facebook.com/${userIdFacebook}`;
+                const win = window.open(uri, '_blank');
+                win.focus();  
+            } catch (error) {
+                Modal.vm.open(Alert, {label: 'Huvo un problema, y no se pudo visitar este perfíl'});
+            }
+        };
+
+        this.dataUser = (client) => {
+            const email = client.email() !== '' ? (<a href={'mailto:'+client.email()} >{client.email()}</a>) : (<i>No hay acceso a email</i>);
+            return (
+                <div>
+                    {client.name()}<br/>
+                    {email}<br/>
+                    <span class="pt-icon-standard pt-icon-phone"></span> <b>{client.cell_phone()}</b><br/>
+                    <a onclick={this.openProfileFacebook.bind(this, client.userIdFacebook())} >Perfíl Facebook <span class="pt-icon-standard pt-icon-link"></span></a>
+                </div>
+            );
+        }; 
+
+
+
     },
     view(c,p){
 
@@ -196,21 +220,7 @@ export const Clients = {
                     </label>
 
                     <label class="pt-label">
-                        Número identificación
-                        <input
-                            type="text"
-                            class="pt-input pt-fill"
-                            name="cc"
-                            oninput={m.withAttr('value', c.vm.client().form.cc)}
-                            value={c.vm.client().form.cc()}
-                            placeholder="Solo números"
-                            required
-                            disabled={c.vm.readonly()}
-                        />
-                    </label>
-
-                    <label class="pt-label">
-                        Celular 
+                    Teléfono o Celular 
                         <input
                             type="text"
                             class="pt-input pt-fill"
@@ -219,20 +229,6 @@ export const Clients = {
                             value={c.vm.client().form.cell_phone()}
                             placeholder="Solo números"
                             required
-                            disabled={c.vm.readonly()}
-                        />
-                    </label>
-
-
-                    <label class="pt-label">
-                        Teléfono fijo <i>(Opcional)</i> 
-                        <input
-                            type="text"
-                            class="pt-input pt-fill"
-                            name="telephone"
-                            oninput={m.withAttr('value', c.vm.client().form.telephone)}
-                            value={c.vm.client().form.telephone()}
-                            placeholder="Opcional"
                             disabled={c.vm.readonly()}
                         />
                     </label>
@@ -311,8 +307,8 @@ export const Clients = {
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>cc</th>
                                 <th>Nombre</th>
+                                <th>Información</th>
                                 <th>Celular</th>
                                 <th></th>
                             </tr>
@@ -321,8 +317,8 @@ export const Clients = {
                         {c.vm.clients().map((client,index) => {
                             return (
                                 <tr>
-                                    <td>{client.cc()}</td>
                                     <td>{client.name()}</td>
+                                    <td>{c.dataUser(client)}</td>
                                     <td>{client.cell_phone()}</td>
                                     <td>
                                         <div class="dropdown">

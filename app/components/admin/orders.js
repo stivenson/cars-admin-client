@@ -82,16 +82,36 @@ export const Orders = {
                 .then(() => m.redraw());
         };
 
-        this.nameUser = (clients_id) => {
+        this.openProfileFacebook = (userIdFacebook) => {
+            try {
+                const uri = `https://www.facebook.com/${userIdFacebook}`;
+                const win = window.open(uri, '_blank');
+                win.focus();  
+            } catch (error) {
+                Modal.vm.open(Alert, {label: 'Huvo un problema, y no se pudo visitar este perfíl'});
+            }
+        };
+
+        this.dataUser = (clients_id) => {
+            let data = '';
             if(clients_id != false){    
                 let arr = this.vm.clients().filter(c => c.id() == clients_id);
                 if(arr.length < 1)
                     return ' -- ';
-                return arr[0].name()+' - '+arr[0].cc(); 
+
+                const email = arr[0].email() !== '' ? (<a href={'mailto:'+arr[0].email()} >{arr[0].email()}</a>) : (<i>No hay acceso a email</i>);
+
+                return (
+                    <div>
+                        {arr[0].name()}<br/>
+                        {email}<br/>
+                        <span class="pt-icon-standard pt-icon-phone"></span> <b>{arr[0].cell_phone()}</b><br/>
+                        <a onclick={this.openProfileFacebook.bind(this, arr[0].userIdFacebook())} >Perfíl Facebook <span class="pt-icon-standard pt-icon-link"></span></a>
+                    </div>
+                );
             }else{
                 return '--';    
             }
-            
         }; 
 
         getClients();
@@ -337,9 +357,9 @@ export const Orders = {
                             <option value="">Seleccione...</option>
                             {c.vm.clients().map((s) => {  
                                 if(c.vm.order().form.users_id() == s.id()){
-                                    return <option value={s.id()} selected>{s.name()} - {s.cc()}</option>;
+                                    return <option value={s.id()} selected>{s.name()}, teléfono {s.cell_phone()}</option>;
                                 }else{
-                                    return <option value={s.id()} >{s.name()} - {s.cc()}</option>;
+                                    return <option value={s.id()} >{s.name()}, teléfono {s.cell_phone()}</option>;
                                 }                                
                             })}
                         </select>
@@ -488,7 +508,9 @@ export const Orders = {
                                 <tr>
                                     <td><b>{order.id()}</b></td>
                                     <td>{order.created_at()}</td>
-                                    <td>{c.nameUser(order.users_id())}</td>
+                                    <td>
+                                        {c.dataUser(order.users_id())}<br/>
+                                    </td>
                                     <td><span class={"pt-tag pt-large pt-round "+order.styleStatus()}>{order.objStatus().name}</span></td>
                                     <td>
                                     {(() => {

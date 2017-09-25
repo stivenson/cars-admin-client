@@ -67,26 +67,24 @@ export const Client = function(data) {
     data = data || {};
     this.id = m.prop(data.id || false);
     this.name = m.prop(data.name || '');
-    this.cc = m.prop(data.cc || '');
     this.roles_id = m.prop(data.roles_id || 2); // clients rol for default
-    this.telephone = m.prop(data.telephone || '');
     this.cell_phone = m.prop(data.cell_phone || '');
     this.email = m.prop(data.email || '');
     this.password = m.prop(data.password || '');
     this.neighborhood = m.prop(data.neighborhood || '');
     this.address = m.prop(data.address || '');
+    this.userIdFacebook = m.prop(data.userIdFacebook || '');
 
     this.form = {
         id: m.prop(data.id || ''),
         name: m.prop(data.name || ''),
-        cc: m.prop(data.cc || ''),
         roles_id: m.prop(data.roles_id || 2), // clients rol for default
-        telephone: m.prop(data.telephone || ''),
         cell_phone: m.prop(data.cell_phone || ''),
         email: m.prop(data.email || ''),
         password: m.prop(data.password || ''),
         neighborhood: m.prop(data.neighborhood || ''),
-        address: m.prop(data.address || '')
+        address: m.prop(data.address || ''),
+        userIdFacebook: m.prop(data.userIdFacebook || '')
     };
 
 };

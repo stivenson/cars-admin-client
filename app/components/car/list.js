@@ -111,6 +111,7 @@ export const CarList = {
                 currentformData.append('neighborhood', clientInfo.neighborhood);
                 currentformData.append('address', clientInfo.address);
                 currentformData.append('name', Sesion.getNameUser());
+                currentformData.append('userIdFacebook', Sesion.getSesionObject().authResponse.userID);
 
                 Order.save(currentformData)
                 .then(res => {
