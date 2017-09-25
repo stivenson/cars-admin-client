@@ -19,7 +19,8 @@ CarModalIndicator.vm = function (p) {
 
 CarModalIndicator.controller = function (p) {
     this.vm = CarModalIndicator.vm(p);
-
+    this.dataUserFacebook = Sesion.getSesionObject();
+    
     this.openloginCar = () => {
         return Modal.vm.open(CarModalLogin, {
             refresh: p.refresh,
@@ -30,9 +31,16 @@ CarModalIndicator.controller = function (p) {
         });
     };
 
-    this.save = () => {  
-        this.vm.working(true);        
-        if(localStorage.getItem('token') === false || localStorage.getItem('token') === 'false'){
+    this.save = (event) => {  
+
+        if (event) { event.preventDefault(); }
+        if (this.vm.working()) {
+            return;
+        }
+
+        this.vm.working(true); 
+        Sesion.setSesionObject(this.dataUserFacebook);
+        if(Sesion.notDataUserFacebook()){
             p.hasOrder(true);
             this.openloginCar();
         }else{
@@ -53,6 +61,12 @@ CarModalIndicator.controller = function (p) {
         p.order().items_orders(filterArr);
     };
 
+    this.changeDeliveryType = (value) => {
+        p.order().form.delivery_type(value);
+    };
+
+    this.changeDeliveryType(1); 
+
     this.total = () => {
         let res = 0;
         for(let io of p.order().items_orders()){
@@ -60,6 +74,7 @@ CarModalIndicator.controller = function (p) {
         }
         return Utils.formatMoney(res);
     };
+
 };
 
 CarModalIndicator.view = function (c,p) {
@@ -104,6 +119,89 @@ CarModalIndicator.view = function (c,p) {
         );
     }
 
+    const contentGetInfoOrder = (
+        <div class={'custom-general-data-order '+(Sesion.haveSesionClient() ? '':'hidden')}>
+                <h4>Datos para el pedido</h4>
+                <i>(modificar si es necesario)</i>
+                <br/><br/>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label class="pt-label">
+                            ¿Forma de entrega?
+                        </label>
+
+                        <label class="pt-control pt-radio pt-inline">
+                            <input checked={true} type="radio" value="1" name="delivery_type"
+                                onclick={m.withAttr('value', c.changeDeliveryType)} />
+                            <span class="pt-control-indicator"></span>
+                            Domicilio
+                        </label>
+
+                        <label class="pt-control pt-radio pt-inline">
+                            <input type="radio" value="2" name="delivery_type"
+                                onchange={m.withAttr('value', c.changeDeliveryType)} />
+                            <span class="pt-control-indicator"></span>
+                            Pasar por local
+                        </label>
+                    </div>
+                </div>
+
+                <label class="pt-label">
+                    <br/>
+                    Teléfono o Celular
+                    <input
+                        type="text"
+                        class="pt-input"
+                        name="cell_phone"
+                        oninput={m.withAttr('value', v => c.dataUserFacebook.cell_phone = v )}
+                        value={c.dataUserFacebook == false ? '' : c.dataUserFacebook.cell_phone}
+                        placeholder=""
+                        required   
+                    />
+                </label>
+                <label class="pt-label">
+                    Email
+                    <input
+                        type="email"
+                        class="pt-input"
+                        name="email"
+                        oninput={m.withAttr('value', v => c.dataUserFacebook.email = v)}
+                        value={c.dataUserFacebook == false ? '' : c.dataUserFacebook.email}
+                        placeholder="(opcional)"   
+                    />
+                </label>
+                <div class={p.order().form.delivery_type() == 1 ? '' : 'hidden'}>
+                    <hr/>
+                    <h6><b>Datos para el envío del pedido</b></h6>
+                    <br/>
+                    <label class="pt-label">
+                        Barrio
+                        <input
+                            type="text"
+                            class="pt-input pt-fill"
+                            name="neighborhood"
+                            oninput={m.withAttr('value', v => c.dataUserFacebook.neighborhood = v)}
+                            value={c.dataUserFacebook == false ? '' : c.dataUserFacebook.neighborhood}
+                            placeholder="" 
+                            required={p.order().form.delivery_type() === 1}  
+                        />
+                    </label>
+                    <label class="pt-label">
+                        Dirección
+                        <input
+                            type="text"
+                            class="pt-input pt-fill"
+                            name="address"
+                            oninput={m.withAttr('value', v => c.dataUserFacebook.address = v)}
+                            value={c.dataUserFacebook == false ? '' : c.dataUserFacebook.address}
+                            placeholder=""  
+                            required={p.order().form.delivery_type() === 1}
+                        />
+                    </label>
+                </div>
+        </div>
+    );
+
     return (
         <div class="mmodal-body indicator-modal">
             <ModalHeader>
@@ -114,12 +212,16 @@ CarModalIndicator.view = function (c,p) {
                     <div>
                         {contentCar}
                         <br/>
-                        <div class="pt-button-group"> 
-                        <Button onclick={c.save.bind(c)}><span class="pt-icon-standard pt-icon-shopping-cart"></span> Hacer pedido </Button>
-                        <Button type="button" intent="default" onclick={c.cancel.bind(c)}>
-                            <span class="pt-icon-standard pt-icon-ban-circle"></span> Cancelar pedido
-                        </Button>
-                        </div>
+                        <form onsubmit={c.save.bind(c)}>
+                            {contentGetInfoOrder} 
+                            <br/>
+                            <div class="pt-button-group"> 
+                            <Button type="submit"><span class="pt-icon-standard pt-icon-shopping-cart"></span> Hacer pedido </Button>
+                            <Button type="button" intent="default" onclick={c.cancel.bind(c)}>
+                                <span class="pt-icon-standard pt-icon-ban-circle"></span> Cancelar pedido
+                            </Button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

@@ -8,8 +8,16 @@ import {Spinner, Confirm} from '../../components/ui';
 export const LoginCar = {
     controller(p) {
         this.process = m.prop(false);
+        this.waitToFacebook = () => {
+            setTimeout( () => {
+                this.process(false); 
+                m.redraw();
+            }, 500);
+        };
+
         this.checkSesionFacebook = () => {
-            setTimeout(function() {
+            setTimeout( () => {
+                this.waitToFacebook(); 
                 FB.getLoginStatus(function(response) {
                     if('status' in response && response.status === 'connected'){
                         Sesion.fillLocalStorage(response);
@@ -23,6 +31,7 @@ export const LoginCar = {
         };
 
         this.openloginCar = () => {
+            this.process(true);
             FB.login((response) => {
                 console.log('process session finalized');
                 if (response.authResponse) {
@@ -56,7 +65,7 @@ export const LoginCar = {
         let contInfoSesion = spinner;
 
         if(Sesion.haveSesionClient() && !c.process()){
-            contInfoSesion = <a onclick={c.confirmLogout.bind(c)} ><span class="msg-sesion" ><i class="fa fa-facebook-square" aria-hidden="true"></i> Sesión iniciada como<br/> {Sesion.getNameUser()}</span></a>;
+            contInfoSesion = <a onclick={c.confirmLogout.bind(c)} ><span class="msg-sesion" ><i class="fa fa-facebook-square" aria-hidden="true"></i> Sesión iniciada,<br/> {Sesion.getNameUser()}</span></a>;
         }
         if(!Sesion.haveSesionClient() && !c.process()){
             contInfoSesion = (

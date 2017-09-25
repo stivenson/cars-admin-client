@@ -1,5 +1,11 @@
 .indicator-modal{
     padding: 15px;
+
+	& .custom-general-data-order {
+		background-color: #C3D6E6;
+		padding: 7px;
+		padding-top: 15px;
+	}
 }
 
 .title-indicator{

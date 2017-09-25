@@ -6,7 +6,9 @@ import {Alert} from '../../components/ui';
 
 const DELIVERY_TYPE_DOMICILE = 1;
 const STATUS_PENDING = 1;
-export const STATUTES = [{id:1,name:'Pendiente'},{id:2,name:'Confirmado'},
+export const STATUTES = [
+    {id:1,name:'Pendiente'},
+    {id:2,name:'Confirmado'},
     {id:3,name:'Cancelado'},
     {id:4,name:'Entregado'}];
 export const DELIVERY_TYPES = [{id:1,name:'Domicilio'},{id:2,name:'En local'}];
@@ -82,19 +84,37 @@ const clearLocalStorage = () => {
 };
 
 Sesion.getNameUser = () => {
-    const data_user_facebook = JSON.parse(localStorage.getItem('data_user_facebook'));
-    console.log('-----');
-    console.log(data_user_facebook);
-    return data_user_facebook.name || '';
+    let data_user_facebook = {};
+    try {
+        data_user_facebook = JSON.parse(localStorage.getItem('data_user_facebook'));        
+    } catch (error) {}
+
+    return (data_user_facebook != null && 'name' in data_user_facebook) ? data_user_facebook.name : '';
 };
 
-Sesion.getClientInfo = () => {
+
+Sesion.getClientInfo = (process = false, already = false) => {
     const data_user_facebook = JSON.parse(localStorage.getItem('data_user_facebook'));
-    const userID = data_user_facebook.authResponse.userID;
+    const userID = typeof data_user_facebook.authResponse !== 'undefined' ? data_user_facebook.authResponse.userID : false;
     FB.api(`/${userID}`, function(response) {
         data_user_facebook.name = response.name;
-        Sesion.fillLocalStorage(data_user_facebook);
-        m.redraw();
+        Sesion.getClientWithIdFacebook(userID).then(r => {
+            data_user_facebook.name = response.name;
+
+            if(already)
+                Sesion.fillLocalStorage(Object.assign({}, data_user_facebook, r), already);
+            else if(r != false)
+                Sesion.fillLocalStorage(Object.assign({}, data_user_facebook, r));
+            else
+                Sesion.fillLocalStorage(Object.assign({}, data_user_facebook));
+            
+            try {
+                if(process != false)
+                    process(false); 
+            } catch (error) {}
+
+            m.redraw();
+        });
     });
 };
 
@@ -102,13 +122,14 @@ Sesion.check = function (data) {
     return API.get('public/check');    
 };
 
-Sesion.fillLocalStorage = function (r) {
-    clearLocalStorage();
+Sesion.fillLocalStorage = function (r,already = false) {
+    if(!already)
+        clearLocalStorage();
     localStorage.setItem('data_user_facebook', JSON.stringify(r));
 };
 
 Sesion.haveSesionClient = function() {
-    return localStorage.getItem('data_user_facebook') !== null && localStorage.getItem('data_user_facebook') !== 'false' && localStorage.getItem('data_user_facebook') !== false;
+    return localStorage.getItem('data_user_facebook') !== 'false' && localStorage.getItem('data_user_facebook') !== false;
 };
 
 Sesion.logout = function () {
@@ -119,6 +140,41 @@ Sesion.logout = function () {
     },200);
 };
 
+Sesion.getClientWithIdFacebook = (userIdFacebook) => {
+    return API.get(`public/clients/${userIdFacebook}`);    
+};
+
+Sesion.getSesionObject = () => {
+    let obj = JSON.parse(window.localStorage.getItem('data_user_facebook'));
+
+    if(obj != false){
+        obj.cell_phone = typeof obj.cell_phone !== 'undefined' ? obj.cell_phone : '';
+        obj.email = typeof obj.email !== 'undefined' ? obj.email : '';
+        obj.neighborhood = typeof obj.neighborhood !== 'undefined' ? obj.neighborhood : '';
+        obj.address = typeof obj.address !== 'undefined' ? obj.address : '';
+    }
+
+    return obj;
+};
+
+Sesion.notDataUserFacebook = () => {
+    return localStorage.getItem('data_user_facebook') === false || localStorage.getItem('data_user_facebook') === 'false' || localStorage.getItem('data_user_facebook') == null;
+};
+
+Sesion.setSesionObject = (objectParam) => {
+    const object = objectParam || {};
+    const sesionObject = Object.assign({},Sesion.getSesionObject(),{});
+    clearLocalStorage(); 
+    
+    const client = {
+        cell_phone: object.cell_phone || '',
+        email: object.email || '',
+        neighborhood: object.neighborhood || '',
+        address: object.address || ''
+    };
+
+    window.localStorage.setItem('data_user_facebook',JSON.stringify(Object.assign({}, sesionObject, client)));
+};
 
 /* ORDERS */
 

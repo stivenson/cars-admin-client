@@ -46,7 +46,6 @@ CarModalLogin.controller = function (p) {
         Sesion.login(credentials).then(r => {
             Modal.vm.open(Alert, {label: 'Inicio de sesión exitoso', icon: 'pt-icon-endorsed', mood: 'success'}); 
             Sesion.fillLocalStorage(r);
-            this.vm.saving(false);
             if(p.hasOrder())
                 p.sendOrder();
             p.refresh();

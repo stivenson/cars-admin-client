@@ -105,6 +105,13 @@ export const CarList = {
                 currentformData.append('status', order.status());
                 order.reloadUserId();
                 currentformData.append('users_id', order.users_id());  
+                const clientInfo = Sesion.getSesionObject();
+                currentformData.append('cell_phone', clientInfo.cell_phone);
+                currentformData.append('email', clientInfo.email);
+                currentformData.append('neighborhood', clientInfo.neighborhood);
+                currentformData.append('address', clientInfo.address);
+                currentformData.append('name', Sesion.getNameUser());
+
                 Order.save(currentformData)
                 .then(res => {
                     this.vm.working(false);
