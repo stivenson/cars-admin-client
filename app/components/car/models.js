@@ -3,6 +3,7 @@ import API from '../api';
 import Utils from '../utils';
 import Modal from '../../containers/modal/modal';
 import {Alert} from '../../components/ui';
+import {Config} from '../../config';
 
 const DELIVERY_TYPE_DOMICILE = 1;
 const STATUS_PENDING = 1;
@@ -42,6 +43,9 @@ MProduct.get = (id) => {
 	return API.get(`public/products/${id}`,{type:MProduct});
 };
 
+MProduct.getUrlShareProductFacebook = (id) => {
+    return `${Config.API_URL}/public/share/product/facebook/${id}`;
+};
 
 export const Client = function(data) {
     data = data || {};

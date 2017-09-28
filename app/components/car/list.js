@@ -130,6 +130,23 @@ export const CarList = {
                 });
             }
         };
+
+        this.openShared = (idProduct) => {
+            const link = MProduct.getUrlShareProductFacebook(idProduct); 
+            const urlSharedFacebook = `https://www.facebook.com/sharer/sharer.php?u=${link}`;
+            window.open(urlSharedFacebook, '_blank');
+        };
+
+        this.sharedWithFacebookV2 = (idProduct) => {
+            return (
+                <a onclick={this.openShared.bind(this, idProduct)} class="pt-tag pt-intent-primary"> 
+                    <i class="fa fa-facebook-square" aria-hidden="true"></i>
+                    <span class="sepcolor">_</span>
+                    Compartir
+                </a>
+            ); 
+
+        };
     },
     view(c,p){
 
@@ -153,7 +170,6 @@ export const CarList = {
         if(c.vm.products() != 'empty'){
             list = (
                 <div class="car-list">
-
                     {infocar}
                     <div class="row">
                         {c.vm.products().map((product) => {
@@ -167,12 +183,13 @@ export const CarList = {
                                             <h4 class="title-product">{product.name()}</h4>
                                             <p class="price-product">{product.value()}</p>
                                         </div>
+                                        {c.sharedWithFacebookV2(product.id())}
                                     </a>
                                 </div> 
                             );
                         })}                                  
                     </div>
-                </div>
+                </div>   
             );
         }
 
