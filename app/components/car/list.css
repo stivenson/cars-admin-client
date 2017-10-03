@@ -23,6 +23,12 @@
 		margin-bottom: 20px;
 	}
 
+	& .address-client {
+    	text-align: left;
+		color: #FFFFFF;
+ 		border-bottom: #e5e5e5 solid 1px; 
+	}
+
 }
 
 .cont-image-product {
