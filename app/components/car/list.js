@@ -7,6 +7,7 @@ import CarModalproduct from './modalproduct';
 import IndicatorCar from './indicator';
 import CoverageCar from './coverage';
 import LoginCar from './login';
+import {Config} from '../../config';
 
 export const CarList = {
     vm(p){
@@ -34,6 +35,14 @@ export const CarList = {
 
         this.refresh = () => {
             this.check();
+        };
+
+        this.urlMapsClient = () => {
+            return Config.URL_MAPS_CLIENT;
+        };
+
+        this.addressClient = () => {
+            return Config.ADDRESS_CIENT;
         };
 
         this.check = () => {
@@ -152,6 +161,8 @@ export const CarList = {
 
         let indicator = <div class="align-indicator-car"><IndicatorCar refresh={c.refresh.bind(c)} hasOrder={c.vm.hasOrder.bind(c.vm)} sendOrder={c.sendOrder.bind(c)} order={c.vm.order.bind(c.vm)} amounproducts={c.amounproducts.bind(c)} /></div>;
 
+        let addressClient = <span class="address-client">{c.addressClient()}</span>;
+
         let coverage = <div class="align-coverage-car"><CoverageCar /></div>;
 
         let login = <div class="align-login-car"><LoginCar hasSesion={c.hasSesion.bind(c)} checkSesion={c.check.bind(c)} refresh={c.refresh.bind(c)} hasOrder={c.vm.hasOrder.bind(c.vm)} sendOrder={c.sendOrder.bind(c)} /></div>;
@@ -160,7 +171,9 @@ export const CarList = {
  
         let infocar = (
             <div class="row infocar">
-                <div class="col-sm-8 col-md-8 col-xs-12" ></div>
+                <div class="col-sm-8 col-md-8 col-xs-12" >
+                    <a style="color: #FFFFFF;" href={c.urlMapsClient()} target="_blank"><span class="pt-icon-standard pt-icon-map-marker custom-icon"></span>&nbsp;{c.addressClient()}</a>
+                </div>
                 <div class="col-sm-4 col-md-4 col-xs-12" >
                     <div class="row"><div class="col-md-4 col-xs-4">{coverage}</div><div class="col-md-2 col-xs-2">{indicator}</div><div class="col-md-6 col-xs-6">{login}</div></div>
                 </div>
