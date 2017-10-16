@@ -12,7 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('client',false);
     localStorage.setItem('admin',false);
     localStorage.setItem('data_user', false);
-    localStorage.setItem('token', false);
+    let token = (typeof window.localStorage.getItem('token') != 'undefined' && typeof window.localStorage.getItem('token') != 'null');
+    if (!token) {
+        localStorage.setItem('token', false);
+    }
     const WrapMainLayout = (children) => {
         return {
             view() {

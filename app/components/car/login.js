@@ -73,9 +73,9 @@ export const LoginCar = {
                     <span class="pt-tag pt-intent-primary"> 
                         <i class="fa fa-facebook-square" aria-hidden="true"></i>
                         <span class="sepcolor">_</span>
-                        Iniciar<span class="sepcolor">_</span>
-                        Sesión<span class="sepcolor">_</span>
-                        con<span class="sepcolor">_</span>
+                        Iniciar
+                        Sesión
+                        con
                         Facebook
                     </span> 
                 </a>

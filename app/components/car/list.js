@@ -167,7 +167,7 @@ export const CarList = {
 
         let login = <div class="align-login-car"><LoginCar hasSesion={c.hasSesion.bind(c)} checkSesion={c.check.bind(c)} refresh={c.refresh.bind(c)} hasOrder={c.vm.hasOrder.bind(c.vm)} sendOrder={c.sendOrder.bind(c)} /></div>;
 
-        let list = <div class="custom-spinner text-center"><Spinner Large /></div>;
+        let list = <div class="custom-spinner text-center"><Spinner Large warning /></div>;
  
         let infocar = (
             <div class="row infocar">
@@ -175,7 +175,7 @@ export const CarList = {
                     <a style="color: #FFFFFF;" href={c.urlMapsClient()} target="_blank"><span class="pt-icon-standard pt-icon-map-marker custom-icon"></span>&nbsp;{c.addressClient()}</a>
                 </div>
                 <div class="col-sm-4 col-md-4 col-xs-12" >
-                    <div class="row"><div class="col-md-4 col-xs-4">{coverage}</div><div class="col-md-2 col-xs-2">{indicator}</div><div class="col-md-6 col-xs-6">{login}</div></div>
+                    <div class="row"><div class="col-md-4 col-xs-6"><br/>{coverage}</div><div class="col-md-3 col-xs-6"><br/>{indicator}</div><div class="col-md-5 col-xs-12"><br/>{login}</div></div>
                 </div>
             </div>
         );
