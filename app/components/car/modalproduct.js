@@ -13,7 +13,7 @@ import {
 
 import { ModalHeader } from '../modal/header';
 import Modal from '../../containers/modal/modal';
-import {MProduct, Itemorder, Sesion} from './models';
+import {MProduct, Itemorder, Sesion, Tools, START_HOUR_WORK, END_HOUR_WORK, START_HOUR, END_HOUR} from './models';
 
 
 const CarModalproduct = {};
@@ -46,18 +46,38 @@ CarModalproduct.controller = function (p) {
         if(!Sesion.haveSesionClient()){
             Modal.vm.open(Alert, {label: 'Porfavor, inicie sesión para poder seleccionar productos'});
         }else{
-            let params = {}; 
-            params.amount = this.vm.amount();
-            params.name = product.name();
-            params.numberValue = product.numberValue();
-            params.value = product.value();
-            params.observations = this.vm.observations();
-            params.products_id = product.id();
-            params.orders_id = p.order().id();
-            this.vm.addToCar(new Itemorder(params));
 
-            Modal.vm.terminate();
-            m.redraw(true);
+            const objTime = new Tools();
+
+            objTime.currentHour().then(r => {
+
+                const currentHourServer = Date.parse(`01/01/2016 ${r}:00`);
+
+                if(currentHourServer > END_HOUR_WORK || START_HOUR_WORK > currentHourServer ) {
+                    
+                    Modal.vm.terminate();
+                    Modal.vm.open(Alert, {label: `En la hora actual (${r}), no se reciben pedidos. Agradecemos su comprensión. El horario de pedidos es de ${START_HOUR} a ${END_HOUR}.`});
+                    //m.redraw(true);
+
+                } else {
+
+                    let params = {}; 
+                    params.amount = this.vm.amount();
+                    params.name = product.name();
+                    params.numberValue = product.numberValue();
+                    params.value = product.value();
+                    params.observations = this.vm.observations();
+                    params.products_id = product.id();
+                    params.orders_id = p.order().id();
+                    this.vm.addToCar(new Itemorder(params));
+
+                    Modal.vm.terminate();
+                    m.redraw(true);
+
+                }
+
+            });
+
         }
     }; 
 };

@@ -27,7 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
     m.route(root, '/', {
         '/login': WrapMainLayout(Login),
         '/admin': WrapMainLayout(Admin),
-        '/': WrapMainLayout(Dashboard)
+        '/': WrapMainLayout(Dashboard),
+        '/category/:category': WrapMainLayout(Dashboard)
     });
 });
 

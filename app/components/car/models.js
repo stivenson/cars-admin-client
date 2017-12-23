@@ -11,6 +11,8 @@ export const STATUTES = [{id:1,name:'Pendiente'},{id:2,name:'Confirmado'},
     {id:4,name:'Entregado'}];
 export const DELIVERY_TYPES = [{id:1,name:'Domicilio'},{id:2,name:'En local'}];
 export const TAKE = 16;
+export const START_HOUR = '06:00 am', END_HOUR = '5:30 pm';
+export const START_HOUR_WORK = Date.parse('01/01/2016 06:00:00'), END_HOUR_WORK = Date.parse('01/01/2016 05:30:00');
 
 export const MProduct = function(data) {
     data = data || {};
@@ -32,8 +34,8 @@ MProduct.listAvailable = () => {
     return API.get('spe/products/available',{type:MProduct});
 };
 
-MProduct.listAvailablePaginate = (skip = 0, take = 24) => {
-    return API.get(`spe/products/available/pagination_products/${skip}/${take}`, {type: MProduct});
+MProduct.listAvailablePaginate = (skip = 0, take = 24, category = 0) => {
+    return API.get(`spe/products/available/pagination_products/${skip}/${take}/${category}`, {type: MProduct});
 };
 
 MProduct.get = (id) => {
@@ -210,3 +212,13 @@ Order.save = function (data) {
 
     return API.post(endpoint, data, options);
 };
+
+export const Tools = function() {
+
+    this.currentHour = function() {
+        return API.get('tools/current_hour');
+    };
+
+};
+
+

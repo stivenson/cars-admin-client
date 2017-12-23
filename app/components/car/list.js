@@ -7,6 +7,7 @@ import CarModalproduct from './modalproduct';
 import IndicatorCar from './indicator';
 import CoverageCar from './coverage';
 import LoginCar from './login';
+const TAKE = 24;
 
 export const CarList = {
     vm(p){
@@ -15,8 +16,8 @@ export const CarList = {
             working: m.prop(false),
             order: m.prop(new Order()),
             hasOrder: m.prop(false),
-            fetchProducts: (skip = 0) => {
-                return MProduct.listAvailablePaginate(skip);
+            fetchProducts: (skip = 0, category = 0) => {
+                return MProduct.listAvailablePaginate(skip, TAKE, category);
             },
             openProduct(product,refOrder){
                 return Modal.vm.open(CarModalproduct, {order:refOrder,
@@ -44,7 +45,10 @@ export const CarList = {
         };
 
         this.getProducts = () => {
-            this.vm.fetchProducts(skip).then( r => {
+            
+            let category = typeof m.route.param("category") === 'undefined' ? 0 : m.route.param("category");
+            console.log('GETTING PRODUCTS CATEGORY: '+category);
+            this.vm.fetchProducts(skip, category).then( r => {
                 if(skip > 0)
                     this.vm.products(this.vm.products().concat(r));
                 else
@@ -122,6 +126,32 @@ export const CarList = {
                 });
             }
         };
+
+        this.jivoSite = () => {
+            (function() {
+                let widget_id = 'RDDYpbjcQK';
+                let d = document;
+                let w = window;
+
+                function l() {
+                    let s = document.createElement('script');
+                    s.type = 'text/javascript';
+                    s.async = true;
+                    s.src = '//code.jivosite.com/script/widget/' + widget_id;
+                    var ss = document.getElementsByTagName('script')[0];
+                    ss.parentNode.insertBefore(s, ss);
+                }
+                if (d.readyState == 'complete') {
+                    l();
+                } else {
+                    if (w.attachEvent) {
+                        w.attachEvent('onload', l);
+                    } else {
+                        w.addEventListener('load', l, false);
+                    }
+                }
+            })();
+        };
     },
     view(c,p){
 
@@ -132,7 +162,7 @@ export const CarList = {
         let login = <div class="align-login-car"><LoginCar hasSesion={c.hasSesion.bind(c)} checkSesion={c.check.bind(c)} refresh={c.refresh.bind(c)} hasOrder={c.vm.hasOrder.bind(c.vm)} sendOrder={c.sendOrder.bind(c)} /></div>;
 
         let list = <div class="custom-spinner text-center"><Spinner Large /></div>;
- 
+
         let nameUser;
 
         if(Sesion.haveSesionClient()){
@@ -162,8 +192,8 @@ export const CarList = {
                     <div class="row">
                         {c.vm.products().map((product) => {
                             return (
-                                <div class="col-sm-3 col-md-3 col-xs-12">
-                                    <a onclick={c.openProductWithCar.bind(c,product)} class="thumbnail thumbnail-click">
+                                <div class="col-sm-3 col-md-3 col-xs-12 col-centered">
+                                    <a onclick={c.openProductWithCar.bind(c,product)} class="thumbnail thumbnail-click thumbnail-custom">
                                         <div class="cont-image-product">
                                             <img class="image-product" alt={"image product "+product.id()} src={product.srcImage()} />
                                         </div>
@@ -176,6 +206,7 @@ export const CarList = {
                             );
                         })}                                  
                     </div>
+                    
                 </div>
             );
         }

@@ -26,23 +26,68 @@ export const Orders = {
         this.vm = Orders.vm(p);
         this.limitSizeImagen = 8388606;
         this.skip = 0;
-        const MILISECONDS_FOR_REFRESH = 60000;  
+        const MILISECONDS_FOR_REFRESH = 20000;  
 
         let currentformData = new FormData(); 
 
-        let getOrders = (noSelect, index, take = 15, skip = null) => {
+
+        const requestPermissionNotification = () => {
+
+            // Let's check if the browser supports notifications
+            if (!("Notification" in window)) {
+                alert("This browser does not support desktop notification");
+                return;
+            }
+
+            if (Notification.permission !== "denied") {
+                Notification.requestPermission((permission) => {});
+            }
+        };
+
+        requestPermissionNotification();
+
+        const msgNotification = (lastFirstID, newLastFirstID) => {
+            console.log('check notifications');
+            if( newLastFirstID !== lastFirstID){
+                let notification = new Notification("Hay nuevas ordenes");
+            }
+        };
+
+        const notifyNewOrders = (lastFirstID, newLastFirstID) => {
+            // Let's check if the browser supports notifications
+            if (!("Notification" in window)) {
+              console.log("This browser does not support desktop notification");
+            }
+            // Let's check whether notification permissions have already been granted
+            else if (Notification.permission === "granted") {
+              // If it's okay let's create a notification
+              msgNotification(lastFirstID, newLastFirstID);
+            }
+        };
+
+        let getOrders = (noSelect, index, take = 15, skip = null, notifyChanges = false) => {
             index = index || null;
+            let lastFirstID = 0;
+            let newLastFirstID = 0;
             this.vm.working(true);
             if(skip != null)
                 this.skip = skip;
+            let auxLastArr = this.vm.orders();
+            if((auxLastArr instanceof Array) && auxLastArr.length > 0){
+                lastFirstID = auxLastArr[0].id();
+            }
+            
             Order.list(this.skip, take)
                 .then(r => {
                     this.vm.loadingMoreOrders(false);
+
                     if(this.skip > 0)
                         this.vm.orders(this.vm.orders().concat(r));
                     else
                         this.vm.orders(r);
 
+                    let auxLastArr = this.vm.orders();
+                    newLastFirstID = auxLastArr[0].id();
                     this.skip += r.length;
                 })
                 .then(()=>this.vm.working(false))
@@ -50,9 +95,14 @@ export const Orders = {
                     if(index != null)
                         this.edit(index);
                 })
-                .then(()=>{
+                .then(() => {
                     if(noSelect == true) 
                         this.add();
+                })
+                .then(() => {
+                    if(notifyChanges){
+                        notifyNewOrders(lastFirstID, newLastFirstID);
+                    }
                 })
                 .then(()=>m.redraw())
                 .catch(() => {
@@ -82,12 +132,18 @@ export const Orders = {
                 .then(() => m.redraw());
         };
 
-        this.nameUser = (clients_id) => {
+        this.dataUser = (clients_id) => {
             if(clients_id != false){    
                 let arr = this.vm.clients().filter(c => c.id() == clients_id);
                 if(arr.length < 1)
                     return ' -- ';
-                return arr[0].name()+' - '+arr[0].cc(); 
+                return (
+                    <div>
+                        <i>{arr[0].name()+' - '+arr[0].cc()}</i> <br/>
+                        {arr[0].email()}<br/>
+                        <span class="pt-icon-standard pt-icon-phone"></span> <b>{arr[0].cell_phone()}</b>
+                    </div>
+                );
             }else{
                 return '--';    
             }
@@ -163,7 +219,7 @@ export const Orders = {
         } catch (error) {}
 
         setTimeout(() => {
-            p.interval(setInterval(() => getOrders(false, null, this.vm.orders().length, 0), MILISECONDS_FOR_REFRESH));
+            p.interval(setInterval(() => getOrders(false, null, this.vm.orders().length, 0, true), MILISECONDS_FOR_REFRESH));
         },10000);
         
         this.changeState = (index,status) => {
@@ -488,7 +544,7 @@ export const Orders = {
                                 <tr>
                                     <td><b>{order.id()}</b></td>
                                     <td>{order.created_at()}</td>
-                                    <td>{c.nameUser(order.users_id())}</td>
+                                    <td>{c.dataUser(order.users_id())}</td>
                                     <td><span class={"pt-tag pt-large pt-round "+order.styleStatus()}>{order.objStatus().name}</span></td>
                                     <td>
                                     {(() => {

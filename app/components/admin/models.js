@@ -9,12 +9,14 @@ export const STATUTES = [{id:1,name:'Pendiente'},{id:2,name:'Confirmado'},
     {id:3,name:'Cancelado'},
     {id:4,name:'Entregado'}];
 export const DELIVERY_TYPES = [{id:1,name:'Domicilio'},{id:2,name:'En local'}];
+export const CATEGORIES = [{id:0,name:' -- '}, {id:1,name:'Sushi'}, {id:2,name:'Ensaladas'}, {id: 3, name: 'Menú de hoy'}];
 export const TAKE = 16;
 
 export const Product = function(data) {
     data = data || {};
     this.id = m.prop(data.id || false);
     this.name = m.prop(data.name || '');
+    this.category_id = m.prop(data.category_id || 0);
     this.description = m.prop(data.description || '');
     this.smalldescription = m.prop(this.description().substring(0,10)+'...');
     this.value = m.prop(Utils.formatMoney(data.value) || '');
@@ -33,6 +35,7 @@ export const Product = function(data) {
         description: m.prop(data.description || ''),
         value: m.prop(data.value || ''),
         available: m.prop(data.available == true ? true : false),
+        category_id: m.prop(data.category_id || 0),
         iva: m.prop(data.iva || ''),
         image: m.prop(urlImage),
         haveImage: m.prop(mime != ' '),

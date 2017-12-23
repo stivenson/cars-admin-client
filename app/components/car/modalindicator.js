@@ -60,6 +60,13 @@ CarModalIndicator.controller = function (p) {
         }
         return Utils.formatMoney(res);
     };
+
+    this.changeDeliveryType = (value) => {
+        p.order().form.delivery_type(value);
+    };
+
+    this.changeDeliveryType(1); 
+
 };
 
 CarModalIndicator.view = function (c,p) {
@@ -104,6 +111,30 @@ CarModalIndicator.view = function (c,p) {
         );
     }
 
+    const formGet = (
+        <div class="row">
+            <div class="col-md-12">
+                <label class="pt-label">
+                    ¿Forma de entrega?
+                </label>
+
+                <label class="pt-control pt-radio pt-inline">
+                    <input checked={true} type="radio" value="1" name="delivery_type"
+                        onclick={m.withAttr('value', c.changeDeliveryType)} />
+                    <span class="pt-control-indicator"></span>
+                    Domicilio
+                </label>
+
+                <label class="pt-control pt-radio pt-inline">
+                    <input type="radio" value="2" name="delivery_type"
+                        onchange={m.withAttr('value', c.changeDeliveryType)} />
+                    <span class="pt-control-indicator"></span>
+                    Pasar por local
+                </label>
+            </div>
+        </div>
+    );
+
     return (
         <div class="mmodal-body indicator-modal">
             <ModalHeader>
@@ -113,6 +144,8 @@ CarModalIndicator.view = function (c,p) {
                 <div class="caption text-center">
                     <div>
                         {contentCar}
+                        <br/>
+                        {formGet}
                         <br/>
                         <div class="pt-button-group"> 
                         <Button onclick={c.save.bind(c)}><span class="pt-icon-standard pt-icon-shopping-cart"></span> Hacer pedido </Button>

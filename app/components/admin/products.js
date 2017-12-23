@@ -1,5 +1,5 @@
 import m from 'mithril';
-import { Product } from './models';
+import { Product, CATEGORIES } from './models';
 import API from '../api';
 import Modal from '../../containers/modal/modal';
 import {Spinner, Button, Alert, Confirm} from '../../components/ui';
@@ -9,6 +9,7 @@ export const Products = {
     	return {
             working: m.prop(false),
             products: m.prop('empty'),
+            categories_id: m.prop(CATEGORIES),
             readonly: m.prop(false),
             product: m.prop(new Product()),
             waitForm: m.prop(false),
@@ -132,6 +133,7 @@ export const Products = {
             currentformData.append('value', this.vm.product().form.value());
             currentformData.append('iva', this.vm.product().form.iva());
             currentformData.append('available', this.vm.product().form.available());
+            currentformData.append('category_id', this.vm.product().form.category_id());
 
             if(this.vm.product().form.id() != false){
 
@@ -281,6 +283,19 @@ export const Products = {
                         <img src={c.vm.product().form.image()}/>
                         <br/><br/>
                     </div>
+
+                    <label class="pt-label">
+                        Categoría
+                        <div class="pt-select">
+                            <select disabled={c.vm.readonly()} name="category_id" onchange={m.withAttr('value', (v) => {if(v != null) c.vm.product().form.category_id(v)})} required >
+                                {c.vm.categories_id().map( ca => {
+                                    return (
+                                        <option value={ca.id} selected={c.vm.product().form.category_id() == ca.id}>{ca.name}</option>
+                                    );
+                                })}
+                            </select>
+                        </div>
+                    </label>
 
                     <label class={"pt-control pt-checkbox pt-inline "+(c.vm.readonly() == true ? 'hidden':'')} >
                         <input
