@@ -172,9 +172,9 @@ export const CarList = {
         let list = <div class="custom-spinner text-center"><Spinner Large warning /></div>;
  
         let infocar = (
-            <div class="row infocar">
+            <div class="row infocar floating-header">
                 <div class="col-sm-8 col-md-8 col-xs-12" >
-                    <a style="color: #FFFFFF;" href={c.urlMapsClient()} target="_blank"><span class="pt-icon-standard pt-icon-map-marker custom-icon"></span>&nbsp;{c.addressClient()}{messageStivensonContact}</a>
+                    <a style="color: #FFFFFF;" href={c.urlMapsClient()} target="_blank"><span class="pt-icon-standard pt-icon-map-marker custom-icon"></span>&nbsp;{c.addressClient()}</a>{messageStivensonContact}
                 </div>
                 <div class="col-sm-4 col-md-4 col-xs-12" >
                     <div class="row"><div class="col-md-4 col-xs-6"><br/>{coverage}</div><div class="col-md-3 col-xs-6"><br/>{indicator}</div><div class="col-md-5 col-xs-12"><br/>{login}</div></div>
@@ -186,7 +186,7 @@ export const CarList = {
             list = (
                 <div class="car-list">
                     {infocar}
-                    <div class="row">
+                    <div class="row not-floating-body">
                         {c.vm.products().map((product) => {
                             return (
                                 <div class="col-sm-3 col-md-3 col-xs-12 col-centered cont-thumbnail-custom">

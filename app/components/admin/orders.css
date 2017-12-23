@@ -48,5 +48,58 @@
 		font-weight: bold;
 	}
 
+	& .background-flicker-white {
+	    background-color: orange;
+	    animation: flickerorange 2s;
+	    -webkit-animation: flickerorange 2s;
+	    -moz-animation: flickerorange 2s;
+	    animation-iteration-count: infinite;
+	    -webkit-animation-iteration-count: infinite;
+	    -moz-animation-iteration-count: infinite
+	}
+
+	& .background-flicker-blue {
+	    background-color: blue;
+	    animation: flickerblue  2s;
+	    -webkit-animation: flickerblue  2s;
+	    -moz-animation: flickerblue  2s;
+	    animation-iteration-count: infinite;
+	    -webkit-animation-iteration-count: infinite;
+	    -moz-animation-iteration-count: infinite
+	}
+
 }
 
+	@keyframes flickerorange {
+	    0%, 100% {
+	        box-shadow: 0 0 10px orange
+	    }
+	    50% {
+	        box-shadow: 0 0 50px orange
+	    }
+	}
+	@-webkit-keyframes flickerorange {
+	    0%, 100% {
+	        -webkit-box-shadow: 0 0 10px orange
+	    }
+	    50% {
+	        -webkit-box-shadow: 0 0 50px orange
+	    }
+	}
+
+	@keyframes flickerblue {
+	    0%, 100% {
+	        box-shadow: 0 0 10px blue
+	    }
+	    50% {
+	        box-shadow: 0 0 50px blue
+	    }
+	}
+	@-webkit-keyframes flickerblue {
+	    0%, 100% {
+	        -webkit-box-shadow: 0 0 10px blue
+	    }
+	    50% {
+	        -webkit-box-shadow: 0 0 50px blue
+	    }
+	}

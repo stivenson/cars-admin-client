@@ -184,7 +184,7 @@ export const Orders = {
 
         setTimeout(() => {
             p.interval(setInterval(() => getOrders(false, null, this.vm.orders().length, 0), MILISECONDS_FOR_REFRESH));
-        },10000);
+        },60000);
         
         this.changeState = (index,status) => {
             currentformData = new FormData();
@@ -506,7 +506,7 @@ export const Orders = {
                         {c.vm.orders().map((order, index) => {
                             return (
                                 <tr>
-                                    <td><b>{order.id()}</b></td>
+                                    <td class={(order.form.status() === 1 ? 'background-flicker-white' : '') || (order.form.status() == 2 ? 'background-flicker-blue' : '')} > <i class={"fa fa-lightbulb-o fa-2x "+((order.form.status() == 1 ? 'background-flicker-white' : '') || (order.form.status() == 2 ? 'background-flicker-blue' : ''))} aria-hidden="true"></i> <b>{order.id()}</b></td>
                                     <td>{order.created_at()}</td>
                                     <td>
                                         {c.dataUser(order.users_id())}<br/>

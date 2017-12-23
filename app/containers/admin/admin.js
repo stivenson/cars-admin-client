@@ -8,7 +8,7 @@ import {Alert} from '../../components/ui';
 
 export const Admin = {
     controller(p){
-        this.tab = m.prop(1);
+        this.tab = m.prop(3);
         this.interval = m.prop('');
         
         this.construction = () => {
@@ -42,6 +42,8 @@ export const Admin = {
             this.tab(3);
         };
 
+        // this.getOrdersSection();
+
     },
     view(c,p){
         
@@ -60,9 +62,9 @@ export const Admin = {
                     <div>
                         <div class="pt-tabs">
                             <ul class="pt-tab-list pt-large" role="tablist"> 
+                                <li class="pt-tab" role="tab" aria-selected={(c.tab() == 3)} ><a class="tab-link" onclick={c.getOrdersSection.bind(c)}> Pedidos</a></li>
                                 <li class="pt-tab" role="tab" aria-selected={(c.tab() == 1)} ><a class="tab-link"  onclick={c.tab.bind(c,1)}> Clientes</a></li>
                                 <li class="pt-tab" role="tab" aria-selected={(c.tab() == 2)} ><a class="tab-link" onclick={c.tab.bind(c,2)}> Productos</a></li>
-                                <li class="pt-tab" role="tab" aria-selected={(c.tab() == 3)} ><a class="tab-link" onclick={c.getOrdersSection.bind(c)}> Pedidos</a></li>
                             </ul>
                             <div class="pt-tab-panel" role="tabpanel" aria-hidden={!(c.tab() == 1)} ><Clients /></div>
                             <div class="pt-tab-panel" role="tabpanel" aria-hidden={!(c.tab() == 2)} ><Products /></div>
