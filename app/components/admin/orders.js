@@ -220,7 +220,7 @@ export const Orders = {
 
         setTimeout(() => {
             p.interval(setInterval(() => getOrders(false, null, this.vm.orders().length, 0, true), MILISECONDS_FOR_REFRESH));
-        },10000);
+        },60000);
         
         this.changeState = (index,status) => {
             currentformData = new FormData();
