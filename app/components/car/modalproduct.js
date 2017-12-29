@@ -13,7 +13,7 @@ import {
 
 import { ModalHeader } from '../modal/header';
 import Modal from '../../containers/modal/modal';
-import {MProduct, Itemorder, Sesion, Tools, START_HOUR_WORK, END_HOUR_WORK, START_HOUR, END_HOUR} from './models';
+import {MProduct, Itemorder, Sesion, Tools, minutesOfDay, START_HOUR_WORK, END_HOUR_WORK, START_HOUR, END_HOUR} from './models';
 
 
 const CarModalproduct = {};
@@ -51,15 +51,11 @@ CarModalproduct.controller = function (p) {
 
             objTime.currentHour().then(r => {
 
-                const currentHourServer = Date.parse(`01/01/2016 ${r}:00`);
+                const currentHourServer = minutesOfDay(r);
 
-                //if(currentHourServer > END_HOUR_WORK || START_HOUR_WORK > currentHourServer ) {
-                    
-                //    Modal.vm.terminate();
-                //    Modal.vm.open(Alert, {label: `En la hora actual (${r}), no se reciben pedidos. Agradecemos su comprensión. El horario de pedidos es de ${START_HOUR} a ${END_HOUR}.`});
-                    //m.redraw(true);
+                console.log(currentHourServer + ' >= ' + START_HOUR_WORK + ' && ' + currentHourServer + ' <= ' + END_HOUR_WORK);
 
-                //} else {
+                if( currentHourServer >= START_HOUR_WORK && currentHourServer <= END_HOUR_WORK ) {
 
                     let params = {}; 
                     params.amount = this.vm.amount();
@@ -74,7 +70,14 @@ CarModalproduct.controller = function (p) {
                     Modal.vm.terminate();
                     m.redraw(true);
 
-                //}
+
+                } else {
+
+                    Modal.vm.terminate();
+                    Modal.vm.open(Alert, {label: `En la hora actual (${r}), no se reciben pedidos. Agradecemos su comprensión. El horario de pedidos es de ${START_HOUR} a ${END_HOUR}.`});
+                    //m.redraw(true);
+
+                }
 
             });
 

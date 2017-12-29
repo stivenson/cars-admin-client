@@ -12,7 +12,6 @@ export const STATUTES = [{id:1,name:'Pendiente'},{id:2,name:'Confirmado'},
 export const DELIVERY_TYPES = [{id:1,name:'Domicilio'},{id:2,name:'En local'}];
 export const TAKE = 16;
 export const START_HOUR = '06:00 am', END_HOUR = '5:30 pm';
-export const START_HOUR_WORK = Date.parse('01/01/2016 06:00:00'), END_HOUR_WORK = Date.parse('01/01/2016 05:30:00');
 
 export const MProduct = function(data) {
     data = data || {};
@@ -28,6 +27,21 @@ export const MProduct = function(data) {
 
     this.srcImage = m.prop(`data:image/${this.mime()};base64,${this.image1()}`);
 };
+
+export const minutesOfDay = function(hour) {
+
+    let hoursDay = hour.substring(0, 2);
+    let minutesDay = hour.substring(3, 5);
+
+    hoursDay = parseInt(hoursDay);
+    minutesDay = parseInt(minutesDay);
+
+    return minutesDay + hoursDay * 60;
+
+}
+
+export const START_HOUR_WORK = minutesOfDay('06:00'), END_HOUR_WORK = minutesOfDay('17:30');
+
 
 
 MProduct.listAvailable = () => {
