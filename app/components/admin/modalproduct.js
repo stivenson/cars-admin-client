@@ -34,8 +34,8 @@ AdminModalproduct.vm = function (p) {
                 return;
             }
         }
-    }
-}
+    };
+};
 
 AdminModalproduct.controller = function (p) {
     this.vm = AdminModalproduct.vm(p);
@@ -47,17 +47,33 @@ AdminModalproduct.controller = function (p) {
         params.products_id = p.product.id();
         params.orders_id = p.order().id();
         this.vm.addToCar(new Itemorder(params));
+        p.refreshStatus();
         Modal.vm.terminate();
         m.redraw(true);
     };
 
-}
+    this.cancelAll = () => {
+        try {
+            console.log('operation about DOM');
+            window.document.getElementById(p.currentIDElement).checked = false;
+        } catch (error) {}
+        p.refreshStatus();
+        Modal.vm.terminate();
+    };
+
+};
 
 AdminModalproduct.view = function (c,p) {
     return (
         <div class="mmodal-body product-modal">
             <ModalHeader notlockable="true" >
-                <div class="text-center title-product">{p.product.name()}</div>
+                <div class="pattern-custom-close">
+                    <a class="custom-close-header-product" onclick={c.cancelAll.bind(c)}><span class="pt-icon-standard pt-icon-cross"></span> 
+                    </a>
+                </div>
+                <div class="text-center title-product">
+                    {p.product.name()}
+                </div>
             </ModalHeader>
 
             <div class="thumbnail thumbnail-click">
@@ -77,6 +93,7 @@ AdminModalproduct.view = function (c,p) {
                         onchange={m.withAttr('value', c.vm.observations)}>{c.vm.observations()}</textarea>
                         <br/>
                         <Button onclick={c.addToCar.bind(c,p.product)}><span class="pt-icon-standard pt-icon-shopping-cart"></span> Agregar </Button>
+                        <Button intent="default" onclick={c.cancelAll.bind(c)}><span class="pt-icon-standard pt-icon-cross"></span> Cancelar </Button>
                     </div>
                 </div>
             </div>

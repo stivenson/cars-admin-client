@@ -1,7 +1,7 @@
 import m from 'mithril';
 import API from '../api';
 import Utils from '../utils';
-import { Client } from './models';
+import { Client, Sesion } from './models';
 
 import {
     InputAutoComplete,
@@ -13,7 +13,6 @@ import { ModalHeader } from '../modal/header';
 import Modal from '../../containers/modal/modal';
 import {Alert} from '../ui';
 
-
 const CarModalLogin = {};
 
 CarModalLogin.vm = function (p) {
@@ -22,17 +21,18 @@ CarModalLogin.vm = function (p) {
         email: m.prop(''),
         password: m.prop(''),
         register: m.prop(false),
+        isMsgEmail: m.prop(false),
         client: m.prop(new Client())
-    }
-}
+    };
+};
 
 CarModalLogin.controller = function (p) {
     
     this.vm = CarModalLogin.vm(p);
-
+    this.vm.isMsgEmail(false);
     this.construction = () => {
         Modal.vm.open(Alert, {label: 'En construcción'});
-    }
+    };
 
     this.login = () => {
 
@@ -40,11 +40,25 @@ CarModalLogin.controller = function (p) {
         let credentials = {};
         credentials.email = this.vm.email();
         credentials.password = this.vm.password();
-        
-        // Modal.vm.terminate();
-        this.vm.saving(false);
-        this.construction();
-        // m.redraw(true);
+        credentials.isclient = true;
+        Modal.vm.terminate();
+
+        Sesion.login(credentials).then(r => {
+            Modal.vm.open(Alert, {label: 'Inicio de sesión exitoso', icon: 'pt-icon-endorsed', mood: 'success'}); 
+            Sesion.fillLocalStorage(r);
+            if(p.hasOrder())
+                p.sendOrder();
+            p.refresh();
+        }).catch(r => {
+            this.vm.saving(false);
+            if(r === 'invalid_credentials') {
+                Modal.vm.open(Alert, { label: 'Credenciales incorrectas. Porfavor verifique y vuelva a intentarlo' });
+            } else if(r === 'not_role') {
+                Modal.vm.open(Alert, { label: 'Un administrador no puede iniciar sesión como un cliente' });                        
+            } else {
+                Modal.vm.open(Alert, { label: 'Ha ocurrido un error, por favor, vuelta a intentarlo (verifique su internet)' });                        
+            }
+        });
 
     };
 
@@ -55,28 +69,63 @@ CarModalLogin.controller = function (p) {
             return;
         }
         this.login();
-    }
+    };
     
     this.submitRegister = (e) => {
         if (e) 
             e.preventDefault();
         if (this.vm.saving())
             return;
-        this.vm.register(false);
-        this.construction();
-    }
+
+        const formClient = this.vm.client().form;
+
+        const objformClient = {
+            id: formClient.id(),
+            name: formClient.name(),
+            cc: formClient.cc(),
+            roles_id: formClient.roles_id(),
+            telephone: formClient.telephone(),
+            cell_phone: formClient.cell_phone(),
+            neighborhood: formClient.neighborhood(),
+            address: formClient.address(),
+            email: formClient.email(),
+            password: formClient.password()
+        };
+        this.vm.saving(true);
+        this.vm.isMsgEmail(false);
+        Client.save(objformClient).then( r => {
+            if(r == 'email_invalid') {  
+                this.vm.saving(false); 
+                this.vm.isMsgEmail(true);
+                m.redraw();
+            }else{
+                Modal.vm.open(Alert, {label: 'Registro exitoso, ahora porfavor, inicie sesión', icon: 'pt-icon-endorsed', mood: 'success'});  
+                this.vm.saving(false); 
+                this.vm.register(false); 
+                m.redraw();  
+            }
+
+        }).catch( r => {
+            Modal.vm.open(Alert, {label: 'Huvo un error mientras se realizaba el registro, porfavor vuelva a intentarlo'});
+            this.vm.saving(false);                     
+        });
+    };
 
 
     this.openFormRegister = () => {
         this.vm.register(!this.vm.register());
-    }
+    };
 
-}
+};
 
 CarModalLogin.view = function (c,p) {
 
-
     let registerForm;
+
+    let msgEmail = '';
+
+    if(c.vm.isMsgEmail())
+        msgEmail = <span class="pt-tag pt-intent-danger">El correo especificado ya existe en el sistema, por favor indique otro</span>;
 
     if(c.vm.register()){
         registerForm = (
@@ -166,6 +215,7 @@ CarModalLogin.view = function (c,p) {
 
 
                         <label class="pt-label">
+                            {msgEmail}
                             Email
                             <input
                                 type="email"
@@ -192,7 +242,7 @@ CarModalLogin.view = function (c,p) {
                         </label>
 
                         <div class="text-center"> 
-                            <Button type="submit">
+                            <Button loading={c.vm.saving()} type="submit">
                                 <span class="pt-icon-standard pt-icon-user"></span> Enviar registro 
                             </Button>
                         </div>
@@ -203,65 +253,19 @@ CarModalLogin.view = function (c,p) {
         );        
     }
 
+    let optionalMessage = '';
+
+    if('specialMessage' in p)
+        optionalMessage = <div><div class="pt-card pt-elevation-3 optional-message">{p.specialMessage}</div><br/><br/></div>;
+        
 
     return (
         <div class="mmodal-body login-modal">
             <ModalHeader>
-                <div class="text-center title-login">Iniciar Sesión</div>
+                <div class="text-center title-login">Iniciar Sesión Con Facebook</div>
             </ModalHeader>
-            <div class="thumbnail thumbnail-click">
-                <div class="caption text-center">
-                    <form onsubmit={c.submit.bind(c)}>
-
-                        <label class="pt-label">
-                            Correo electrónico
-                            <input
-                                type="email"
-                                class="pt-input pt-fill"
-                                name="email"
-                                oninput={m.withAttr('value', c.vm.email)}
-                                value={c.vm.email()}
-                                placeholder=""
-                                required
-                            />
-                        </label>
-
-                        <label class="pt-label">
-                            Contraseña
-                            <input
-                                type="password"
-                                class="pt-input pt-fill"
-                                name="password"
-                                oninput={m.withAttr('value', c.vm.password)}
-                                value={c.vm.password()}
-                                placeholder=""
-                                required
-                            />
-                        </label>
-
-                        <br/>
-
-                        <div class="pt-button-group"> 
-
-                            <Button type="submit">
-                                <span class="pt-icon-standard pt-icon-log-in"></span> Entrar 
-                            </Button>
-
-                            <Button type="button" intent="default" onclick={c.openFormRegister.bind(c)}>
-                                <span class="pt-icon-standard pt-icon-user "></span> Registrarse
-                            </Button>
-
-                        </div>
-
-                    </form>
-
-                    {registerForm}
-                
-                </div>
-            </div>
         </div>
-    )
-}
-
+    );
+};
 
 export default CarModalLogin;

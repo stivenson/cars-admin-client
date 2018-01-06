@@ -1,5 +1,5 @@
 import m from 'mithril';
-import { Client } from './models';
+import { Client, Sesion } from './models';
 import API from '../api';
 import Modal from '../../containers/modal/modal';
 import {Button, Alert} from '../../components/ui';
@@ -10,7 +10,7 @@ export const AdminLogin = {
             working: m.prop(false),
             email: m.prop(''),
             password: m.prop('')
-        } 
+        }; 
     },
     controller(p){
 
@@ -24,21 +24,32 @@ export const AdminLogin = {
 
             this.vm.working(true);
 
-            Client.login({email:this.vm.email(), password:this.vm.password()})
-                .then(r => {
-                    this.vm.working(false);
-                    if(r === true){
-                        m.route('/admin');
-                        // window.location.reload();
-                    } else {
-                        Modal.vm.open(Alert, { label: 'Credenciales incorrectas. Porfavor verifique y vuelva a intentarlo' });
-                    }
-                });
+            Sesion.login({email:this.vm.email(), password:this.vm.password()})
+            .then(r => {
+                this.vm.working(false);
+                Sesion.fillLocalStorage(r);
+                localStorage.setItem('admin',true);
+                m.route('/admin');
 
-        }
+            }).catch(r => {
+                localStorage.setItem('admin',false);
+                this.vm.working(false);
+                if(r === 'invalid_credentials') {
+                    Modal.vm.open(Alert, { label: 'Credenciales incorrectas. Porfavor verifique y vuelva a intentarlo' });
+                } else if(r === 'not_role') {
+                    Modal.vm.open(Alert, { label: 'Su usuario es el de un cliente. No tiene permiso para ingresar acá' });                        
+                } else {
+                    Modal.vm.open(Alert, { label: 'Ha ocurrido un error, por favor, vuelta a intentarlo (verifique su internet)' });                        
+                }
+            });
+        };
 
     },
     view(c,p){
+
+        if(Sesion.haveSession()){
+            m.route('/admin');
+        }
 
         let content = (
             <div class="admin-login">
@@ -54,7 +65,7 @@ export const AdminLogin = {
                                     name="email"
                                     oninput={m.withAttr('value', c.vm.email)}
                                     value={c.vm.email()}
-                                    placeholder="Solo números"
+                                    placeholder=""
                                     required
                                 />
                             </label>
@@ -68,7 +79,7 @@ export const AdminLogin = {
                                     name="password"
                                     oninput={m.withAttr('value', c.vm.password)}
                                     value={c.vm.password()}
-                                    placeholder="Solo números"
+                                    placeholder=""
                                     required
                                 />
                             </label>
@@ -83,12 +94,12 @@ export const AdminLogin = {
                     </div>
                 </div>
             </div>
-        )
+        );
 
         return content;
 
     }
-}
+};
 
 
 export default AdminLogin;

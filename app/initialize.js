@@ -9,7 +9,13 @@ import MainLayout from 'layouts/MainLayout/MainLayout';
 
 document.addEventListener('DOMContentLoaded', () => {
     var root = document.getElementById('app');
-    localStorage.setItem('user',false);
+    localStorage.setItem('client',false);
+    localStorage.setItem('admin',false);
+    localStorage.setItem('data_user', false);
+    let token = (typeof window.localStorage.getItem('token') != 'undefined' && typeof window.localStorage.getItem('token') != 'null');
+    if (!token) {
+        localStorage.setItem('token', false);
+    }
     const WrapMainLayout = (children) => {
         return {
             view() {
@@ -17,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <MainLayout>{children}</MainLayout>
                 );
             }
-        }
+        };
     };
 
     m.route.mode = 'hash';

@@ -3,7 +3,6 @@ import {Config} from '../config';
 
 const API = {
     config(xhr) {
-        xhr.setRequestHeader('Content-Type', 'application/json');
     },
     configAuth(xhr, token) {
         xhr.setRequestHeader('Authorization', 'Bearer ' + token);
@@ -33,7 +32,8 @@ const API = {
         var defaults = {
             method: 'GET',
             url: API.requestUrl(endpoint),
-            background: true
+            background: true,
+            config: API.requestConfig
         };
         var request = m.request(Object.assign({}, defaults, options));
         request.xhr = xhr;
@@ -46,6 +46,7 @@ const API = {
             method: 'POST',
             url: API.requestUrl(endpoint),
             data: payload,
+            config: API.requestConfig,
             background: true
         };
         return m.request(Object.assign({}, defaults, options));

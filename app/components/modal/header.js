@@ -3,7 +3,6 @@ import Modal from '../../containers/modal/modal';
 
 export const ModalHeader = {
     view(ctrl, attrs, children) {
-        console.log(attrs);
         return (
             <div class="mmodal-header">
                 <h1>{children}</h1>

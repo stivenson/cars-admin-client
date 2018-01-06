@@ -140,9 +140,6 @@ const TablePaginated = {
         );
 
         var sample = {};
-        console.log('············');
-        console.log(state.data());
-        console.log('············');
         var data = state.data().data();
 
         if (data.length > 0) {

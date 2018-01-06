@@ -18,7 +18,7 @@ export const CoverageCar = {
                 <a onclick={c.opencoverageCar.bind(c)}>
                     <span class="pt-tag pt-intent-success"> 
                         <span class="pt-icon-standard pt-icon-map-marker custom-icon"> </span>
-                        <span class="sepcolor">_</span>Covertura<span class="sepcolor">_</span>Cúcuta 
+                        <span class="sepcolor">_</span>Covertura 
                     </span> 
                 </a>
             </span>

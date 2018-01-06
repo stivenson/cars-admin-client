@@ -115,7 +115,7 @@ export const Products = {
                 Modal.vm.open(Alert, {label: 'Debe especificar imagen'});
             }
 
-        }
+        };
 
         this.save = (event) => {
             if (event) { event.preventDefault(); }
@@ -151,7 +151,6 @@ export const Products = {
                     }   
                 }).catch(erSave => {
                     this.vm.working(false);
-                    console.log("Error: "+erSave);
                     Modal.vm.open(Alert, {label: 'No se pudo actualizar el producto, por favor verifique datos faltantes, y/o reales'});
                 });
 
@@ -172,7 +171,6 @@ export const Products = {
                     }
                 }).catch(erSave => {
                     this.vm.working(false);
-                    console.log("Error: "+erSave);
                     Modal.vm.open(Alert, {label: 'No se pudo guardar el producto, por favor verifique datos faltantes, y/o reales'});
                 });
 
@@ -190,7 +188,7 @@ export const Products = {
         let list = spinner;
         let form = spinner;
 
-        let btnAdd = <button onclick={c.add.bind(c)} type="button" class="pt-button pt-minimal pt-icon-add pt-intent-primary custom-add-btn" >Agregar Producto</button>;
+        let btnAdd = <button onclick={c.add.bind(c)} type="button" class="pt-button custom-add-btn" ><span style="color: red;" class="pt-icon-standard pt-icon-add"></span> Agregar Producto</button>;
 
 
         if(c.vm.waitForm() == false){
@@ -272,7 +270,8 @@ export const Products = {
                             type="file" 
                             required={c.vm.product().form.id() == false}
                             disabled={c.vm.readonly()}
-                            onchange={c.prepareImage.bind(c)}/>
+                            onchange={c.prepareImage.bind(c)}
+                            accept="image/*" />
                             <span class={"pt-file-upload-input "+(c.vm.statusImage() == 'Seleccionar imagen' ? '':'have-image')}>{c.vm.statusImage()}</span>
                             <br/>
                             <br/>

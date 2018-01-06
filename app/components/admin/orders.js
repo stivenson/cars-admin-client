@@ -1,5 +1,5 @@
 import m from 'mithril';
-import {Order, Client, Product, Itemorder, STATUTES, DELIVERY_TYPES, TAKE} from './models';
+import {Order, Client, Product, Itemorder, Sesion, STATUTES, DELIVERY_TYPES} from './models';
 import API from '../api';
 import Modal from '../../containers/modal/modal';
 import {Spinner, Button, Alert, Confirm} from '../../components/ui';
@@ -17,6 +17,7 @@ export const Orders = {
             statutes: m.prop(STATUTES),
             readonly: m.prop(false),
             order: m.prop(new Order()),
+            loadingMoreOrders: m.prop(false),
             waitForm: m.prop(false),
             arr_check_status: []
         }; 
@@ -24,31 +25,53 @@ export const Orders = {
     controller(p){
         this.vm = Orders.vm(p);
         this.limitSizeImagen = 8388606;
-        this.limitOrders = m.prop(380);
+        this.skip = 0;
+        const MILISECONDS_FOR_REFRESH = 60000;  
+
         let currentformData = new FormData(); 
-        this.limit = 0;
-        let getOrders = (noSelect, index, withlimit = false) => {
-            if(withlimit)
-                this.limit = this.limit + TAKE;
+
+        let getOrders = (noSelect, index, take = 15, skip = null) => {
             index = index || null;
             this.vm.working(true);
-            Order.list(this.limit)
-                .then(this.vm.orders)
+            if(skip != null)
+                this.skip = skip;
+            Order.list(this.skip, take)
+                .then(r => {
+                    this.vm.loadingMoreOrders(false);
+                    if(this.skip > 0)
+                        this.vm.orders(this.vm.orders().concat(r));
+                    else
+                        this.vm.orders(r);
+
+                    this.skip += r.length;
+                })
                 .then(()=>this.vm.working(false))
                 .then(() => {
-                    if(index != null){
+                    if(index != null)
                         this.edit(index);
-                    }
                 })
-                .then(()=>{if(noSelect == true) this.add()})
-                .then(()=>m.redraw());
+                .then(()=>{
+                    if(noSelect == true) 
+                        this.add();
+                })
+                .then(()=>m.redraw())
+                .catch(() => {
+                    if(!Sesion.haveSesionAdmin()){
+                        try {
+                            clearInterval(this.interval());
+                        } catch (error) {}
+                        Modal.vm.open(Alert, { label: 'La sesión se encuentra cerrada, porfavor, vuelva a iniciarla' });
+                        m.route('/login');
+                    }
+                });
         };
 
-        getOrders(true,null,true);
+        getOrders(true,null);
 
 
         this.getMoreOrders = () => {
-            getOrders(true,null,true);
+            this.vm.loadingMoreOrders(true);
+            getOrders(true,null);
         };
 
         let getClients = () => {
@@ -59,16 +82,36 @@ export const Orders = {
                 .then(() => m.redraw());
         };
 
-        this.nameUser = (clients_id) => {
+        this.openProfileFacebook = (userIdFacebook) => {
+            try {
+                const uri = `https://www.facebook.com/${userIdFacebook}`;
+                const win = window.open(uri, '_blank');
+                win.focus();  
+            } catch (error) {
+                Modal.vm.open(Alert, {label: 'Huvo un problema, y no se pudo visitar este perfíl'});
+            }
+        };
+
+        this.dataUser = (clients_id) => {
+            let data = '';
             if(clients_id != false){    
                 let arr = this.vm.clients().filter(c => c.id() == clients_id);
                 if(arr.length < 1)
                     return ' -- ';
-                return arr[0].name()+' - '+arr[0].cc(); 
+
+                const email = arr[0].email() !== '' ? (<a href={'mailto:'+arr[0].email()} >{arr[0].email()}</a>) : (<i>No hay acceso a email</i>);
+
+                return (
+                    <div>
+                        {arr[0].name()}<br/>
+                        {email}<br/>
+                        <span class="pt-icon-standard pt-icon-phone"></span> <b>{arr[0].cell_phone()}</b><br/>
+                        <a onclick={this.openProfileFacebook.bind(this, arr[0].userIdFacebook())} > <i class="fa fa-facebook-square" aria-hidden="true"></i> Perfíl Facebook <span class="pt-icon-standard pt-icon-link"></span></a>
+                    </div>
+                );
             }else{
                 return '--';    
             }
-            
         }; 
 
         getClients();
@@ -134,7 +177,15 @@ export const Orders = {
                 m.redraw();
             },350);
         };
- 
+
+        try {
+            clearInterval(p.interval());
+        } catch (error) {}
+
+        setTimeout(() => {
+            p.interval(setInterval(() => getOrders(false, null, this.vm.orders().length, 0), MILISECONDS_FOR_REFRESH));
+        },60000);
+        
         this.changeState = (index,status) => {
             currentformData = new FormData();
             this.vm.waitForm(true);
@@ -162,8 +213,8 @@ export const Orders = {
         };
 
 
-        this.openProduct = (product) => {
-            return Modal.vm.open(AdminModalproduct, {order: this.vm.order.bind(this.vm),product: product, className: 'mmodal-small'});
+        this.openProduct = (product, currentIDElement) => {
+            return Modal.vm.open(AdminModalproduct, {refreshStatus: this.refreshStatus.bind(this), currentIDElement: currentIDElement, order: this.vm.order.bind(this.vm),product: product, className: 'mmodal-small'});
         };
 
         this.detailProduct = (products_id) => {
@@ -171,17 +222,18 @@ export const Orders = {
             this.openProduct(currentProducts[0]).then( r => this.refreshStatus() );
         };
 
-        this.statusProduct = (products_id) => {
+        this.statusProduct = (products_id, currentIDElement) => {
+
             let selected = this.vm.order().items_orders().filter(o => o.products_id() == products_id);
 
             if(selected.length > 0){
                 this.vm.order().items_orders(this.vm.order().items_orders().filter(o => o.products_id() != products_id));
+                this.refreshStatus();
             }else{
                 // open modal
                 let currentProducts = this.vm.products().filter(p => p.id() == products_id);
-                this.openProduct(currentProducts[0]).then( r => this.refreshStatus() );
+                this.openProduct(currentProducts[0], currentIDElement);
             }
-            this.refreshStatus();
         };
 
         this.refreshStatus = () => {
@@ -203,7 +255,6 @@ export const Orders = {
         this.save = (event, indexChangeStatus = false) => {
             if (event) { event.preventDefault(); }
             if (this.vm.working()) return;
-            console.log(this.vm.order().jsonItemsOrders());
             if (this.vm.order().jsonItemsOrders() == '[]') {
                 Modal.vm.open(Alert, {label: 'Debe seleccionar al menos un producto'});
                 return;
@@ -237,12 +288,11 @@ export const Orders = {
                             auxIndex = indexChangeStatus;
                         }
 
-                        getOrders(false,auxIndex);
+                        getOrders(false,auxIndex, this.vm.orders().length, 0);
                         Modal.vm.open(Alert, {label: 'Orden actualizada con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
                     }   
                 }).catch(erSave => {
                     this.vm.working(false);
-                    console.log("Error: "+erSave);
                     Modal.vm.open(Alert, {label: 'No se pudo actualizar la orden, por favor verifique datos faltantes, y/o reales'});
                 });
 
@@ -258,12 +308,11 @@ export const Orders = {
                     }else{  
                         this.vm.order(new Order());
                         currentformData = new FormData();
-                        getOrders(true,null);
+                        getOrders(true, null, this.vm.orders().length, 0);
                         Modal.vm.open(Alert, {label: 'Orden guardada con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
                     }
                 }).catch(erSave => {
                     this.vm.working(false);
-                    console.log("Error: "+erSave);
                     Modal.vm.open(Alert, {label: 'No se pudo guardar la orden, por favor verifique datos faltantes, y/o reales'});
                 });
 
@@ -274,7 +323,6 @@ export const Orders = {
         this.total = () => {
             let res = 0;
             for(let io of this.vm.order().items_orders()){
-                // // console.log('XXX'); // console.log(io.products_id());
                 let prArr = this.vm.products().filter( p => p.id() == io.products_id() );
                 let pr = prArr[0];
                 res += (parseFloat(pr.numberValue()) * parseInt(io.amount()));
@@ -282,7 +330,12 @@ export const Orders = {
             return Utils.formatMoney(res);
         };
 
-
+        this.getRandomArbitrary = (min, max) => {
+            // let numA = Math.random() * (max - min) + min;
+            // return numA.toString().replace(".", "_");
+            return '_'; // temporal
+        };
+    
     },
     view(c,p){
 
@@ -304,9 +357,9 @@ export const Orders = {
                             <option value="">Seleccione...</option>
                             {c.vm.clients().map((s) => {  
                                 if(c.vm.order().form.users_id() == s.id()){
-                                    return <option value={s.id()} selected>{s.name()} - {s.cc()}</option>;
+                                    return <option value={s.id()} selected>{s.name()}, teléfono {s.cell_phone()}</option>;
                                 }else{
-                                    return <option value={s.id()} >{s.name()} - {s.cc()}</option>;
+                                    return <option value={s.id()} >{s.name()}, teléfono {s.cell_phone()}</option>;
                                 }                                
                             })}
                         </select>
@@ -349,10 +402,13 @@ export const Orders = {
                             <li>
                                 <label class="pt-control pt-switch">
                                     {(() => {
+                                        
+                                        let currentID = 'check_product_'+c.getRandomArbitrary(1,6)+'_'+p.id();
+
                                         if(c.arrCheckStatus(p.id())) {
-                                            return <input disabled={c.vm.readonly()} checked name="products" type="checkbox" onchange={c.statusProduct.bind(c, p.id())} />;
+                                            return <input id={currentID} disabled={c.vm.readonly()} checked name="products" type="checkbox" onchange={c.statusProduct.bind(c, p.id(), currentID)} />;
                                         } else {
-                                            return <input disabled={c.vm.readonly()} name="products" type="checkbox" onchange={c.statusProduct.bind(c, p.id())} />;
+                                            return <input id={currentID} disabled={c.vm.readonly()} name="products" type="checkbox" onchange={c.statusProduct.bind(c, p.id(), currentID)} />;
                                         }
                                     })()}
                                     <span class="pt-control-indicator"></span>
@@ -386,7 +442,7 @@ export const Orders = {
                         </div>
                         <div class="panel panel-default" >
                             <div class="total-admin-car">
-                                Total: <b>{c.total()}</b>
+                                <big>Total: <b>{c.total()}</b></big>
                             </div>
                         </div>
                         <label class="pt-label">
@@ -427,17 +483,16 @@ export const Orders = {
 
         let btnGetMoreOrders;
 
-        if(c.limit >= c.limitOrders()){
-            btnGetMoreOrders = <b>limite de ordenes mostradas hacia atrás en el tiempo ({c.limitOrders()})</b>;
-        } else {
-            btnGetMoreOrders = <button onclick={c.getMoreOrders.bind(c)} type="button" class="pt-button pt-minimal custom-btn-add-more-orders"><span class="pt-icon-standard pt-icon-add-to-artifact"></span> Ver ordenes anteriores</button>;
-        }
+        btnGetMoreOrders = <Button loading={c.vm.loadingMoreOrders()} onclick={c.getMoreOrders.bind(c)} type="button" class="pt-button pt-minimal custom-btn-add-more-orders"><span class="pt-icon-standard pt-icon-add-to-artifact"></span> Ver ordenes anteriores</Button>;
 
         if(c.vm.orders() != 'empty' && c.vm.clients() != 'empty'){
             list = (
             	<div class="table-responsive custom-table-responsive">
                     <table class="table table-striped">
                         <thead>
+                            <tr>
+                                <td colspan="6"><i class="pt-tag pt-intent-success">Este listado se actualiza cada 60 segundos</i></td>
+                            </tr>
                             <tr>
                                 <th>Nº Orden</th>
                                 <th>Fecha</th>
@@ -451,9 +506,11 @@ export const Orders = {
                         {c.vm.orders().map((order, index) => {
                             return (
                                 <tr>
-                                    <td><b>{order.id()}</b></td>
+                                    <td class={(order.form.status() === 1 ? 'background-flicker-white' : '') || (order.form.status() == 2 ? 'background-flicker-blue' : '')} > <i class={"fa fa-lightbulb-o fa-2x "+((order.form.status() == 1 ? 'background-flicker-white' : '') || (order.form.status() == 2 ? 'background-flicker-blue' : ''))} aria-hidden="true"></i> <b>{order.id()}</b></td>
                                     <td>{order.created_at()}</td>
-                                    <td>{c.nameUser(order.users_id())}</td>
+                                    <td>
+                                        {c.dataUser(order.users_id())}<br/>
+                                    </td>
                                     <td><span class={"pt-tag pt-large pt-round "+order.styleStatus()}>{order.objStatus().name}</span></td>
                                     <td>
                                     {(() => {
@@ -487,7 +544,7 @@ export const Orders = {
                                         </div>
                                     </td>
                                 </tr>
-                            )
+                            );
                         })}
                         </tbody>
                     </table>

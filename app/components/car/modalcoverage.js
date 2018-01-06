@@ -10,12 +10,12 @@ const CarModalCoverage = {};
 CarModalCoverage.vm = function (p) {
     return {
 
-    }
-}
+    };
+};
 
 CarModalCoverage.controller = function (p) {
     this.vm = CarModalCoverage.vm(p);
-}
+};
 
 CarModalCoverage.view = function (c,p) {
     return (
@@ -29,8 +29,8 @@ CarModalCoverage.view = function (c,p) {
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
 
 export default CarModalCoverage;

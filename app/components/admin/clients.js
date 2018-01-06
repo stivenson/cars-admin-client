@@ -12,7 +12,7 @@ export const Clients = {
             readonly: m.prop(false),
             client: m.prop(new Client()),
             waitForm: m.prop(false)
-        } 
+        }; 
     },
     controller(p){
         this.vm = Clients.vm(p);
@@ -32,8 +32,12 @@ export const Clients = {
                         this.edit(index);
                 }})
                 .then(()=>{if(selectFirst == true) {this.detail(0)}})
-                .then(()=>m.redraw());
-        }
+                .then(()=>m.redraw())
+                .catch(r=>{
+                    m.route('/login');
+                    window.location.reload();
+                });
+        };
 
         getClients(true,null);
 
@@ -103,14 +107,14 @@ export const Clients = {
             };
 
             currentformData.append('name', this.vm.client().form.name());
-            currentformData.append('cc', this.vm.client().form.cc());
             currentformData.append('roles_id', this.vm.client().form.roles_id());
-            currentformData.append('telephone', this.vm.client().form.telephone());
             currentformData.append('cell_phone', this.vm.client().form.cell_phone());
             currentformData.append('email', this.vm.client().form.email());
             currentformData.append('password', this.vm.client().form.password());
             currentformData.append('neighborhood', this.vm.client().form.neighborhood());
             currentformData.append('address', this.vm.client().form.address());
+            currentformData.append('userIdFacebook', this.vm.client().form.userIdFacebook());
+            
 
             if(this.vm.client().form.id() != false){
 
@@ -123,14 +127,15 @@ export const Clients = {
                     this.vm.working(false);
                     if(res == false){
                         Modal.vm.open(Alert, {label: 'No se pudo actualizar el cliente'});
-                    }else{  
+                    }else if(res === 'email_invalid') {  
+                        Modal.vm.open(Alert, {label: 'El nuevo correo especificado ya existe en el sistema, por favor indique otro'});
+                    } else {  
                         let auxIndex = (this.vm.client().index()-1) == 0 ? 'first': this.vm.client().index()-1;
                         getClients(false,auxIndex);
                         Modal.vm.open(Alert, {label: 'Cliente actualizado con éxito', icon: 'pt-icon-endorsed',mood: 'success'});
                     }   
                 }).catch(erSave => {
                     this.vm.working(false);
-                    console.log("Error: "+erSave);
                     Modal.vm.open(Alert, {label: 'No se pudo actualizar el cliente, por favor verifique datos faltantes, y/o reales'});
                 });
 
@@ -143,7 +148,9 @@ export const Clients = {
                     this.vm.working(false);
                     if(res == false){
                         Modal.vm.open(Alert, {label: 'No se pudo guardar el cliente'});
-                    }else{  
+                    }else if(res === 'email_invalid') {  
+                        Modal.vm.open(Alert, {label: 'El correo especificado ya existe en el sistema, por favor indique otro'});
+                    } else {
                         this.vm.client(new Client());
                         currentformData = new FormData();
                         getClients(true,null);
@@ -151,7 +158,6 @@ export const Clients = {
                     }
                 }).catch(erSave => {
                     this.vm.working(false);
-                    console.log("Error: "+erSave);
                     Modal.vm.open(Alert, {label: 'No se pudo guardar el cliente, por favor verifique datos faltantes, y/o reales'});
                 });
 
@@ -161,6 +167,30 @@ export const Clients = {
         }
 
 
+        this.openProfileFacebook = (userIdFacebook) => {
+            try {
+                const uri = `https://www.facebook.com/${userIdFacebook}`;
+                const win = window.open(uri, '_blank');
+                win.focus();  
+            } catch (error) {
+                Modal.vm.open(Alert, {label: 'Huvo un problema, y no se pudo visitar este perfíl'});
+            }
+        };
+
+        this.dataUser = (client) => {
+            const email = client.email() !== '' ? (<a href={'mailto:'+client.email()} >{client.email()}</a>) : (<i>No hay acceso a email</i>);
+            return (
+                <div>
+                    {client.name()}<br/>
+                    {email}<br/>
+                    <span class="pt-icon-standard pt-icon-phone"></span> <b>{client.cell_phone()}</b><br/>
+                    <a onclick={this.openProfileFacebook.bind(this, client.userIdFacebook())} > <i class="fa fa-facebook-square" aria-hidden="true"></i> Perfíl Facebook <span class="pt-icon-standard pt-icon-link"></span></a>
+                </div>
+            );
+        }; 
+
+
+
     },
     view(c,p){
 
@@ -168,9 +198,6 @@ export const Clients = {
 
         let list = spinner;
         let form = spinner;
-
-        let btnAdd = <button onclick={c.add.bind(c)} type="button" class="pt-button pt-minimal pt-icon-add pt-intent-primary custom-add-btn" >Agregar Cliente</button>;
-
 
         if(c.vm.waitForm() == false){
             form = (
@@ -193,21 +220,7 @@ export const Clients = {
                     </label>
 
                     <label class="pt-label">
-                        Número identificación
-                        <input
-                            type="text"
-                            class="pt-input pt-fill"
-                            name="cc"
-                            oninput={m.withAttr('value', c.vm.client().form.cc)}
-                            value={c.vm.client().form.cc()}
-                            placeholder="Solo números"
-                            required
-                            disabled={c.vm.readonly()}
-                        />
-                    </label>
-
-                    <label class="pt-label">
-                        Celular 
+                    Teléfono o Celular 
                         <input
                             type="text"
                             class="pt-input pt-fill"
@@ -216,20 +229,6 @@ export const Clients = {
                             value={c.vm.client().form.cell_phone()}
                             placeholder="Solo números"
                             required
-                            disabled={c.vm.readonly()}
-                        />
-                    </label>
-
-
-                    <label class="pt-label">
-                        Teléfono fijo <i>(Opcional)</i> 
-                        <input
-                            type="text"
-                            class="pt-input pt-fill"
-                            name="telephone"
-                            oninput={m.withAttr('value', c.vm.client().form.telephone)}
-                            value={c.vm.client().form.telephone()}
-                            placeholder="Opcional"
                             disabled={c.vm.readonly()}
                         />
                     </label>
@@ -308,8 +307,8 @@ export const Clients = {
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>cc</th>
                                 <th>Nombre</th>
+                                <th>Información</th>
                                 <th>Celular</th>
                                 <th></th>
                             </tr>
@@ -318,8 +317,8 @@ export const Clients = {
                         {c.vm.clients().map((client,index) => {
                             return (
                                 <tr>
-                                    <td>{client.cc()}</td>
                                     <td>{client.name()}</td>
+                                    <td>{c.dataUser(client)}</td>
                                     <td>{client.cell_phone()}</td>
                                     <td>
                                         <div class="dropdown">
@@ -344,7 +343,7 @@ export const Clients = {
 
         let content = (
             <div class="admin-clients row">
-                <div clas="col-md-12">{btnAdd}<br/></div> 
+                
 
                 <div class="col-md-7">
                     {list}

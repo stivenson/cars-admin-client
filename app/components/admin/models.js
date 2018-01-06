@@ -5,7 +5,9 @@ import Utils from '../utils';
 
 const DELIVERY_TYPE_DOMICILE = 1;
 const STATUS_PENDING = 1;
-export const STATUTES = [{id:1,name:'Pendiente'},{id:2,name:'Confirmado'},{id:3,name:'Cancelado'},{id:4,name:'Entregado'}];
+export const STATUTES = [{id:1,name:'Pendiente'},{id:2,name:'Confirmado'},
+    {id:3,name:'Cancelado'},
+    {id:4,name:'Entregado'}];
 export const DELIVERY_TYPES = [{id:1,name:'Domicilio'},{id:2,name:'En local'}];
 export const TAKE = 16;
 
@@ -35,29 +37,29 @@ export const Product = function(data) {
         image: m.prop(urlImage),
         haveImage: m.prop(mime != ' '),
         selected: m.prop(false)
-    } 
+    }; 
 
-}
+};
 
 Product.list = function () {
     return API.get('products', {type: Product});
-}
+};
 
 Product.listAvailable = () => {
     return API.get('spe/products/available',{type:Product});
-}
+};
 
 Product.get = (id) => {
     return API.get(`products/${id}`,{type:Product});
-}
+};
 
 Product.save = function (data,options) {
     return API.post('products',data,options);
-}
+};
 
 Product.delete = function (id) {
     return API.get(`temporal/delete/products/${id}`);
-}
+};
 
 
 
@@ -65,44 +67,42 @@ export const Client = function(data) {
     data = data || {};
     this.id = m.prop(data.id || false);
     this.name = m.prop(data.name || '');
-    this.cc = m.prop(data.cc || '');
     this.roles_id = m.prop(data.roles_id || 2); // clients rol for default
-    this.telephone = m.prop(data.telephone || '');
     this.cell_phone = m.prop(data.cell_phone || '');
     this.email = m.prop(data.email || '');
     this.password = m.prop(data.password || '');
     this.neighborhood = m.prop(data.neighborhood || '');
     this.address = m.prop(data.address || '');
+    this.userIdFacebook = m.prop(data.userIdFacebook || '');
 
     this.form = {
         id: m.prop(data.id || ''),
         name: m.prop(data.name || ''),
-        cc: m.prop(data.cc || ''),
         roles_id: m.prop(data.roles_id || 2), // clients rol for default
-        telephone: m.prop(data.telephone || ''),
         cell_phone: m.prop(data.cell_phone || ''),
         email: m.prop(data.email || ''),
         password: m.prop(data.password || ''),
         neighborhood: m.prop(data.neighborhood || ''),
-        address: m.prop(data.address || '')
-    }
+        address: m.prop(data.address || ''),
+        userIdFacebook: m.prop(data.userIdFacebook || '')
+    };
 
-}
+};
 
-Client.list = function (select) {
+Client.list = function (select, withAdmins = 'no') {
     if(select)
-        return API.get('clients/order/true', {type: Client});
+        return API.get(`clients/order/true/${withAdmins}`, {type: Client});
     else
         return API.get('clients', {type: Client});
-}
+};
 
 Client.save = function (data,options) {
     return API.post('clients',data,options);
-}
+};
 
 Client.delete = function (id) {
     return API.get(`temporal/delete/clients/${id}`);
-}
+};
 
 
 
@@ -110,11 +110,28 @@ Client.delete = function (id) {
 
 export const Sesion = function() {};
 
-Sesion.logout = function () {
-    localStorage.setItem('sesion',false);
+const clearLocalStorage = () => {
+    localStorage.setItem('data_user', false);
+    localStorage.setItem('token', false);
+    localStorage.setItem('admin',false);
+    localStorage.setItem('client',false);
 };
 
+Sesion.logout = function () {
+    API.get('public/logout');
+    setTimeout(()=>{
+        clearLocalStorage();
+        m.route('/login');
+    },200);
+};
 
+Sesion.notHaveSession = function () {
+    return localStorage.getItem('admin') === 'false' || localStorage.getItem('admin') === false;
+};
+
+Sesion.haveSesionAdmin = function () {
+    return localStorage.getItem('admin') !== 'false' && localStorage.getItem('admin') !== false;
+};
 
 /* ORDERS */
 
@@ -159,8 +176,7 @@ export const Order = function(data) {
     this.id = m.prop(data.id || false);
     this.delivery_type = m.prop(data.delivery_type || DELIVERY_TYPE_DOMICILE);
     this.status = m.prop(data.status || STATUS_PENDING);
-    // console.log(localStorage.getItem('users_id'));
-    this.users_id = m.prop(data.users_id || localStorage.getItem('users_id'));
+    this.users_id = m.prop(data.users_id || false);
     this.created_at = m.prop(data.created_at || '--');
     this.items_orders = m.prop([]);
 
@@ -169,7 +185,7 @@ export const Order = function(data) {
         id: m.prop(data.id || ''),
         status: m.prop(data.status || STATUS_PENDING),
         delivery_type: m.prop(data.delivery_type || DELIVERY_TYPE_DOMICILE),
-        users_id: m.prop(data.users_id || localStorage.getItem('users_id')),
+        users_id: m.prop(data.users_id || false),
         created_at: m.prop(data.created_at || '--'),
         items_orders: this.items_orders 
     };
@@ -178,7 +194,6 @@ export const Order = function(data) {
         let res = [];
         let arr = this.items_orders();
         for (let item of arr) {
-            // // console.log(item);
             res.push(item.json());
         }
         return JSON.stringify(res);
@@ -201,7 +216,7 @@ export const Order = function(data) {
             case 4: res = 'pt-intent-success'; break;
         }
         return res;
-    }
+    };
 
 
     this.listItems = () => Itemorder.list(this.id());
@@ -224,13 +239,11 @@ export const Order = function(data) {
     };
 };
 
-Order.list = function (take = 16, skip = 0) {
+Order.list = function (skip = 0, take = 15) {
     return API.get(`pagination_orders/${skip}/${take}`, {type: Order});
 };
 
 Order.save = function (data,options) {
-    // console.log('Save order and items');
-    // console.log(data);
     return API.post('orders',data,options);
 };
 
